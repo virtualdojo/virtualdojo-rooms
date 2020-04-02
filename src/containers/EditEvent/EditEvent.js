@@ -60,11 +60,18 @@ function EditEvent({ user, event }) {
     return unsubscribe;
   }, [event.eventId, setEventRoomsUsers]);
 
+  const userRoom = eventRoomsUsers.find((ru) => ru.userId === user.userId);
+  const userRoomDetails =
+    userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
   return (
     <DndProvider backend={Backend}>
       <div style={containerStyle}>
-        <VideoChat></VideoChat>
-
+        {<button onClick={() => setIsModalOpen(true)}>{`Open`}</button>}
+        <VideoChat
+          user={user}
+          room={userRoomDetails}
+          isMenuOpen={isModalOpen}
+        ></VideoChat>
         {isModalOpen && (
           <div className="modal">
             <button onClick={() => setIsModalOpen(false)}>{`Close`}</button>
