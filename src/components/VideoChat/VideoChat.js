@@ -16,11 +16,11 @@ function VideoChat({ user, room, isMenuOpen }) {
   };
 
   const jitsiContainerStyle = {
-    display: loading ? "none" : "block",
+    display: loading || isMenuOpen ? "none" : "block",
     width: "100%",
     height: "100%",
   };
-  const roomId = room ? room.roomId : "virtualdojo-test-room-all";
+  const roomId = room ? room.roomId : "virtualdojo-test-room";
 
   useEffect(() => {
     function startConference() {

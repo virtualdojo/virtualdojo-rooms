@@ -93,11 +93,10 @@ function EditEvent({ user, event }) {
       <VideoChat
         user={user}
         room={userRoomDetails}
-        isMenuOpen={isModalOpen}
+        isMenuOpen={isModalOpen || isDocumentOpen}
       ></VideoChat>
       <Document isOpen={isDocumentOpen}></Document>
       <div className={isModalOpen ? "Edit-modal-opened " : "Edit-modal-closed"}>
-        <button onClick={() => setIsModalOpen(false)}>{`Close`}</button>
         <div>
           <ErrorMessage errorCode={error}></ErrorMessage>
           <header className="app-header">
