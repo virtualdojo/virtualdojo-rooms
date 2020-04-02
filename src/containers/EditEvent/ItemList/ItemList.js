@@ -6,11 +6,11 @@ const ItemTypes = {
   USER: "user",
 };
 
-const User = ({ eventId, user }) => {
+const User = ({ eventId, user, currentUser }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
+    canDrag: currentUser.isMentor,
     end: (item, monitor) => {
-      console.log("User -> item && dropResult", item, monitor.getDropResult());
       const dropResult = monitor.getDropResult();
       if (item && dropResult) {
         FirestoreService.addUserToRoom(
@@ -25,14 +25,28 @@ const User = ({ eventId, user }) => {
     }),
   });
   const opacity = isDragging ? 0.4 : 1;
+  console.log("currentUser", currentUser);
+  const isCurrentUser = currentUser && currentUser.userId === user.userId;
   return (
     <div ref={drag} style={{ opacity }}>
-      {user.userName}
+      {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
+      {currentUser.isMentor && !isCurrentUser && (
+        <button
+          onClick={() =>
+            FirestoreService.setUserIsMentor(
+              user.userId,
+              eventId,
+              !user.isMentor
+            )
+          }
+        >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</button>
+      )}
+      {isCurrentUser && " (me)"}
     </div>
   );
 };
 
-const Room = ({ eventId, room, users }) => {
+const Room = ({ eventId, room, users, currentUser }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -56,13 +70,24 @@ const Room = ({ eventId, room, users }) => {
     <div ref={drop} style={{ backgroundColor }}>
       <h1>{room.roomName}</h1>
       {users.map((u) => (
-        <User key={u.userId} user={u} eventId={eventId}></User>
+        <User
+          key={u.userId}
+          user={u}
+          currentUser={currentUser}
+          eventId={eventId}
+        ></User>
       ))}
     </div>
   );
 };
 
-function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
+function ItemList({
+  eventId,
+  currentUser,
+  eventUsers,
+  eventRooms,
+  eventRoomsUsers,
+}) {
   const getUsersByRoomId = (roomId) => {
     const usersInRoom = eventRoomsUsers
       .filter((ru) => ru.roomId === roomId)
@@ -71,7 +96,12 @@ function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
     return users;
   };
   const users = eventUsers.map((item) => (
-    <User key={item.userId} eventId={eventId} user={item}></User>
+    <User
+      key={item.userId}
+      eventId={eventId}
+      currentUser={currentUser}
+      user={item}
+    ></User>
   ));
   const rooms = eventRooms.map((item) => (
     <Room
@@ -79,6 +109,7 @@ function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
       room={item}
       eventId={eventId}
       users={getUsersByRoomId(item.roomId)}
+      currentUser={currentUser}
     ></Room>
   ));
   return (

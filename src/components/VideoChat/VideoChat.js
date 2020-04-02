@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./VideoChat.css";
 
-const isVideoEnabled = true;
+const isVideoEnabled = false;
 
 let api;
 
@@ -20,7 +20,7 @@ function VideoChat({ user, room, isMenuOpen }) {
     width: "100%",
     height: "100%",
   };
-  const roomId = room ? room.roomId : "virtualdojo-test-room";
+  const roomId = room ? room.roomId : "virtualdojo-test-room-random";
 
   useEffect(() => {
     function startConference() {

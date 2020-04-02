@@ -40,6 +40,8 @@ function EditEvent({ user, event }) {
         const updatedEventUsers = querySnapshot.docs
           ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
           : [];
+
+        console.log("EditEvent -> updatedEventUsers", updatedEventUsers);
         setEventUsers(updatedEventUsers);
       },
       error: () => setError("user-get-fail"),
@@ -73,6 +75,7 @@ function EditEvent({ user, event }) {
     return unsubscribe;
   }, [event.eventId, setEventRoomsUsers]);
 
+  const userMeta = eventUsers.find((u) => u.userId === user.userId);
   const userRoom = eventRoomsUsers.find((ru) => ru.userId === user.userId);
   const userRoomDetails =
     userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
@@ -99,17 +102,6 @@ function EditEvent({ user, event }) {
       <div className={isModalOpen ? "Edit-modal-opened " : "Edit-modal-closed"}>
         <div>
           <ErrorMessage errorCode={error}></ErrorMessage>
-          <header className="app-header">
-            <h1>{`Benvenuto a ${event.name}`}</h1>
-            <p>
-              <strong>Ciao {user.userName}!</strong>
-            </p>
-            <p>
-              <strong>
-                {user.isMentor ? "Sei un mentor" : "Sei un ninja"}
-              </strong>
-            </p>
-          </header>
           <div className="edit-container">
             {user.isMentor && (
               <div className="list-column">
@@ -119,6 +111,7 @@ function EditEvent({ user, event }) {
             <div className="list-column">
               <ItemList
                 eventId={event.eventId}
+                currentUser={userMeta || {}}
                 eventUsers={eventUsers}
                 eventRooms={eventRooms}
                 eventRoomsUsers={eventRoomsUsers}
