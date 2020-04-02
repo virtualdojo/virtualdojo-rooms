@@ -4,7 +4,7 @@ import * as FirestoreService from "./services/firestore";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
-import VideoChat from "./containers/VideoChat/VideoChat";
+import EditEvent from "./containers/EditEvent/EditEvent";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
 import useQueryString from "./hooks/useQueryString";
@@ -90,7 +90,7 @@ function App() {
 
   if (eventMeta && user) {
     return (
-      <VideoChat user={user} event={{ eventId, ...eventMeta }}></VideoChat>
+      <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
     );
   } else if (eventMeta) {
     return (

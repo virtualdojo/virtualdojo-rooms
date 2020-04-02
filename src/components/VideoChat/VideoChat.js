@@ -1,17 +1,16 @@
 /* global JitsiMeetExternalAPI  */
 import React, { useState, useEffect } from "react";
-import EditEvent from "../EditEvent/EditEvent";
 import "./VideoChat.css";
 
 const isVideoEnabled = true;
 
+const containerStyle = {
+  width: "100%",
+  height: "100vh",
+};
+
 function VideoChat({ user, event }) {
   const [loading, setLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(!isVideoEnabled);
-  const containerStyle = {
-    width: "100%",
-    height: "100vh",
-  };
 
   const jitsiContainerStyle = {
     display: loading ? "none" : "block",
@@ -40,7 +39,7 @@ function VideoChat({ user, event }) {
         api.executeCommand("displayName", "MyName");
       });
       api.addEventListener("audioMuteStatusChanged", ({ muted }) => {
-        if (muted) setIsModalOpen(true);
+        //if (muted) setIsModalOpen(true);
       });
     } catch (error) {
       console.error("Failed to load Jitsi API", error);
@@ -48,25 +47,18 @@ function VideoChat({ user, event }) {
   }
 
   useEffect(() => {
-    if (isVideoEnabled && !isModalOpen) {
+    if (isVideoEnabled) {
       // verify the JitsiMeetExternalAPI constructor is added to the global..
       if (window.JitsiMeetExternalAPI) startConference();
       else alert("Jitsi Meet API script not loaded");
     } else {
       setLoading(false);
     }
-  }, [isModalOpen]);
+  }, []);
 
   return (
     <div style={containerStyle}>
-      {loading && <div>{`Loading`}</div>}
-      {!isModalOpen && <div id="jitsi-container" style={jitsiContainerStyle} />}
-      {isModalOpen && (
-        <div className="modal">
-          <button onClick={() => setIsModalOpen(false)}>{`Close`}</button>
-          <EditEvent user={user} event={event}></EditEvent>
-        </div>
-      )}
+      <div id="jitsi-container" style={jitsiContainerStyle} />
     </div>
   );
 }

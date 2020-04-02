@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import * as FirestoreService from "../../../services/firestore";
-import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 import { useDrag, useDrop } from "react-dnd";
 
 const ItemTypes = {
@@ -63,53 +62,7 @@ const Room = ({ eventId, room, users }) => {
   );
 };
 
-function ItemList(props) {
-  const { eventId } = props;
-
-  const [eventUsers, setEventUsers] = useState([]);
-  const [eventRooms, setEventRooms] = useState([]);
-  const [eventRoomsUsers, setEventRoomsUsers] = useState([]);
-  const [error, setError] = useState();
-
-  useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventItems(eventId, {
-      next: (querySnapshot) => {
-        const updatedEventUsers = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        setEventUsers(updatedEventUsers);
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, setEventUsers]);
-
-  useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventRooms(eventId, {
-      next: (querySnapshot) => {
-        const updatedEventRooms = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        setEventRooms(updatedEventRooms);
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, setEventRooms]);
-
-  useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventRoomsUsers(eventId, {
-      next: (querySnapshot) => {
-        const updatedEventRoomsUsers = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        setEventRoomsUsers(updatedEventRoomsUsers);
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, setEventRoomsUsers]);
-
+function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
   const getUsersByRoomId = (roomId) => {
     const usersInRoom = eventRoomsUsers
       .filter((ru) => ru.roomId === roomId)
@@ -130,7 +83,6 @@ function ItemList(props) {
   ));
   return (
     <div>
-      <ErrorMessage errorCode={error}></ErrorMessage>
       <div>{users}</div>
       <div>-----</div>
       <div>{rooms}</div>
