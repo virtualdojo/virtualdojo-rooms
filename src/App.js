@@ -4,7 +4,6 @@ import * as FirestoreService from "./services/firestore";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
-import EditEvent from "./containers/EditEvent/EditEvent";
 import VideoChat from "./containers/VideoChat/VideoChat";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
@@ -13,7 +12,7 @@ import useQueryString from "./hooks/useQueryString";
 function App() {
   const [user, setUser] = useState();
   const [userId, setUserId] = useState();
-  const [event, setEvent] = useState();
+  const [eventMeta, setEventMeta] = useState();
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -28,7 +27,7 @@ function App() {
             .then((event) => {
               if (event.exists) {
                 setError(null);
-                setEvent(event.data());
+                setEventMeta(event.data());
               } else {
                 setError("event-not-found");
                 setEventId();
@@ -60,7 +59,7 @@ function App() {
       .then((event) => {
         if (event.exists) {
           setError(null);
-          setEvent(event.data());
+          setEventMeta(event.data());
         } else {
           setError("event-not-found");
           setEventId();
@@ -75,34 +74,30 @@ function App() {
 
   function onCloseEvent() {
     setEventId();
-    setEvent();
+    setEventMeta();
     setUser();
   }
 
   function onSelectUser(userName) {
     setUser(userName);
     FirestoreService.getEvent(eventId)
-      .then((updatedEvent) => setEvent(updatedEvent.data()))
+      .then((updatedEvent) => setEventMeta(updatedEvent.data()))
       .catch(() => setError("event-get-fail"));
   }
 
   // render a scene based on the current state
   if (isLoading) return <div>{`Loading...`}</div>;
 
-  if (event && user) {
+  if (eventMeta && user) {
     return (
-      <VideoChat>
-        <EditEvent
-          {...{ eventId, user, onCloseEvent, userId, event }}
-        ></EditEvent>
-      </VideoChat>
+      <VideoChat user={user} event={{ eventId, ...eventMeta }}></VideoChat>
     );
-  } else if (event) {
+  } else if (eventMeta) {
     return (
       <div>
         <ErrorMessage errorCode={error}></ErrorMessage>
         <JoinEvent
-          users={event.users}
+          users={eventMeta.users}
           {...{ eventId, onSelectUser, onCloseEvent, userId }}
         ></JoinEvent>
       </div>

@@ -6,12 +6,7 @@ import AddItem from "./AddItem/AddItem";
 import ItemList from "./ItemList/ItemList";
 
 function EditEvent(props) {
-  const { eventId, user, onCloseEvent, userId, event } = props;
-
-  function onCreateListClick(e) {
-    e.preventDefault();
-    onCloseEvent();
-  }
+  const { user, event } = props;
 
   console.log("user ", user);
   return (
@@ -29,21 +24,14 @@ function EditEvent(props) {
         <div className="edit-container">
           {user.isMentor && (
             <div className="list-column">
-              <AddItem {...{ eventId, userId }}></AddItem>
+              <AddItem userId={user.userId} eventId={event.eventId}></AddItem>
             </div>
           )}
           <div className="list-column">
-            <ItemList {...{ eventId }}></ItemList>
+            <ItemList eventId={event.eventId}></ItemList>
           </div>
         </div>
-        <footer className="app-footer">
-          <p>
-            <a href="/" onClick={onCreateListClick}>
-              Crea un nuovo evento
-            </a>
-            .
-          </p>
-        </footer>
+        <footer className="app-footer"></footer>
       </div>
     </DndProvider>
   );

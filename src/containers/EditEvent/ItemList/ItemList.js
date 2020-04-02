@@ -11,6 +11,7 @@ const User = ({ eventId, user }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
     end: (item, monitor) => {
+      console.log("User -> item && dropResult", item, monitor.getDropResult());
       const dropResult = monitor.getDropResult();
       if (item && dropResult) {
         FirestoreService.addUserToRoom(
@@ -35,7 +36,10 @@ const User = ({ eventId, user }) => {
 const Room = ({ eventId, room, users }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
-    drop: () => ({ room }),
+    drop: () => {
+      console.log("dropped");
+      return { room };
+    },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop(),

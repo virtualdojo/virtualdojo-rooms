@@ -57,20 +57,18 @@ function JoinEvent(props) {
       <div className="join-container">
         <div>
           <form name="addUserToListForm">
-            <p>Select your name if you previously joined the list...</p>
-            {getUserButtonList()}
-            <p>...or enter your name to join the list...</p>
+            <p>Inserisci il tuo nome per accedere</p>
             <p>
               <input type="text" name="name" />
               <button onClick={addNewUser}>Join</button>
             </p>
             <ErrorMessage errorCode={error}></ErrorMessage>
-            <p>
+            {/*<p>
               ...or{" "}
               <a href="/" onClick={onCreateListClick}>
                 create a new event
               </a>
-            </p>
+            </p>*/}
           </form>
         </div>
       </div>
