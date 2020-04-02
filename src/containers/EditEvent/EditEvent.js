@@ -7,11 +7,13 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import AddItem from "./AddItem/AddItem";
 import ItemList from "./ItemList/ItemList";
 import VideoChat from "../../components/VideoChat/VideoChat";
+import Document from "../../components/Document/Document";
 import "./EditEvent.css";
 
 const containerStyle = {
   width: "100%",
   height: "100vh",
+  overflowX: "hidden",
 };
 
 function EditEvent({ user, event }) {
@@ -19,7 +21,18 @@ function EditEvent({ user, event }) {
   const [eventRooms, setEventRooms] = useState([]);
   const [eventRoomsUsers, setEventRoomsUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isDocumentOpen, setIsDocumentOpen] = useState(false);
   const [error, setError] = useState();
+
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+    if (!isModalOpen) setIsDocumentOpen(false);
+  };
+
+  const toggleDocument = () => {
+    setIsDocumentOpen(!isDocumentOpen);
+    if (!isDocumentOpen) setIsModalOpen(false);
+  };
 
   useEffect(() => {
     const unsubscribe = FirestoreService.streamEventItems(event.eventId, {
@@ -64,55 +77,59 @@ function EditEvent({ user, event }) {
   const userRoomDetails =
     userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
   return (
-    <DndProvider backend={Backend}>
-      <div style={containerStyle}>
-        {<button onClick={() => setIsModalOpen(true)}>{`Open`}</button>}
-        <VideoChat
-          user={user}
-          room={userRoomDetails}
-          isMenuOpen={isModalOpen}
-        ></VideoChat>
-        {isModalOpen && (
-          <div className="modal">
-            <button onClick={() => setIsModalOpen(false)}>{`Close`}</button>
-            <div>
-              <ErrorMessage errorCode={error}></ErrorMessage>
-              <header className="app-header">
-                <h1>{`Benvenuto a ${event.name}`}</h1>
-                <p>
-                  <strong>Ciao {user.userName}!</strong>
-                </p>
-                <p>
-                  <strong>
-                    {user.isMentor ? "Sei un mentor" : "Sei un ninja"}
-                  </strong>
-                </p>
-              </header>
-              <div className="edit-container">
-                {user.isMentor && (
-                  <div className="list-column">
-                    <AddItem
-                      userId={user.userId}
-                      eventId={event.eventId}
-                    ></AddItem>
-                  </div>
-                )}
-                <div className="list-column">
-                  <ItemList
-                    eventId={event.eventId}
-                    eventUsers={eventUsers}
-                    eventRooms={eventRooms}
-                    eventRoomsUsers={eventRoomsUsers}
-                  ></ItemList>
-                </div>
+    <div style={containerStyle}>
+      <div style={{ position: "fixed" }}>
+        {
+          <button onClick={() => toggleModal()}>{`${
+            isModalOpen ? "close" : "open"
+          } dashboard`}</button>
+        }
+        {
+          <button onClick={() => toggleDocument()}>{`${
+            isDocumentOpen ? "close" : "open"
+          } document`}</button>
+        }
+      </div>
+      <VideoChat
+        user={user}
+        room={userRoomDetails}
+        isMenuOpen={isModalOpen}
+      ></VideoChat>
+      <Document isOpen={isDocumentOpen}></Document>
+      <div className={isModalOpen ? "Edit-modal-opened " : "Edit-modal-closed"}>
+        <button onClick={() => setIsModalOpen(false)}>{`Close`}</button>
+        <div>
+          <ErrorMessage errorCode={error}></ErrorMessage>
+          <header className="app-header">
+            <h1>{`Benvenuto a ${event.name}`}</h1>
+            <p>
+              <strong>Ciao {user.userName}!</strong>
+            </p>
+            <p>
+              <strong>
+                {user.isMentor ? "Sei un mentor" : "Sei un ninja"}
+              </strong>
+            </p>
+          </header>
+          <div className="edit-container">
+            {user.isMentor && (
+              <div className="list-column">
+                <AddItem userId={user.userId} eventId={event.eventId}></AddItem>
               </div>
-              <footer className="app-footer"></footer>
+            )}
+            <div className="list-column">
+              <ItemList
+                eventId={event.eventId}
+                eventUsers={eventUsers}
+                eventRooms={eventRooms}
+                eventRoomsUsers={eventRoomsUsers}
+              ></ItemList>
             </div>
           </div>
-        )}
+          <footer className="app-footer"></footer>
+        </div>
       </div>
-      )
-    </DndProvider>
+    </div>
   );
 }
 

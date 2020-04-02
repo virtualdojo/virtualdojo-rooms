@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-
+import { DndProvider } from "react-dnd";
+import Backend from "react-dnd-html5-backend";
 import * as FirestoreService from "./services/firestore";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
@@ -90,7 +91,9 @@ function App() {
 
   if (eventMeta && user) {
     return (
-      <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+      <DndProvider backend={Backend}>
+        <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+      </DndProvider>
     );
   } else if (eventMeta) {
     return (

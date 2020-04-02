@@ -16,7 +16,7 @@ function VideoChat({ user, room, isMenuOpen }) {
   };
 
   const jitsiContainerStyle = {
-    display: loading || isMenuOpen ? "none" : "block",
+    display: loading ? "none" : "block",
     width: "100%",
     height: "100%",
   };
