@@ -5,6 +5,7 @@ import * as FirestoreService from "./services/firestore";
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
 import EditEvent from "./containers/EditEvent/EditEvent";
+import VideoChat from "./containers/VideoChat/VideoChat";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
 import useQueryString from "./hooks/useQueryString";
@@ -87,11 +88,14 @@ function App() {
 
   // render a scene based on the current state
   if (isLoading) return <div>{`Loading...`}</div>;
+
   if (event && user) {
     return (
-      <EditEvent
-        {...{ eventId, user, onCloseEvent, userId, event }}
-      ></EditEvent>
+      <VideoChat>
+        <EditEvent
+          {...{ eventId, user, onCloseEvent, userId, event }}
+        ></EditEvent>
+      </VideoChat>
     );
   } else if (event) {
     return (
