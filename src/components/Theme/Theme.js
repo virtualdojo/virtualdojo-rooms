@@ -10,10 +10,10 @@ const palette = {
     default: "#fff",
   },
   primary: {
-    light: "#baffff",
-    main: "#84ffff",
+    light: "#219ec3",
+    main: "#219ec3",
     dark: "#219ec3",
-    contrastText: "#0d47a1",
+    contrastText: "#fff",
   },
   secondary: {
     light: "#ffffbf",

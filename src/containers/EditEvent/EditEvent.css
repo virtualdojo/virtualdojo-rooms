@@ -7,12 +7,9 @@
 .edit-container {
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
 }
 
 .add-item-column {
-  min-width: 300px;
-  width: 25%;
   background-color: rgb(247, 237, 202);
   padding: 20px;
   border-radius: 2%;
@@ -21,8 +18,6 @@
 }
 
 .list-column {
-  min-width: 300px;
-  width: 25%;
   padding: 20px;
   border-radius: 2%;
   margin: 5px;
@@ -36,8 +31,8 @@
   left: 40px;
   right: 40px;
   border-radius: 15px;
-  z-index:1000;
-  transition:0.2s linear;
+  z-index: 1000;
+  transition: 0.2s linear;
   opacity: 1;
   transform: translateX(0px);
 }
@@ -45,5 +40,25 @@
 .Edit-modal-closed {
   opacity: 0;
   transform: translateX(-2000px);
+  transition: 0.1s linear;
+}
+
+
+.Document-modal {
+  position: absolute;
+  top: 40px;
+  bottom: 40px;
+  left: 40px;
+  right: 40px;
+  border-radius: 15px;
+  z-index: 1100;
+  transition:0.2s linear;
+  opacity: 1;
+  transform: translateX(0px);
+}
+
+.Document-modal-closed {
+  opacity: 0;
+  transform: translateX(2000px);
   transition: 0.1s linear;
 }

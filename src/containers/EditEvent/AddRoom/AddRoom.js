@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
-
-import "./AddItem.css";
+import { v4 as uuidv4 } from "uuid";
+import "./AddRoom.css";
 import * as FirestoreService from "../../../services/firestore";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
-function AddItem(props) {
+function AddRoom(props) {
   const { eventId } = props;
 
   const [error, setError] = useState("");
@@ -19,12 +19,7 @@ function AddItem(props) {
       setError("user-desc-req");
       return;
     }
-
-    const roomId = document.addItemForm.roomId.value;
-    if (!roomId) {
-      setError("user-desc-req");
-      return;
-    }
+    const roomId = uuidv4();
 
     FirestoreService.addRoom(roomId, roomName, eventId)
       .then(() => document.addItemForm.reset())
@@ -39,17 +34,16 @@ function AddItem(props) {
   }
 
   return (
-    <form name="addItemForm">
-      <Typography variant="h5">Room name</Typography>
-      <TextField fullWidth name="roomName" variant="filled" />
-      <Typography variant="h5">Room id</Typography>
-      <TextField fullWidth name="roomId" variant="filled" />
+    <form name="addItemForm" className="AddRoom-container">
+      <Typography variant="h5" style={{ marginRight: "20px" }}>
+        Create new room:{" "}
+      </Typography>
+      <TextField label="Room name" name="roomName" variant="filled" />
       <Button
         variant="contained"
         color="primary"
-        fullWidth
         size="large"
-        style={{ marginTop: 20, fontWeight: 600 }}
+        style={{ marginLeft: "20px", fontWeight: 600 }}
         type="submit"
         onClick={addItem}
       >
@@ -60,4 +54,4 @@ function AddItem(props) {
   );
 }
 
-export default AddItem;
+export default AddRoom;

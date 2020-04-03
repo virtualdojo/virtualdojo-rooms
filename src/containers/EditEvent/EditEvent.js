@@ -2,13 +2,18 @@ import React, { useEffect, useState } from "react";
 
 import { useTheme } from "@material-ui/core/styles";
 import { Button, IconButton } from "@material-ui/core";
-import { CancelRounded as Cancel } from "@material-ui/icons";
+import {
+  DescriptionRounded as DocumentIcon,
+  PeopleAltRounded as PeopleAltRoundedIcon,
+  VideocamRounded as VideocamRoundedIcon,
+} from "@material-ui/icons";
+import Grid from "@material-ui/core/Grid";
 
 import * as FirestoreService from "../../services/firestore";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import AddItem from "./AddItem/AddItem";
+import AddRoom from "./AddRoom/AddRoom";
 
-import ItemList from "./ItemList/ItemList";
+import Dashboard from "./Dashboard";
 import VideoChat from "../../components/VideoChat/VideoChat";
 
 import Document from "../../components/Document/Document";
@@ -86,51 +91,57 @@ function EditEvent({ user, event }) {
     userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
   return (
     <div className="main-container" style={theme.container}>
-      <div style={{ position: "fixed" }}>
-        {
-          <Button onClick={() => toggleModal()}>{`${
-            isModalOpen ? "close" : "open"
-          } dashboard`}</Button>
-        }
-        {
-          <Button onClick={() => toggleDocument()}>{`${
-            isDocumentOpen ? "close" : "open"
-          } document`}</Button>
-        }
-      </div>
+      {!isModalOpen && !isDocumentOpen && (
+        <div style={{ position: "fixed" }}>
+          <IconButton color="secondary" onClick={() => toggleModal()}>
+            <PeopleAltRoundedIcon fontSize="large" />
+          </IconButton>
+          <IconButton color="secondary" onClick={() => toggleDocument()}>
+            <DocumentIcon fontSize="large" />
+          </IconButton>
+        </div>
+      )}
       <VideoChat
         user={user}
         room={userRoomDetails}
         isMenuOpen={isModalOpen || isDocumentOpen}
       ></VideoChat>
-      <Document isOpen={isDocumentOpen}></Document>
+
+      <div
+        className={
+          isDocumentOpen
+            ? "Document-modal"
+            : "Document-modal Document-modal-closed"
+        }
+        style={theme.modal}
+      >
+        <IconButton color="primary" onClick={() => toggleDocument()}>
+          <VideocamRoundedIcon fontSize="large" />
+        </IconButton>
+        <IconButton color="primary" onClick={() => toggleModal()}>
+          <PeopleAltRoundedIcon fontSize="large" />
+        </IconButton>
+        <Document isOpen={isDocumentOpen}></Document>
+      </div>
       <div
         className={isModalOpen ? "Edit-modal" : "Edit-modal Edit-modal-closed"}
         style={theme.modal}
       >
-        <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
-          <Cancel fontSize="large" />
+        <IconButton color="primary" onClick={() => toggleModal()}>
+          <VideocamRoundedIcon fontSize="large" />
         </IconButton>
-        <div>
-          <ErrorMessage errorCode={error}></ErrorMessage>
-          <div className="edit-container">
-            {user.isMentor && (
-              <div className="list-column" style={theme.listItem}>
-                <AddItem userId={user.userId} eventId={event.eventId}></AddItem>
-              </div>
-            )}
-            <div className="list-column" style={theme.listItem}>
-              <ItemList
-                eventId={event.eventId}
-                currentUser={userMeta || {}}
-                eventUsers={eventUsers}
-                eventRooms={eventRooms}
-                eventRoomsUsers={eventRoomsUsers}
-              ></ItemList>
-            </div>
-          </div>
-          <footer className="app-footer"></footer>
-        </div>
+        <IconButton color="primary" onClick={() => toggleDocument()}>
+          <DocumentIcon fontSize="large" />
+        </IconButton>
+        <Dashboard
+          user={user}
+          event={event}
+          error={error}
+          userMeta={userMeta}
+          eventUsers={eventUsers}
+          eventRooms={eventRooms}
+          eventRoomsUsers={eventRoomsUsers}
+        />
       </div>
     </div>
   );
