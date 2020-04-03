@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { ThemeProvider } from "@material-ui/core/styles";
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 import * as FirestoreService from "./services/firestore";
 
@@ -6,6 +8,7 @@ import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
 import EditEvent from "./containers/EditEvent/EditEvent";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import { theme } from "./components/Theme/Theme";
 
 import useQueryString from "./hooks/useQueryString";
 
@@ -90,7 +93,10 @@ function App() {
 
   if (eventMeta && user) {
     return (
-      <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+      </ThemeProvider>
     );
   } else if (eventMeta) {
     return (

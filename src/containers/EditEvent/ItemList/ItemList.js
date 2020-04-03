@@ -1,12 +1,14 @@
 import React from "react";
 import * as FirestoreService from "../../../services/firestore";
 import { useDrag, useDrop } from "react-dnd";
+import { useTheme } from "@material-ui/core/styles";
+import { Paper, Typography, Card } from "@material-ui/core";
 
 const ItemTypes = {
   USER: "user",
 };
 
-const User = ({ eventId, user }) => {
+const User = ({ inRoom, eventId, user }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
     end: (item, monitor) => {
@@ -24,15 +26,30 @@ const User = ({ eventId, user }) => {
       isDragging: monitor.isDragging(),
     }),
   });
-  const opacity = isDragging ? 0.4 : 1;
+
+  const styles = {
+    opacity: isDragging ? 0.4 : 1,
+    width: inRoom ? "90%" : "100%",
+    margin: "0 auto 5px auto",
+  };
   return (
-    <div ref={drag} style={{ opacity }}>
-      {user.userName}
+    <div ref={drag} style={styles}>
+      <Paper elevation={3}>
+        <Typography variant="h5">
+          {user.userName}
+        </Typography>
+      </Paper>
     </div>
   );
 };
 
 const Room = ({ eventId, room, users }) => {
+  const { palette } = useTheme();
+  const theme = {
+    default: palette.secondary.main,
+    active: palette.secondary.main,
+    hover: palette.primary.main,
+  };
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -45,20 +62,22 @@ const Room = ({ eventId, room, users }) => {
     }),
   });
   const isActive = canDrop && isOver;
-  let backgroundColor = "white";
+  let backgroundColor = theme.default;
   if (isActive) {
-    backgroundColor = "gray";
+    backgroundColor = theme.active;
   } else if (canDrop) {
-    backgroundColor = "yellow";
+    backgroundColor = theme.hover;
   }
 
   return (
-    <div ref={drop} style={{ backgroundColor }}>
-      <h1>{room.roomName}</h1>
+    <Card ref={drop} style={{ backgroundColor, marginBottom: 10, padding: 5 }}>
+      <Typography variant="h4">
+        {room.roomName}
+      </Typography>
       {users.map((u) => (
-        <User key={u.userId} user={u} eventId={eventId}></User>
+        <User inRoom key={u.userId} user={u} eventId={eventId}></User>
       ))}
-    </div>
+    </Card>
   );
 };
 
@@ -84,7 +103,7 @@ function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
   return (
     <div>
       <div>{users}</div>
-      <div>-----</div>
+      <hr style={{ borderStyle: "dashed", margin: "20px 0" }} />
       <div>{rooms}</div>
     </div>
   );
