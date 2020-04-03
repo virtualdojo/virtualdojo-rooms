@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useTheme } from "@material-ui/core/styles";
 import { TextField, Button, Typography } from "@material-ui/core";
 
 import "./AddItem.css";

@@ -2,7 +2,7 @@ import React from "react";
 import * as FirestoreService from "../../../services/firestore";
 import { useDrag, useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
-import { Paper, Typography, Card } from "@material-ui/core";
+import { Button, Paper, Typography, Card } from "@material-ui/core";
 
 const ItemTypes = {
   USER: "user",
@@ -37,11 +37,15 @@ const User = ({ eventId, user, currentUser, inRoom }) => {
 
   return (
     <div ref={drag} style={styles}>
-      <Paper elevation={3}>
+      <Paper elevation={3} style={{ padding: 5 }}>
         <Typography variant="h5">
           {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
           {currentUser.isMentor && !isCurrentUser && (
-            <button
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              style={{ display: 'block', margin: '5px auto' }}
               onClick={() =>
                 FirestoreService.setUserIsMentor(
                   user.userId,
@@ -49,7 +53,7 @@ const User = ({ eventId, user, currentUser, inRoom }) => {
                   !user.isMentor
                 )
               }
-            >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</button>
+            >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</Button>
           )}
           {isCurrentUser && " (me)"}
         </Typography>

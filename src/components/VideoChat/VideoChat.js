@@ -10,7 +10,6 @@ function VideoChat({ user, room, isMenuOpen }) {
   const [loading, setLoading] = useState(true);
 
   const containerStyle = {
-    backgroundColor: "rgb(33, 27, 27)",
     width: "100%",
     height: "100vh",
   };

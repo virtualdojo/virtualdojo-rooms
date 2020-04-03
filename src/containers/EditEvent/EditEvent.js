@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton, Typography } from "@material-ui/core";
+import { Button, IconButton } from "@material-ui/core";
 import { CancelRounded as Cancel } from "@material-ui/icons";
 
 import * as FirestoreService from "../../services/firestore";
@@ -88,14 +88,14 @@ function EditEvent({ user, event }) {
     <div className="main-container" style={theme.container}>
       <div style={{ position: "fixed" }}>
         {
-          <button onClick={() => toggleModal()}>{`${
+          <Button onClick={() => toggleModal()}>{`${
             isModalOpen ? "close" : "open"
-          } dashboard`}</button>
+          } dashboard`}</Button>
         }
         {
-          <button onClick={() => toggleDocument()}>{`${
+          <Button onClick={() => toggleDocument()}>{`${
             isDocumentOpen ? "close" : "open"
-          } document`}</button>
+          } document`}</Button>
         }
       </div>
       <VideoChat
@@ -104,25 +104,12 @@ function EditEvent({ user, event }) {
         isMenuOpen={isModalOpen || isDocumentOpen}
       ></VideoChat>
       <Document isOpen={isDocumentOpen}></Document>
-      <div className={isModalOpen ? "Edit-modal Edit-modal-opened " : "Edit-modal Edit-modal-closed"} style={theme.modal}>
+      <div className={isModalOpen ? "Edit-modal" : "Edit-modal Edit-modal-closed"} style={theme.modal}>
         <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
           <Cancel fontSize="large" />
         </IconButton>
         <div>
           <ErrorMessage errorCode={error}></ErrorMessage>
-          {/*
-              <header className="app-header">
-                <Typography variant="h3" component="h1">
-                  {`Benvenuto a ${event.name}`}
-                </Typography>
-                <Typography variant="h4">
-                  Ciao {user.userName}!
-                </Typography>
-                <Typography variant="h5">
-                  {user.isMentor ? "Sei un mentor" : "Sei un ninja"}
-                </Typography>
-              </header>
-              */}
           <div className="edit-container">
             {user.isMentor && (
               <div className="list-column" style={theme.listItem}>

@@ -29,7 +29,7 @@
   text-align: center;
 }
 
-.Edit-modal-opened {
+.Edit-modal {
   position: absolute;
   top: 40px;
   bottom: 40px;
@@ -37,22 +37,12 @@
   right: 40px;
   border-radius: 15px;
   z-index:1000;
-  background-color: white;
-  border: 1px solid black;
   transition:0.2s linear;
   opacity: 1;
   transform: translateX(0px);
 }
 
 .Edit-modal-closed {
-  position: absolute;
-  top: 40px;
-  bottom: 40px;
-  left: 40px;
-  right: 40px;
-  z-index:1000;
-  background-color: white;
-  border: 1px solid black;
   opacity: 0;
   transform: translateX(-2000px);
   transition: 0.1s linear;
