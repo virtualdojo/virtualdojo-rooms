@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
 
 import { useTheme } from "@material-ui/core/styles";
 import { IconButton, Typography } from "@material-ui/core";
@@ -13,6 +11,7 @@ import AddItem from "./AddItem/AddItem";
 import ItemList from "./ItemList/ItemList";
 import VideoChat from "../../components/VideoChat/VideoChat";
 
+import Document from "../../components/Document/Document";
 import "./EditEvent.css";
 
 function EditEvent({ user, event }) {
@@ -20,6 +19,7 @@ function EditEvent({ user, event }) {
   const [eventRooms, setEventRooms] = useState([]);
   const [eventRoomsUsers, setEventRoomsUsers] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isDocumentOpen, setIsDocumentOpen] = useState(false);
   const [error, setError] = useState();
   const { palette } = useTheme();
 
@@ -29,12 +29,24 @@ function EditEvent({ user, event }) {
     listItem: { background: palette.grey[200] },
   };
 
+  const toggleModal = () => {
+    setIsModalOpen(!isModalOpen);
+    if (!isModalOpen) setIsDocumentOpen(false);
+  };
+
+  const toggleDocument = () => {
+    setIsDocumentOpen(!isDocumentOpen);
+    if (!isDocumentOpen) setIsModalOpen(false);
+  };
+
   useEffect(() => {
     const unsubscribe = FirestoreService.streamEventItems(event.eventId, {
       next: (querySnapshot) => {
         const updatedEventUsers = querySnapshot.docs
           ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
           : [];
+
+        console.log("EditEvent -> updatedEventUsers", updatedEventUsers);
         setEventUsers(updatedEventUsers);
       },
       error: () => setError("user-get-fail"),
@@ -68,18 +80,37 @@ function EditEvent({ user, event }) {
     return unsubscribe;
   }, [event.eventId, setEventRoomsUsers]);
 
+  const userMeta = eventUsers.find((u) => u.userId === user.userId);
+  const userRoom = eventRoomsUsers.find((ru) => ru.userId === user.userId);
+  const userRoomDetails =
+    userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
   return (
-    <DndProvider backend={Backend}>
-      <div className="main-container" style={theme.container}>
-        <VideoChat></VideoChat>
-
-        {isModalOpen && (
-          <div className="modal" style={theme.modal}>
-            <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
-              <Cancel fontSize="large" />
-            </IconButton>
-            <div>
-              <ErrorMessage errorCode={error}></ErrorMessage>
+    <div className="main-container" style={theme.container}>
+      <div style={{ position: "fixed" }}>
+        {
+          <button onClick={() => toggleModal()}>{`${
+            isModalOpen ? "close" : "open"
+          } dashboard`}</button>
+        }
+        {
+          <button onClick={() => toggleDocument()}>{`${
+            isDocumentOpen ? "close" : "open"
+          } document`}</button>
+        }
+      </div>
+      <VideoChat
+        user={user}
+        room={userRoomDetails}
+        isMenuOpen={isModalOpen || isDocumentOpen}
+      ></VideoChat>
+      <Document isOpen={isDocumentOpen}></Document>
+      <div className={isModalOpen ? "Edit-modal Edit-modal-opened " : "Edit-modal Edit-modal-closed"} style={theme.modal}>
+        <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
+          <Cancel fontSize="large" />
+        </IconButton>
+        <div>
+          <ErrorMessage errorCode={error}></ErrorMessage>
+          {/*
               <header className="app-header">
                 <Typography variant="h3" component="h1">
                   {`Benvenuto a ${event.name}`}
@@ -91,31 +122,27 @@ function EditEvent({ user, event }) {
                   {user.isMentor ? "Sei un mentor" : "Sei un ninja"}
                 </Typography>
               </header>
-              <div className="edit-container">
-                {user.isMentor && (
-                  <div className="list-column" style={theme.listItem}>
-                    <AddItem
-                      userId={user.userId}
-                      eventId={event.eventId}
-                    ></AddItem>
-                  </div>
-                )}
-                <div className="list-column" style={theme.listItem}>
-                  <ItemList
-                    eventId={event.eventId}
-                    eventUsers={eventUsers}
-                    eventRooms={eventRooms}
-                    eventRoomsUsers={eventRoomsUsers}
-                  ></ItemList>
-                </div>
+              */}
+          <div className="edit-container">
+            {user.isMentor && (
+              <div className="list-column" style={theme.listItem}>
+                <AddItem userId={user.userId} eventId={event.eventId}></AddItem>
               </div>
-              <footer className="app-footer"></footer>
+            )}
+            <div className="list-column" style={theme.listItem}>
+              <ItemList
+                eventId={event.eventId}
+                currentUser={userMeta || {}}
+                eventUsers={eventUsers}
+                eventRooms={eventRooms}
+                eventRoomsUsers={eventRoomsUsers}
+              ></ItemList>
             </div>
           </div>
-        )}
+          <footer className="app-footer"></footer>
+        </div>
       </div>
-      )
-    </DndProvider>
+    </div>
   );
 }
 

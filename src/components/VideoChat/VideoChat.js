@@ -2,59 +2,65 @@
 import React, { useState, useEffect } from "react";
 import "./VideoChat.css";
 
-const isVideoEnabled = true;
+const isVideoEnabled = false;
 
-const containerStyle = {
-  width: "100%",
-  height: "100vh",
-};
+let api;
 
-function VideoChat({ user, event }) {
+function VideoChat({ user, room, isMenuOpen }) {
   const [loading, setLoading] = useState(true);
 
+  const containerStyle = {
+    backgroundColor: "rgb(33, 27, 27)",
+    width: "100%",
+    height: "100vh",
+  };
+
   const jitsiContainerStyle = {
-    display: loading ? "none" : "block",
+    display: loading || isMenuOpen ? "none" : "block",
     width: "100%",
     height: "100%",
   };
-
-  function startConference() {
-    try {
-      const domain = "meet.jit.si";
-      const options = {
-        roomName: "virtualdojo-test-room",
-        parentNode: document.getElementById("jitsi-container"),
-        interfaceConfigOverwrite: {
-          filmStripOnly: false,
-          SHOW_JITSI_WATERMARK: false,
-        },
-        configOverwrite: {
-          disableSimulcast: false,
-        },
-      };
-
-      const api = new JitsiMeetExternalAPI(domain, options);
-      api.addEventListener("videoConferenceJoined", () => {
-        setLoading(false);
-        api.executeCommand("displayName", "MyName");
-      });
-      api.addEventListener("audioMuteStatusChanged", ({ muted }) => {
-        //if (muted) setIsModalOpen(true);
-      });
-    } catch (error) {
-      console.error("Failed to load Jitsi API", error);
-    }
-  }
+  const roomId = room ? room.roomId : "virtualdojo-test-room-random";
 
   useEffect(() => {
-    if (isVideoEnabled) {
-      // verify the JitsiMeetExternalAPI constructor is added to the global..
+    function startConference() {
+      try {
+        const domain = "meet.jit.si";
+        const options = {
+          roomName: roomId,
+          parentNode: document.getElementById("jitsi-container"),
+          interfaceConfigOverwrite: {
+            filmStripOnly: false,
+            SHOW_JITSI_WATERMARK: false,
+          },
+          configOverwrite: {
+            disableSimulcast: false,
+          },
+          userInfo: {
+            displayName: user.userName,
+            email: user.userId,
+          },
+        };
+
+        api = new JitsiMeetExternalAPI(domain, options);
+        api.addEventListener("videoConferenceJoined", () => {
+          setLoading(false);
+        });
+      } catch (error) {
+        console.error("Failed to load Jitsi API", error);
+      }
+    }
+    if (isVideoEnabled && roomId) {
+      if (api) {
+        api.dispose();
+        api = undefined;
+      }
       if (window.JitsiMeetExternalAPI) startConference();
       else alert("Jitsi Meet API script not loaded");
     } else {
       setLoading(false);
     }
-  }, []);
+  }, [roomId, user.isMentor, user.userId, user.userName]);
 
   return (
     <div style={containerStyle}>

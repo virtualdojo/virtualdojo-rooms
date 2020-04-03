@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
+import { DndProvider } from "react-dnd";
+import Backend from "react-dnd-html5-backend";
 import * as FirestoreService from "./services/firestore";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
@@ -95,7 +97,9 @@ function App() {
     return (
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+        <DndProvider backend={Backend}>
+          <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+        </DndProvider>
       </ThemeProvider>
     );
   } else if (eventMeta) {

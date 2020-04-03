@@ -7,7 +7,7 @@ import * as FirestoreService from "../../../services/firestore";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
 function AddItem(props) {
-  const { eventId, userId } = props;
+  const { eventId } = props;
 
   const [error, setError] = useState("");
 

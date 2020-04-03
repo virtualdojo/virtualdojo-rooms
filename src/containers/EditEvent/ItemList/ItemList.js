@@ -8,11 +8,11 @@ const ItemTypes = {
   USER: "user",
 };
 
-const User = ({ inRoom, eventId, user }) => {
+const User = ({ eventId, user, currentUser, inRoom }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
+    canDrag: currentUser.isMentor,
     end: (item, monitor) => {
-      console.log("User -> item && dropResult", item, monitor.getDropResult());
       const dropResult = monitor.getDropResult();
       if (item && dropResult) {
         FirestoreService.addUserToRoom(
@@ -27,29 +27,38 @@ const User = ({ inRoom, eventId, user }) => {
     }),
   });
 
+  const isCurrentUser = currentUser && currentUser.userId === user.userId;
+
   const styles = {
     opacity: isDragging ? 0.4 : 1,
     width: inRoom ? "90%" : "100%",
     margin: "0 auto 5px auto",
   };
+
   return (
     <div ref={drag} style={styles}>
       <Paper elevation={3}>
         <Typography variant="h5">
-          {user.userName}
+          {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
+          {currentUser.isMentor && !isCurrentUser && (
+            <button
+              onClick={() =>
+                FirestoreService.setUserIsMentor(
+                  user.userId,
+                  eventId,
+                  !user.isMentor
+                )
+              }
+            >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</button>
+          )}
+          {isCurrentUser && " (me)"}
         </Typography>
       </Paper>
     </div>
   );
 };
 
-const Room = ({ eventId, room, users }) => {
-  const { palette } = useTheme();
-  const theme = {
-    default: palette.secondary.main,
-    active: palette.secondary.main,
-    hover: palette.primary.main,
-  };
+const Room = ({ eventId, room, users, currentUser }) => {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -62,6 +71,13 @@ const Room = ({ eventId, room, users }) => {
     }),
   });
   const isActive = canDrop && isOver;
+  const { palette } = useTheme();
+  const theme = {
+    default: palette.secondary.main,
+    active: palette.secondary.main,
+    hover: palette.primary.main,
+  };
+
   let backgroundColor = theme.default;
   if (isActive) {
     backgroundColor = theme.active;
@@ -75,13 +91,25 @@ const Room = ({ eventId, room, users }) => {
         {room.roomName}
       </Typography>
       {users.map((u) => (
-        <User inRoom key={u.userId} user={u} eventId={eventId}></User>
+        <User
+          inRoom
+          key={u.userId}
+          user={u}
+          currentUser={currentUser}
+          eventId={eventId}
+        ></User>
       ))}
     </Card>
   );
 };
 
-function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
+function ItemList({
+  eventId,
+  currentUser,
+  eventUsers,
+  eventRooms,
+  eventRoomsUsers,
+}) {
   const getUsersByRoomId = (roomId) => {
     const usersInRoom = eventRoomsUsers
       .filter((ru) => ru.roomId === roomId)
@@ -90,7 +118,12 @@ function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
     return users;
   };
   const users = eventUsers.map((item) => (
-    <User key={item.userId} eventId={eventId} user={item}></User>
+    <User
+      key={item.userId}
+      eventId={eventId}
+      currentUser={currentUser}
+      user={item}
+    ></User>
   ));
   const rooms = eventRooms.map((item) => (
     <Room
@@ -98,6 +131,7 @@ function ItemList({ eventId, eventUsers, eventRooms, eventRoomsUsers }) {
       room={item}
       eventId={eventId}
       users={getUsersByRoomId(item.roomId)}
+      currentUser={currentUser}
     ></Room>
   ));
   return (

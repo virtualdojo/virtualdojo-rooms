@@ -4,23 +4,9 @@ import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import * as FirestoreService from "../../services/firestore";
 
 function JoinEvent(props) {
-  const { users, eventId, onSelectUser, onCloseEvent, userId } = props;
+  const { users, eventId, onSelectUser, userId } = props;
 
   const [error, setError] = useState();
-
-  function addExistingUser(e) {
-    e.preventDefault();
-    onSelectUser(e.target.innerText);
-  }
-
-  function getUserButtonList() {
-    const buttonList = users.map((user) => (
-      <button key={user.name} onClick={addExistingUser}>
-        {user.name}
-      </button>
-    ));
-    return <div className="button-group">{buttonList}</div>;
-  }
 
   function addNewUser(e) {
     e.preventDefault();
@@ -44,11 +30,6 @@ function JoinEvent(props) {
     }
   }
 
-  function onCreateListClick(e) {
-    e.preventDefault();
-    onCloseEvent();
-  }
-
   return (
     <div>
       <header>
@@ -63,12 +44,6 @@ function JoinEvent(props) {
               <button onClick={addNewUser}>Join</button>
             </p>
             <ErrorMessage errorCode={error}></ErrorMessage>
-            {/*<p>
-              ...or{" "}
-              <a href="/" onClick={onCreateListClick}>
-                create a new event
-              </a>
-            </p>*/}
           </form>
         </div>
       </div>

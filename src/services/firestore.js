@@ -149,3 +149,26 @@ export const addUserToRoom = (userId, roomId, eventId) => {
         });
     });
 };
+
+export const setUserIsMentor = (userId, eventId, isMentor) => {
+  return db
+    .collection("events")
+    .doc(eventId)
+    .collection("items")
+    .get()
+    .then((querySnapshot) => querySnapshot.docs)
+    .then((eventItems) =>
+      eventItems.find((eventItem) => eventItem.data().userId === userId)
+    )
+    .then((matchingItem) => {
+      if (matchingItem) {
+        return db
+          .collection("events")
+          .doc(eventId)
+          .collection("items")
+          .doc(matchingItem.id)
+          .update({ isMentor });
+      }
+      console.warn(`User not found ${userId}`);
+    });
+};
