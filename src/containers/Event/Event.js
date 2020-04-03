@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton } from "@material-ui/core";
+import { IconButton, Typography } from "@material-ui/core";
 import {
   DescriptionRounded as DocumentIcon,
   PeopleAltRounded as PeopleAltRoundedIcon,
@@ -41,7 +41,7 @@ function EditEvent({ user, event }) {
   };
 
   useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventItems(event.eventId, {
+    const unsubscribe = FirestoreService.streamEventUsers(event.eventId, {
       next: (querySnapshot) => {
         const updatedEventUsers = querySnapshot.docs
           ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
@@ -110,15 +110,35 @@ function EditEvent({ user, event }) {
         }
         style={theme.modal}
       >
-        <IconButton color="primary" onClick={() => toggleDocument()}>
-          <VideocamRoundedIcon fontSize="large" />
-        </IconButton>
-        <IconButton color="primary" onClick={() => toggleModal()}>
-          <PeopleAltRoundedIcon fontSize="large" />
-        </IconButton>
-        <IconButton color="primary" onClick={() => toggleDocument()} disabled>
-          <DocumentIcon fontSize="large" />
-        </IconButton>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <IconButton color="primary" onClick={() => toggleDocument()}>
+            <VideocamRoundedIcon fontSize="large" />
+          </IconButton>
+          <IconButton color="primary" onClick={() => toggleModal()}>
+            <PeopleAltRoundedIcon fontSize="large" />
+          </IconButton>
+          <IconButton color="primary" onClick={() => toggleDocument()} disabled>
+            <DocumentIcon fontSize="large" />
+          </IconButton>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: "140px",
+            }}
+          >
+            <Typography variant="h5" color="primary">
+              {event.name}
+            </Typography>
+          </div>
+        </div>
         <Document isOpen={isDocumentOpen}></Document>
       </div>
       <div
@@ -129,15 +149,35 @@ function EditEvent({ user, event }) {
         }
         style={theme.modal}
       >
-        <IconButton color="primary" onClick={() => toggleModal()}>
-          <VideocamRoundedIcon fontSize="large" />
-        </IconButton>
-        <IconButton color="primary" onClick={() => toggleModal()} disabled>
-          <PeopleAltRoundedIcon fontSize="large" />
-        </IconButton>
-        <IconButton color="primary" onClick={() => toggleDocument()}>
-          <DocumentIcon fontSize="large" />
-        </IconButton>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+          }}
+        >
+          <IconButton color="primary" onClick={() => toggleModal()}>
+            <VideocamRoundedIcon fontSize="large" />
+          </IconButton>
+          <IconButton color="primary" onClick={() => toggleModal()} disabled>
+            <PeopleAltRoundedIcon fontSize="large" />
+          </IconButton>
+          <IconButton color="primary" onClick={() => toggleDocument()}>
+            <DocumentIcon fontSize="large" />
+          </IconButton>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: "140px",
+            }}
+          >
+            <Typography variant="h5" color="primary">
+              {event.name}
+            </Typography>
+          </div>
+        </div>
         <Dashboard
           user={user}
           event={event}

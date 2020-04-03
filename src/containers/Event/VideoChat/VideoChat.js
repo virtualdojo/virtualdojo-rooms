@@ -66,7 +66,6 @@ function VideoChat({ user, room, event, isMenuOpen }) {
     } else {
       setLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, user, user.isMentor, user.userId, user.userName]);
 
   return (

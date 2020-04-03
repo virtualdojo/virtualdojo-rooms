@@ -115,7 +115,6 @@ function App() {
         </Typography>
       </div>
     );
-
   if (eventMeta && user) {
     return (
       <DndProvider backend={Backend}>

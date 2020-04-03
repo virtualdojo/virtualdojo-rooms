@@ -15,41 +15,47 @@ export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
 };
 
-export const createEvent = (eventName, eventPassword, userName, userId) => {
-  return db
-    .collection("events")
-    .add({
-      created: firebase.firestore.FieldValue.serverTimestamp(),
-      createdBy: userId,
-      name: eventName,
-      password: eventPassword,
-      users: [
-        {
-          userId: userId,
-          name: userName,
-        },
-      ],
-    })
-    .then((docRef) => {
-      addUserToEvent(userName, docRef.id, userId, true);
-      return docRef;
-    })
-    .then((docRef) => docRef);
+export const createEvent = async (
+  eventName,
+  eventPassword,
+  userName,
+  userId
+) => {
+  const docRef = await db.collection("events").add({
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy: userId,
+    name: eventName,
+    password: eventPassword,
+    users: [
+      {
+        userId: userId,
+        name: userName,
+      },
+    ],
+  });
+  await db.collection("events").doc(docRef.id).collection("users").add({
+    userId: userId,
+    userName: userName,
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy: userId,
+    isMentor: true,
+  });
+  return docRef;
 };
 
 export const getEvent = (eventId) => {
   return db.collection("events").doc(eventId).get();
 };
 
-export const getEventItems = (eventId) => {
-  return db.collection("events").doc(eventId).collection("items").get();
+export const getEventUsers = (eventId) => {
+  return db.collection("events").doc(eventId).collection("users").get();
 };
 
-export const streamEventItems = (eventId, observer) => {
+export const streamEventUsers = (eventId, observer) => {
   return db
     .collection("events")
     .doc(eventId)
-    .collection("items")
+    .collection("users")
     .orderBy("created")
     .onSnapshot(observer);
 };
@@ -73,51 +79,49 @@ export const streamEventRoomsUsers = (eventId, observer) => {
 };
 
 export const isUserRegistered = (eventId, userId) => {
-  return getEventItems(eventId)
+  return getEventUsers(eventId)
     .then((querySnapshot) => querySnapshot.docs)
-    .then((eventItems) => {
-      const item = eventItems.find((eventItem) => {
+    .then((eventUsers) => {
+      const item = eventUsers.find((eventItem) => {
         return eventItem.data().userId === userId;
       });
       return item ? item.data() : undefined;
     });
 };
 
-export const addUserToEvent = (
+export const addUserToEvent = async (
   userName,
   eventPassword,
   eventId,
   userId,
   isMentor = false
 ) => {
-  return getEvent(eventId)
-    .then((querySnapshot) => {
-      if (querySnapshot.data().password !== eventPassword)
-        throw new Error("event-wrong-password");
-    })
-    .then(() => getEventItems(eventId))
-    .then((querySnapshot) => querySnapshot.docs)
-    .then((eventItems) =>
-      eventItems.find((eventItem) => eventItem.data().userId === userId)
-    )
-    .then((matchingItem) => {
-      if (!matchingItem) {
-        return db.collection("events").doc(eventId).collection("items").add({
-          userId: userId,
-          userName: userName,
-          created: firebase.firestore.FieldValue.serverTimestamp(),
-          createdBy: userId,
-          isMentor,
-        });
-      }
-      throw new Error("duplicate-item-error");
-    });
+  const eventSnapshot = await getEvent(eventId);
+  if (eventSnapshot.data().password !== eventPassword)
+    throw new Error("event-wrong-password");
+
+  const usersSnapshot = await getEventUsers(eventId);
+  const userInEvent = usersSnapshot.docs.find(
+    (u) => u.data().userId === userId
+  );
+
+  if (userInEvent) {
+    throw new Error("duplicate-item-error");
+  }
+
+  return await db.collection("events").doc(eventId).collection("users").add({
+    userId: userId,
+    userName: userName,
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy: userId,
+    isMentor,
+  });
 };
 
-export const addRoom = (roomId, roomName, eventId) => {
-  return getEventItems(eventId)
+export const addRoom = async (roomId, roomName, eventId) => {
+  return getEventUsers(eventId)
     .then((querySnapshot) => querySnapshot.docs)
-    .then((eventItems) => undefined)
+    .then((eventUsers) => undefined)
     .then((matchingItem) => {
       if (!matchingItem) {
         return db.collection("events").doc(eventId).collection("rooms").add({
@@ -137,8 +141,8 @@ export const addUserToRoom = (userId, roomId, eventId) => {
     .collection("rooms_users")
     .get()
     .then((querySnapshot) => querySnapshot.docs)
-    .then((eventItems) =>
-      eventItems.find((eventItem) => eventItem.data().userId === userId)
+    .then((eventUsers) =>
+      eventUsers.find((eventItem) => eventItem.data().userId === userId)
     )
     .then((matchingItem) => {
       if (matchingItem) {
@@ -165,18 +169,18 @@ export const setUserIsMentor = (userId, eventId, isMentor) => {
   return db
     .collection("events")
     .doc(eventId)
-    .collection("items")
+    .collection("users")
     .get()
     .then((querySnapshot) => querySnapshot.docs)
-    .then((eventItems) =>
-      eventItems.find((eventItem) => eventItem.data().userId === userId)
+    .then((eventUsers) =>
+      eventUsers.find((eventItem) => eventItem.data().userId === userId)
     )
     .then((matchingItem) => {
       if (matchingItem) {
         return db
           .collection("events")
           .doc(eventId)
-          .collection("items")
+          .collection("users")
           .doc(matchingItem.id)
           .update({ isMentor });
       }
