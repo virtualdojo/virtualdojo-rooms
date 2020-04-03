@@ -61,22 +61,22 @@ function CreateEvent(props) {
           label="Your Full Name"
           name="userName"
           variant="filled"
-          color="secondary"
-          style={{ marginBottom: "30px" }}
+          color="primary"
+          style={{ marginBottom: "30px", backgroundColor: "white" }}
         />
         <TextField
           label="Event Name"
           name="eventName"
           variant="filled"
-          color="secondary"
-          style={{ marginBottom: "30px" }}
+          color="primary"
+          style={{ marginBottom: "30px", backgroundColor: "white" }}
         />
         <TextField
           label="Event Password"
           name="eventPassword"
           variant="filled"
-          color="secondary"
-          style={{ marginBottom: "30px" }}
+          color="primary"
+          style={{ marginBottom: "30px", backgroundColor: "white" }}
         />
         <Button
           variant="contained"

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "@material-ui/core/styles";
+import { Typography } from "@material-ui/core";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import * as FirestoreService from "./services/firestore";
@@ -95,8 +96,25 @@ function App() {
       .catch(() => setError("event-get-fail"));
   }
 
-  // render a scene based on the current state
-  if (isLoading) return <div>{`Loading...`}</div>;
+  if (isLoading)
+    return (
+      <div
+        style={{
+          ...theme.container,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Typography
+          variant="h3"
+          color="secondary"
+          style={{ marginBottom: "80px" }}
+        >
+          VirtualDojo Rooms
+        </Typography>
+      </div>
+    );
 
   if (eventMeta && user) {
     return (

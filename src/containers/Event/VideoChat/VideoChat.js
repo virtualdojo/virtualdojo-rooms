@@ -2,11 +2,11 @@
 import React, { useState, useEffect } from "react";
 import "./VideoChat.css";
 
-const isVideoEnabled = false;
+const isVideoEnabled = true;
 
 let api;
 
-function VideoChat({ user, room, isMenuOpen }) {
+function VideoChat({ user, room, event, isMenuOpen }) {
   const [loading, setLoading] = useState(true);
 
   const containerStyle = {
@@ -45,7 +45,12 @@ function VideoChat({ user, room, isMenuOpen }) {
         api.addEventListener("videoConferenceJoined", () => {
           api.executeCommand("displayName", user.userName);
           api.executeCommand("email", user.userId);
+          api.executeCommand("password", event.password);
           setLoading(false);
+        });
+
+        api.addEventListener("passwordRequired", () => {
+          api.executeCommand("password", event.password);
         });
       } catch (error) {
         console.error("Failed to load Jitsi API", error);
@@ -61,6 +66,7 @@ function VideoChat({ user, room, isMenuOpen }) {
     } else {
       setLoading(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [roomId, user, user.isMentor, user.userId, user.userName]);
 
   return (

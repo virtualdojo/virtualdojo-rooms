@@ -39,7 +39,12 @@ function Room({ eventId, room, users, currentUser }) {
 
   return (
     <Card ref={drop} style={{ backgroundColor, marginBottom: 10, padding: 5 }}>
-      <Typography variant="h5">{room.roomName}</Typography>
+      <Typography
+        variant="h5"
+        color={isUserInThisRoom ? "secondary" : "primary"}
+      >
+        {room.roomName}
+      </Typography>
       {users.map((u) => (
         <User
           inRoom

@@ -19,7 +19,7 @@ function EditEvent({ user, event }) {
   const [eventUsers, setEventUsers] = useState([]);
   const [eventRooms, setEventRooms] = useState([]);
   const [eventRoomsUsers, setEventRoomsUsers] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDocumentOpen, setIsDocumentOpen] = useState(false);
   const [error, setError] = useState();
   const { palette } = useTheme();
@@ -99,6 +99,7 @@ function EditEvent({ user, event }) {
         user={userMeta}
         room={userRoomDetails}
         isMenuOpen={isModalOpen || isDocumentOpen}
+        event={event}
       ></VideoChat>
 
       <div
