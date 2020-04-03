@@ -104,7 +104,10 @@ function EditEvent({ user, event }) {
         isMenuOpen={isModalOpen || isDocumentOpen}
       ></VideoChat>
       <Document isOpen={isDocumentOpen}></Document>
-      <div className={isModalOpen ? "Edit-modal" : "Edit-modal Edit-modal-closed"} style={theme.modal}>
+      <div
+        className={isModalOpen ? "Edit-modal" : "Edit-modal Edit-modal-closed"}
+        style={theme.modal}
+      >
         <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
           <Cancel fontSize="large" />
         </IconButton>

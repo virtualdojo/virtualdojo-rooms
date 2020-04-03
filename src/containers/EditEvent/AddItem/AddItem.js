@@ -40,15 +40,19 @@ function AddItem(props) {
 
   return (
     <form name="addItemForm">
-      <Typography variant="h5">
-        Room name
-      </Typography>
+      <Typography variant="h5">Room name</Typography>
       <TextField fullWidth name="roomName" variant="filled" />
-      <Typography variant="h5">
-        Room id
-      </Typography>
+      <Typography variant="h5">Room id</Typography>
       <TextField fullWidth name="roomId" variant="filled" />
-      <Button variant="contained" color="primary" fullWidth size="large" style={{ marginTop: 20, fontWeight: 600 }} type="submit" onClick={addItem}>
+      <Button
+        variant="contained"
+        color="primary"
+        fullWidth
+        size="large"
+        style={{ marginTop: 20, fontWeight: 600 }}
+        type="submit"
+        onClick={addItem}
+      >
         Add
       </Button>
       <ErrorMessage errorCode={error}></ErrorMessage>

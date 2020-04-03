@@ -45,7 +45,7 @@ const User = ({ eventId, user, currentUser, inRoom }) => {
               variant="contained"
               color="primary"
               size="small"
-              style={{ display: 'block', margin: '5px auto' }}
+              style={{ display: "block", margin: "5px auto" }}
               onClick={() =>
                 FirestoreService.setUserIsMentor(
                   user.userId,
@@ -91,9 +91,7 @@ const Room = ({ eventId, room, users, currentUser }) => {
 
   return (
     <Card ref={drop} style={{ backgroundColor, marginBottom: 10, padding: 5 }}>
-      <Typography variant="h4">
-        {room.roomName}
-      </Typography>
+      <Typography variant="h4">{room.roomName}</Typography>
       {users.map((u) => (
         <User
           inRoom
