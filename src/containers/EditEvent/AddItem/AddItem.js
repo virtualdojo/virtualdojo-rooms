@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { TextField, Button, Typography } from "@material-ui/core";
+
 import "./AddItem.css";
 import * as FirestoreService from "../../../services/firestore";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
 function AddItem(props) {
-  const { eventId, userId } = props;
+  const { eventId } = props;
 
   const [error, setError] = useState("");
 
@@ -38,13 +40,17 @@ function AddItem(props) {
 
   return (
     <form name="addItemForm">
-      <h3>Room name</h3>
-      <input type="text" name="roomName" />
-      <h3>Room id</h3>
-      <input type="text" name="roomId" />
-      <button type="submit" onClick={addItem}>
+      <Typography variant="h5">
+        Room name
+      </Typography>
+      <TextField fullWidth name="roomName" variant="filled" />
+      <Typography variant="h5">
+        Room id
+      </Typography>
+      <TextField fullWidth name="roomId" variant="filled" />
+      <Button variant="contained" color="primary" fullWidth size="large" style={{ marginTop: 20, fontWeight: 600 }} type="submit" onClick={addItem}>
         Add
-      </button>
+      </Button>
       <ErrorMessage errorCode={error}></ErrorMessage>
     </form>
   );

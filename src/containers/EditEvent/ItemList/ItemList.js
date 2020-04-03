@@ -1,12 +1,14 @@
 import React from "react";
 import * as FirestoreService from "../../../services/firestore";
 import { useDrag, useDrop } from "react-dnd";
+import { useTheme } from "@material-ui/core/styles";
+import { Button, Paper, Typography, Card } from "@material-ui/core";
 
 const ItemTypes = {
   USER: "user",
 };
 
-const User = ({ eventId, user, currentUser }) => {
+const User = ({ eventId, user, currentUser, inRoom }) => {
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
     canDrag: currentUser.isMentor,
@@ -24,24 +26,38 @@ const User = ({ eventId, user, currentUser }) => {
       isDragging: monitor.isDragging(),
     }),
   });
-  const opacity = isDragging ? 0.4 : 1;
-  console.log("currentUser", currentUser);
+
   const isCurrentUser = currentUser && currentUser.userId === user.userId;
+
+  const styles = {
+    opacity: isDragging ? 0.4 : 1,
+    width: inRoom ? "90%" : "100%",
+    margin: "0 auto 5px auto",
+  };
+
   return (
-    <div ref={drag} style={{ opacity }}>
-      {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
-      {currentUser.isMentor && !isCurrentUser && (
-        <button
-          onClick={() =>
-            FirestoreService.setUserIsMentor(
-              user.userId,
-              eventId,
-              !user.isMentor
-            )
-          }
-        >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</button>
-      )}
-      {isCurrentUser && " (me)"}
+    <div ref={drag} style={styles}>
+      <Paper elevation={3} style={{ padding: 5 }}>
+        <Typography variant="h5">
+          {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
+          {currentUser.isMentor && !isCurrentUser && (
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              style={{ display: 'block', margin: '5px auto' }}
+              onClick={() =>
+                FirestoreService.setUserIsMentor(
+                  user.userId,
+                  eventId,
+                  !user.isMentor
+                )
+              }
+            >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</Button>
+          )}
+          {isCurrentUser && " (me)"}
+        </Typography>
+      </Paper>
     </div>
   );
 };
@@ -59,25 +75,35 @@ const Room = ({ eventId, room, users, currentUser }) => {
     }),
   });
   const isActive = canDrop && isOver;
-  let backgroundColor = "white";
+  const { palette } = useTheme();
+  const theme = {
+    default: palette.secondary.main,
+    active: palette.secondary.main,
+    hover: palette.primary.main,
+  };
+
+  let backgroundColor = theme.default;
   if (isActive) {
-    backgroundColor = "gray";
+    backgroundColor = theme.active;
   } else if (canDrop) {
-    backgroundColor = "yellow";
+    backgroundColor = theme.hover;
   }
 
   return (
-    <div ref={drop} style={{ backgroundColor }}>
-      <h1>{room.roomName}</h1>
+    <Card ref={drop} style={{ backgroundColor, marginBottom: 10, padding: 5 }}>
+      <Typography variant="h4">
+        {room.roomName}
+      </Typography>
       {users.map((u) => (
         <User
+          inRoom
           key={u.userId}
           user={u}
           currentUser={currentUser}
           eventId={eventId}
         ></User>
       ))}
-    </div>
+    </Card>
   );
 };
 
@@ -115,7 +141,7 @@ function ItemList({
   return (
     <div>
       <div>{users}</div>
-      <div>-----</div>
+      <hr style={{ borderStyle: "dashed", margin: "20px 0" }} />
       <div>{rooms}</div>
     </div>
   );

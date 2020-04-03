@@ -1,20 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
+
+import { useTheme } from "@material-ui/core/styles";
+import { Button, IconButton } from "@material-ui/core";
+import { CancelRounded as Cancel } from "@material-ui/icons";
 
 import * as FirestoreService from "../../services/firestore";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import AddItem from "./AddItem/AddItem";
+
 import ItemList from "./ItemList/ItemList";
 import VideoChat from "../../components/VideoChat/VideoChat";
+
 import Document from "../../components/Document/Document";
 import "./EditEvent.css";
-
-const containerStyle = {
-  width: "100%",
-  height: "100vh",
-  overflowX: "hidden",
-};
 
 function EditEvent({ user, event }) {
   const [eventUsers, setEventUsers] = useState([]);
@@ -23,6 +21,13 @@ function EditEvent({ user, event }) {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isDocumentOpen, setIsDocumentOpen] = useState(false);
   const [error, setError] = useState();
+  const { palette } = useTheme();
+
+  const theme = {
+    container: { background: palette.primary.main },
+    modal: { background: palette.background.default },
+    listItem: { background: palette.grey[200] },
+  };
 
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
@@ -80,17 +85,17 @@ function EditEvent({ user, event }) {
   const userRoomDetails =
     userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
   return (
-    <div style={containerStyle}>
+    <div className="main-container" style={theme.container}>
       <div style={{ position: "fixed" }}>
         {
-          <button onClick={() => toggleModal()}>{`${
+          <Button onClick={() => toggleModal()}>{`${
             isModalOpen ? "close" : "open"
-          } dashboard`}</button>
+          } dashboard`}</Button>
         }
         {
-          <button onClick={() => toggleDocument()}>{`${
+          <Button onClick={() => toggleDocument()}>{`${
             isDocumentOpen ? "close" : "open"
-          } document`}</button>
+          } document`}</Button>
         }
       </div>
       <VideoChat
@@ -99,16 +104,19 @@ function EditEvent({ user, event }) {
         isMenuOpen={isModalOpen || isDocumentOpen}
       ></VideoChat>
       <Document isOpen={isDocumentOpen}></Document>
-      <div className={isModalOpen ? "Edit-modal-opened " : "Edit-modal-closed"}>
+      <div className={isModalOpen ? "Edit-modal" : "Edit-modal Edit-modal-closed"} style={theme.modal}>
+        <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
+          <Cancel fontSize="large" />
+        </IconButton>
         <div>
           <ErrorMessage errorCode={error}></ErrorMessage>
           <div className="edit-container">
             {user.isMentor && (
-              <div className="list-column">
+              <div className="list-column" style={theme.listItem}>
                 <AddItem userId={user.userId} eventId={event.eventId}></AddItem>
               </div>
             )}
-            <div className="list-column">
+            <div className="list-column" style={theme.listItem}>
               <ItemList
                 eventId={event.eventId}
                 currentUser={userMeta || {}}
