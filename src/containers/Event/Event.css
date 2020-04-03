@@ -9,22 +9,7 @@
   justify-content: center;
 }
 
-.add-item-column {
-  background-color: rgb(247, 237, 202);
-  padding: 20px;
-  border-radius: 2%;
-  margin: 5px;
-  text-align: center;
-}
-
-.list-column {
-  padding: 20px;
-  border-radius: 2%;
-  margin: 5px;
-  text-align: center;
-}
-
-.Edit-modal {
+.Dashboard-modal {
   position: absolute;
   top: 40px;
   bottom: 40px;
@@ -35,9 +20,11 @@
   transition: 0.2s linear;
   opacity: 1;
   transform: translateX(0px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.Edit-modal-closed {
+.Dashboard-modal-closed {
   opacity: 0;
   transform: translateX(-2000px);
   transition: 0.1s linear;
@@ -55,6 +42,8 @@
   transition:0.2s linear;
   opacity: 1;
   transform: translateX(0px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .Document-modal-closed {

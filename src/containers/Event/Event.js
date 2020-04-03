@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from "react";
 
 import { useTheme } from "@material-ui/core/styles";
-import { Button, IconButton } from "@material-ui/core";
+import { IconButton } from "@material-ui/core";
 import {
   DescriptionRounded as DocumentIcon,
   PeopleAltRounded as PeopleAltRoundedIcon,
   VideocamRounded as VideocamRoundedIcon,
 } from "@material-ui/icons";
-import Grid from "@material-ui/core/Grid";
 
 import * as FirestoreService from "../../services/firestore";
-import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import AddRoom from "./AddRoom/AddRoom";
 
-import Dashboard from "./Dashboard";
-import VideoChat from "../../components/VideoChat/VideoChat";
+import Dashboard from "./Dashboard/Dashboard";
+import Document from "./Document/Document";
+import VideoChat from "./VideoChat/VideoChat";
 
-import Document from "../../components/Document/Document";
-import "./EditEvent.css";
+import "./Event.css";
 
 function EditEvent({ user, event }) {
   const [eventUsers, setEventUsers] = useState([]);
@@ -50,8 +47,6 @@ function EditEvent({ user, event }) {
         const updatedEventUsers = querySnapshot.docs
           ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
           : [];
-
-        console.log("EditEvent -> updatedEventUsers", updatedEventUsers);
         setEventUsers(updatedEventUsers);
       },
       error: () => setError("user-get-fail"),
@@ -85,7 +80,7 @@ function EditEvent({ user, event }) {
     return unsubscribe;
   }, [event.eventId, setEventRoomsUsers]);
 
-  const userMeta = eventUsers.find((u) => u.userId === user.userId);
+  const userMeta = eventUsers.find((u) => u.userId === user.userId) || user;
   const userRoom = eventRoomsUsers.find((ru) => ru.userId === user.userId);
   const userRoomDetails =
     userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
@@ -102,7 +97,7 @@ function EditEvent({ user, event }) {
         </div>
       )}
       <VideoChat
-        user={user}
+        user={userMeta}
         room={userRoomDetails}
         isMenuOpen={isModalOpen || isDocumentOpen}
       ></VideoChat>
@@ -121,14 +116,24 @@ function EditEvent({ user, event }) {
         <IconButton color="primary" onClick={() => toggleModal()}>
           <PeopleAltRoundedIcon fontSize="large" />
         </IconButton>
+        <IconButton color="primary" onClick={() => toggleDocument()} disabled>
+          <DocumentIcon fontSize="large" />
+        </IconButton>
         <Document isOpen={isDocumentOpen}></Document>
       </div>
       <div
-        className={isModalOpen ? "Edit-modal" : "Edit-modal Edit-modal-closed"}
+        className={
+          isModalOpen
+            ? "Dashboard-modal"
+            : "Dashboard-modal Dashboard-modal-closed"
+        }
         style={theme.modal}
       >
         <IconButton color="primary" onClick={() => toggleModal()}>
           <VideocamRoundedIcon fontSize="large" />
+        </IconButton>
+        <IconButton color="primary" onClick={() => toggleModal()} disabled>
+          <PeopleAltRoundedIcon fontSize="large" />
         </IconButton>
         <IconButton color="primary" onClick={() => toggleDocument()}>
           <DocumentIcon fontSize="large" />

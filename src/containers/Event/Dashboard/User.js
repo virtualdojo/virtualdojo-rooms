@@ -1,5 +1,5 @@
 import React from "react";
-import * as FirestoreService from "../../services/firestore";
+import * as FirestoreService from "../../../services/firestore";
 import { useDrag, useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
 import { Button, Paper, Typography, Card } from "@material-ui/core";
@@ -9,6 +9,7 @@ const ItemTypes = {
 };
 
 function User({ eventId, user, currentUser, inRoom }) {
+  const [isSelected, setIsSelected] = React.useState(false);
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
     canDrag: currentUser.isMentor,
@@ -36,11 +37,11 @@ function User({ eventId, user, currentUser, inRoom }) {
   };
 
   return (
-    <div ref={drag} style={styles}>
+    <div ref={drag} style={styles} onClick={() => setIsSelected(!isSelected)}>
       <Paper elevation={3} style={{ padding: 5 }}>
-        <Typography variant="h5">
+        <Typography variant={inRoom ? "h7" : "h10"}>
           {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
-          {currentUser.isMentor && !isCurrentUser && (
+          {isSelected && !inRoom && currentUser.isMentor && !isCurrentUser && (
             <Button
               variant="contained"
               color="primary"

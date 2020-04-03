@@ -29,7 +29,9 @@ function Room({ eventId, room, users, currentUser }) {
     hover: palette.primary.main,
   };
 
-  let backgroundColor = theme.default;
+  const isUserInThisRoom = users.find((u) => u.userId === currentUser.userId);
+
+  let backgroundColor = isUserInThisRoom ? theme.hover : theme.default;
   if (isActive) {
     backgroundColor = theme.active;
   } else if (canDrop) {
@@ -38,7 +40,7 @@ function Room({ eventId, room, users, currentUser }) {
 
   return (
     <Card ref={drop} style={{ backgroundColor, marginBottom: 10, padding: 5 }}>
-      <Typography variant="h4">{room.roomName}</Typography>
+      <Typography variant="h5">{room.roomName}</Typography>
       {users.map((u) => (
         <User
           inRoom

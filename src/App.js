@@ -8,7 +8,7 @@ import * as FirestoreService from "./services/firestore";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
-import EditEvent from "./containers/EditEvent/EditEvent";
+import Event from "./containers/Event/Event";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import { theme } from "./components/Theme/Theme";
 
@@ -98,7 +98,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <DndProvider backend={Backend}>
-          <EditEvent user={user} event={{ eventId, ...eventMeta }}></EditEvent>
+          <Event user={user} event={{ eventId, ...eventMeta }}></Event>
         </DndProvider>
       </ThemeProvider>
     );

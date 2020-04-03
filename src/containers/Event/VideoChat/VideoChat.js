@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./VideoChat.css";
 
-const isVideoEnabled = false;
+const isVideoEnabled = true;
 
 let api;
 
