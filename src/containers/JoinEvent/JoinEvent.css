@@ -1,9 +1,6 @@
-.join-container {
+.add-container {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.join-container div {
-    text-align: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./VideoChat.css";
 
-const isVideoEnabled = true;
+const isVideoEnabled = false;
 
 let api;
 
@@ -43,6 +43,8 @@ function VideoChat({ user, room, isMenuOpen }) {
 
         api = new JitsiMeetExternalAPI(domain, options);
         api.addEventListener("videoConferenceJoined", () => {
+          api.executeCommand("displayName", user.userName);
+          api.executeCommand("email", user.userId);
           setLoading(false);
         });
       } catch (error) {
@@ -59,7 +61,7 @@ function VideoChat({ user, room, isMenuOpen }) {
     } else {
       setLoading(false);
     }
-  }, [roomId, user.isMentor, user.userId, user.userName]);
+  }, [roomId, user, user.isMentor, user.userId, user.userName]);
 
   return (
     <div style={containerStyle}>

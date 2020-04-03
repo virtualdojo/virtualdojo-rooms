@@ -15,13 +15,14 @@ export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
 };
 
-export const createEvent = (eventName, userName, userId) => {
+export const createEvent = (eventName, eventPassword, userName, userId) => {
   return db
     .collection("events")
     .add({
       created: firebase.firestore.FieldValue.serverTimestamp(),
       createdBy: userId,
       name: eventName,
+      password: eventPassword,
       users: [
         {
           userId: userId,
@@ -82,23 +83,34 @@ export const isUserRegistered = (eventId, userId) => {
     });
 };
 
-export const addUserToEvent = (userName, eventId, userId, isMentor = false) => {
-  return getEventItems(eventId)
+export const addUserToEvent = (
+  userName,
+  eventPassword,
+  eventId,
+  userId,
+  isMentor = false
+) => {
+  return getEvent(eventId)
+    .then((querySnapshot) => {
+      if (querySnapshot.data().password !== eventPassword)
+        throw new Error("event-wrong-password");
+    })
+    .then(() => getEventItems(eventId))
     .then((querySnapshot) => querySnapshot.docs)
     .then((eventItems) =>
       eventItems.find((eventItem) => eventItem.data().userId === userId)
     )
     .then((matchingItem) => {
-      // if (!matchingItem) {
-      return db.collection("events").doc(eventId).collection("items").add({
-        userId: userId,
-        userName: userName,
-        created: firebase.firestore.FieldValue.serverTimestamp(),
-        createdBy: userId,
-        isMentor,
-      });
-      //}
-      //throw new Error('duplicate-item-error');
+      if (!matchingItem) {
+        return db.collection("events").doc(eventId).collection("items").add({
+          userId: userId,
+          userName: userName,
+          created: firebase.firestore.FieldValue.serverTimestamp(),
+          createdBy: userId,
+          isMentor,
+        });
+      }
+      throw new Error("duplicate-item-error");
     });
 };
 
@@ -129,7 +141,6 @@ export const addUserToRoom = (userId, roomId, eventId) => {
       eventItems.find((eventItem) => eventItem.data().userId === userId)
     )
     .then((matchingItem) => {
-      console.log(matchingItem);
       if (matchingItem) {
         return db
           .collection("events")

@@ -27,7 +27,6 @@ function AddRoom(props) {
         if (reason.message === "duplicate-item-error") {
           setError(reason.message);
         } else {
-          console.log(reason);
           setError("add-list-item-error");
         }
       });
@@ -36,7 +35,7 @@ function AddRoom(props) {
   return (
     <form name="addItemForm" className="AddRoom-container">
       <Typography variant="h5" style={{ marginRight: "20px" }}>
-        Create new room:{" "}
+        Create new room:
       </Typography>
       <TextField label="Room name" name="roomName" variant="filled" />
       <Button

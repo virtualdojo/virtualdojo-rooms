@@ -50,11 +50,16 @@ function Dashboard({
           </Grid>
         )}
         {userMeta.isMentor && (
-          <Grid container item xs={12} spacing={2}>
+          <Grid
+            container
+            item
+            xs={12}
+            spacing={2}
+            style={{ marginLeft: "10px", marginRight: "15px" }}
+          >
             {eventUsers.map((item) => (
-              <Grid item xs={2}>
+              <Grid item xs={2} key={item.userId}>
                 <User
-                  key={item.userId}
                   eventId={event.eventId}
                   currentUser={userMeta}
                   user={item}
@@ -67,11 +72,16 @@ function Dashboard({
           </Grid>
         )}
 
-        <Grid container item xs={12} spacing={4}>
+        <Grid
+          container
+          item
+          xs={12}
+          spacing={4}
+          style={{ marginLeft: "10px", marginRight: "15px" }}
+        >
           {eventRooms.map((item) => (
-            <Grid item xs={3}>
+            <Grid item xs={3} key={item.roomId}>
               <Room
-                key={item.roomId}
                 room={item}
                 eventId={event.eventId}
                 users={getUsersByRoomId(item.roomId)}

@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ThemeProvider } from "@material-ui/core/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
-
+import { useTheme } from "@material-ui/core/styles";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 import * as FirestoreService from "./services/firestore";
@@ -10,7 +8,6 @@ import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
 import Event from "./containers/Event/Event";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
-import { theme } from "./components/Theme/Theme";
 
 import useQueryString from "./hooks/useQueryString";
 
@@ -22,6 +19,15 @@ function App() {
   const [isLoading, setIsLoading] = useState(true);
 
   const [eventId, setEventId] = useQueryString("eventId");
+  const { palette } = useTheme();
+
+  const theme = {
+    container: {
+      background: palette.primary.main,
+      width: "100%",
+      height: "100vh",
+    },
+  };
 
   useEffect(() => {
     FirestoreService.authenticateAnonymously()
@@ -59,7 +65,6 @@ function App() {
 
   function onEventCreate(eventId, userName) {
     setEventId(eventId);
-    console.log(eventId);
     FirestoreService.getEvent(eventId)
       .then((event) => {
         if (event.exists) {
@@ -95,28 +100,27 @@ function App() {
 
   if (eventMeta && user) {
     return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <DndProvider backend={Backend}>
-          <Event user={user} event={{ eventId, ...eventMeta }}></Event>
-        </DndProvider>
-      </ThemeProvider>
+      <DndProvider backend={Backend}>
+        <div style={theme.container}>
+          <Event user={user} event={{ eventId, ...eventMeta }} />
+        </div>
+      </DndProvider>
     );
   } else if (eventMeta) {
     return (
-      <div>
+      <div style={theme.container}>
         <ErrorMessage errorCode={error}></ErrorMessage>
         <JoinEvent
           users={eventMeta.users}
           {...{ eventId, onSelectUser, onCloseEvent, userId }}
-        ></JoinEvent>
+        />
       </div>
     );
   }
   return (
-    <div>
-      <ErrorMessage errorCode={error}></ErrorMessage>
-      <CreateEvent onCreate={onEventCreate} userId={userId}></CreateEvent>
+    <div style={theme.container}>
+      <ErrorMessage errorCode={error} />
+      <CreateEvent onCreate={onEventCreate} userId={userId} />
     </div>
   );
 }

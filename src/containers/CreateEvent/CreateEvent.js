@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import "./CreateEvent.css";
+import { TextField, Button, Typography } from "@material-ui/core";
 import * as FirestoreService from "../../services/firestore";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import "./CreateEvent.css";
 
 function CreateEvent(props) {
   const { onCreate, userId } = props;
@@ -24,7 +25,13 @@ function CreateEvent(props) {
       return;
     }
 
-    FirestoreService.createEvent(eventName, userName, userId)
+    const eventPassword = document.createListForm.eventPassword.value;
+    if (!eventPassword) {
+      setError("user-name-required");
+      return;
+    }
+
+    FirestoreService.createEvent(eventName, eventPassword, userName, userId)
       .then((docRef) => {
         onCreate(docRef.id, userName);
       })
@@ -34,32 +41,55 @@ function CreateEvent(props) {
   }
 
   return (
-    <div>
-      <header>
-        <h1>Benvenuto nella creazione di un nuovo Virtualdojo!</h1>
-      </header>
-      <div className="create-container">
-        <div>
-          <form name="createListForm">
-            <p>
-              <label>Inserisci il nome dell'evento</label>
-            </p>
-            <p>
-              <input type="text" name="eventName" />
-            </p>
-            <p>
-              <label>Inserisci il tuo nome</label>
-            </p>
-            <p>
-              <input type="text" name="userName" />
-            </p>
-            <ErrorMessage errorCode={error}></ErrorMessage>
-            <p>
-              <button onClick={createEvent}>Crea un nuovo evento</button>
-            </p>
-          </form>
-        </div>
-      </div>
+    <div className={"create-container"}>
+      <Typography
+        variant="h3"
+        color="secondary"
+        style={{ marginBottom: "80px" }}
+      >
+        VirtualDojo Rooms
+      </Typography>
+      <Typography
+        variant="h5"
+        color="secondary"
+        style={{ marginBottom: "30px" }}
+      >
+        Please insert the following information:
+      </Typography>
+      <form name="createListForm" className={"create-container"}>
+        <TextField
+          label="Your Full Name"
+          name="userName"
+          variant="filled"
+          color="secondary"
+          style={{ marginBottom: "30px" }}
+        />
+        <TextField
+          label="Event Name"
+          name="eventName"
+          variant="filled"
+          color="secondary"
+          style={{ marginBottom: "30px" }}
+        />
+        <TextField
+          label="Event Password"
+          name="eventPassword"
+          variant="filled"
+          color="secondary"
+          style={{ marginBottom: "30px" }}
+        />
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          style={{ fontWeight: 600 }}
+          type="submit"
+          onClick={createEvent}
+        >
+          {`Create event`}
+        </Button>
+      </form>
+      <ErrorMessage errorCode={error}></ErrorMessage>
     </div>
   );
 }

@@ -6,6 +6,8 @@ function ErrorMessage(props) {
 
   function getErrorMessage() {
     switch (errorCode) {
+      case "event-wrong-password":
+        return "Wrong password";
       default:
         return "Oops, something went wrong.";
     }

@@ -13,7 +13,6 @@ function Room({ eventId, room, users, currentUser }) {
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
-      console.log("dropped");
       return { room };
     },
     collect: (monitor) => ({

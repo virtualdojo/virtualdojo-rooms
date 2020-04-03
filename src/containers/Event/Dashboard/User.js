@@ -1,8 +1,7 @@
 import React from "react";
 import * as FirestoreService from "../../../services/firestore";
-import { useDrag, useDrop } from "react-dnd";
-import { useTheme } from "@material-ui/core/styles";
-import { Button, Paper, Typography, Card } from "@material-ui/core";
+import { useDrag } from "react-dnd";
+import { Button, Paper, Typography } from "@material-ui/core";
 
 const ItemTypes = {
   USER: "user",
@@ -39,7 +38,7 @@ function User({ eventId, user, currentUser, inRoom }) {
   return (
     <div ref={drag} style={styles} onClick={() => setIsSelected(!isSelected)}>
       <Paper elevation={3} style={{ padding: 5 }}>
-        <Typography variant={inRoom ? "h7" : "h10"}>
+        <Typography variant={inRoom ? "subtitle1" : "body2"}>
           {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
           {isSelected && !inRoom && currentUser.isMentor && !isCurrentUser && (
             <Button
