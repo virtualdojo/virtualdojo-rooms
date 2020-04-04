@@ -16,6 +16,7 @@
     "react-dnd-html5-backend": "^10.0.2",
     "react-dom": "^16.13.1",
     "react-scripts": "^3.4.1",
+    "react-swipeable-views": "^0.13.9",
     "uuid": "^7.0.3"
   },
   "scripts": {

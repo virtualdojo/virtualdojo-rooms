@@ -1,12 +1,10 @@
 import React from "react";
 import { useTheme } from "@material-ui/core/styles";
-import Divider from "@material-ui/core/Divider";
 import Grid from "@material-ui/core/Grid";
 
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 import AddRoom from "./AddRoom/AddRoom";
 
-import User from "./User";
 import Room from "./Room";
 
 function Dashboard({
@@ -47,28 +45,6 @@ function Dashboard({
             <div style={theme.listItem}>
               <AddRoom userId={user.userId} eventId={event.eventId} />
             </div>
-          </Grid>
-        )}
-        {userMeta.isMentor && (
-          <Grid
-            container
-            item
-            xs={12}
-            spacing={2}
-            style={{ marginLeft: "10px", marginRight: "15px" }}
-          >
-            {eventUsers.map((item) => (
-              <Grid item xs={2} key={item.userId}>
-                <User
-                  eventId={event.eventId}
-                  currentUser={userMeta}
-                  user={item}
-                ></User>
-              </Grid>
-            ))}
-            <Grid item xs={12}>
-              <Divider />
-            </Grid>
           </Grid>
         )}
 

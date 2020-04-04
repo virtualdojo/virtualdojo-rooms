@@ -1,7 +1,7 @@
 import React from "react";
 import "./Document.css";
 
-function Document({ isOpen }) {
+function Document() {
   return (
     <iframe
       title="document"

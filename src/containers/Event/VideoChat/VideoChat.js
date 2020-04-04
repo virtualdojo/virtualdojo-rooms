@@ -66,7 +66,7 @@ function VideoChat({ user, room, event, isMenuOpen }) {
     } else {
       setLoading(false);
     }
-  }, [roomId, user, user.isMentor, user.userId, user.userName]);
+  }, [event.password, roomId, user, user.isMentor, user.userId, user.userName]);
 
   return (
     <div style={containerStyle}>

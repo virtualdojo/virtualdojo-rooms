@@ -9,7 +9,7 @@
   justify-content: center;
 }
 
-.Dashboard-modal {
+.Event-modal {
   position: absolute;
   top: 40px;
   bottom: 40px;
@@ -20,34 +20,13 @@
   transition: 0.2s linear;
   opacity: 1;
   transform: translateX(0px);
-  overflow-y: auto;
+  overflow-y: hidden;
   overflow-x: hidden;
 }
 
-.Dashboard-modal-closed {
+.Event-modal-closed {
   opacity: 0;
   transform: translateX(-2000px);
   transition: 0.1s linear;
 }
 
-
-.Document-modal {
-  position: absolute;
-  top: 40px;
-  bottom: 40px;
-  left: 40px;
-  right: 40px;
-  border-radius: 15px;
-  z-index: 1100;
-  transition:0.2s linear;
-  opacity: 1;
-  transform: translateX(0px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.Document-modal-closed {
-  opacity: 0;
-  transform: translateX(2000px);
-  transition: 0.1s linear;
-}

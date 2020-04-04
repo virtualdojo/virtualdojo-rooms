@@ -1,43 +1,62 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton, Typography } from "@material-ui/core";
+import { IconButton, Typography, Divider } from "@material-ui/core";
+import SwipeableViews from "react-swipeable-views";
 import {
+  CancelRounded as CancelIcon,
   DescriptionRounded as DocumentIcon,
   PeopleAltRounded as PeopleAltRoundedIcon,
-  VideocamRounded as VideocamRoundedIcon,
+  MeetingRoomRounded as MeetingRoomRoundedIcon,
 } from "@material-ui/icons";
 
 import * as FirestoreService from "../../services/firestore";
 
-import Dashboard from "./Dashboard/Dashboard";
+import Rooms from "./Rooms/Rooms";
+import Users from "./Users/Users";
 import Document from "./Document/Document";
 import VideoChat from "./VideoChat/VideoChat";
 
 import "./Event.css";
 
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      style={{
+        overflowY: "auto",
+        overflowX: "hidden",
+        height: "100%",
+      }}
+      {...other}
+    >
+      {children}
+    </Typography>
+  );
+}
+
 function EditEvent({ user, event }) {
   const [eventUsers, setEventUsers] = useState([]);
   const [eventRooms, setEventRooms] = useState([]);
   const [eventRoomsUsers, setEventRoomsUsers] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isDocumentOpen, setIsDocumentOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [tabIndex, setTabIndex] = useState(0);
   const [error, setError] = useState();
   const { palette } = useTheme();
+
+  const handleChangeIndex = (index) => {
+    setTabIndex(index);
+  };
 
   const theme = {
     container: { background: palette.primary.main },
     modal: { background: palette.background.default },
     listItem: { background: palette.grey[200] },
-  };
-
-  const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
-    if (!isModalOpen) setIsDocumentOpen(false);
-  };
-
-  const toggleDocument = () => {
-    setIsDocumentOpen(!isDocumentOpen);
-    if (!isDocumentOpen) setIsModalOpen(false);
   };
 
   useEffect(() => {
@@ -85,12 +104,24 @@ function EditEvent({ user, event }) {
     userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
   return (
     <div className="main-container" style={theme.container}>
-      {!isModalOpen && !isDocumentOpen && (
+      {!isModalOpen && (
         <div style={{ position: "fixed" }}>
-          <IconButton color="secondary" onClick={() => toggleModal()}>
-            <PeopleAltRoundedIcon fontSize="large" />
+          <IconButton
+            color="secondary"
+            onClick={() => {
+              setTabIndex(0);
+              setIsModalOpen(true);
+            }}
+          >
+            <MeetingRoomRoundedIcon fontSize="large" />
           </IconButton>
-          <IconButton color="secondary" onClick={() => toggleDocument()}>
+          <IconButton
+            color="secondary"
+            onClick={() => {
+              setTabIndex(1);
+              setIsModalOpen(true);
+            }}
+          >
             <DocumentIcon fontSize="large" />
           </IconButton>
         </div>
@@ -98,15 +129,12 @@ function EditEvent({ user, event }) {
       <VideoChat
         user={userMeta}
         room={userRoomDetails}
-        isMenuOpen={isModalOpen || isDocumentOpen}
+        isMenuOpen={isModalOpen}
         event={event}
       ></VideoChat>
-
       <div
         className={
-          isDocumentOpen
-            ? "Document-modal"
-            : "Document-modal Document-modal-closed"
+          isModalOpen ? "Event-modal" : "Event-modal Event-modal-closed"
         }
         style={theme.modal}
       >
@@ -116,15 +144,34 @@ function EditEvent({ user, event }) {
             flexDirection: "row",
           }}
         >
-          <IconButton color="primary" onClick={() => toggleDocument()}>
-            <VideocamRoundedIcon fontSize="large" />
+          <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
+            <CancelIcon fontSize="large" />
           </IconButton>
-          <IconButton color="primary" onClick={() => toggleModal()}>
-            <PeopleAltRoundedIcon fontSize="large" />
+          <Divider orientation="vertical" flexItem />
+          <IconButton
+            color="primary"
+            onClick={() => setTabIndex(0)}
+            disabled={tabIndex === 0}
+          >
+            <MeetingRoomRoundedIcon fontSize="large" />
           </IconButton>
-          <IconButton color="primary" onClick={() => toggleDocument()} disabled>
+          <IconButton
+            color="primary"
+            onClick={() => setTabIndex(1)}
+            disabled={tabIndex === 1}
+          >
             <DocumentIcon fontSize="large" />
           </IconButton>
+          <Divider orientation="vertical" flexItem />
+          {userMeta.isMentor && (
+            <IconButton
+              color="primary"
+              onClick={() => setTabIndex(2)}
+              disabled={tabIndex === 2}
+            >
+              <PeopleAltRoundedIcon fontSize="large" />
+            </IconButton>
+          )}
           <div
             style={{
               display: "flex",
@@ -139,54 +186,37 @@ function EditEvent({ user, event }) {
             </Typography>
           </div>
         </div>
-        <Document isOpen={isDocumentOpen}></Document>
-      </div>
-      <div
-        className={
-          isModalOpen
-            ? "Dashboard-modal"
-            : "Dashboard-modal Dashboard-modal-closed"
-        }
-        style={theme.modal}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-          }}
+        <SwipeableViews
+          axis={"x"}
+          index={tabIndex}
+          onChangeIndex={handleChangeIndex}
         >
-          <IconButton color="primary" onClick={() => toggleModal()}>
-            <VideocamRoundedIcon fontSize="large" />
-          </IconButton>
-          <IconButton color="primary" onClick={() => toggleModal()} disabled>
-            <PeopleAltRoundedIcon fontSize="large" />
-          </IconButton>
-          <IconButton color="primary" onClick={() => toggleDocument()}>
-            <DocumentIcon fontSize="large" />
-          </IconButton>
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: "140px",
-            }}
-          >
-            <Typography variant="h5" color="primary">
-              {event.name}
-            </Typography>
-          </div>
-        </div>
-        <Dashboard
-          user={user}
-          event={event}
-          error={error}
-          userMeta={userMeta}
-          eventUsers={eventUsers}
-          eventRooms={eventRooms}
-          eventRoomsUsers={eventRoomsUsers}
-        />
+          <TabPanel value={tabIndex} index={0} dir={theme.direction}>
+            <Rooms
+              user={user}
+              event={event}
+              error={error}
+              userMeta={userMeta}
+              eventUsers={eventUsers}
+              eventRooms={eventRooms}
+              eventRoomsUsers={eventRoomsUsers}
+            />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={1} dir={theme.direction}>
+            <Document isOpen={true}></Document>
+          </TabPanel>
+          <TabPanel value={tabIndex} index={0} dir={theme.direction}>
+            <Users
+              user={user}
+              event={event}
+              error={error}
+              userMeta={userMeta}
+              eventUsers={eventUsers}
+              eventRooms={eventRooms}
+              eventRoomsUsers={eventRoomsUsers}
+            />
+          </TabPanel>
+        </SwipeableViews>
       </div>
     </div>
   );
