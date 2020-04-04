@@ -22,6 +22,7 @@ WIP
 <table>
   <tr>
     <td align="center"><a href="https://github.com/andtos90"><img src="https://avatars2.githubusercontent.com/u/2692166?v=4" width="100px;" alt=""/><br /><sub><b>Andrea Tosatto</b></sub></a><br /><a href="https://github.com/virtualdojo/virtualdojo-rooms/commits?author=andtos90" title="Code">💻</a> <a href="https://github.com/virtualdojo/virtualdojo-rooms/commits?author=andtos90" title="Documentation">📖</a> <a href="#design-andtos90" title="Design">🎨</a></td>
+    <td align="center"><a href="https://github.com/esthercodes"><img src="https://avatars2.githubusercontent.com/u/8407403?v=4" width="100px;" alt=""/><br /><sub><b>Esther</b></sub></a><br /><a href="https://github.com/virtualdojo/virtualdojo-rooms/commits?author=esthercodes" title="Code">💻</a> <a href="#design-esthercodes" title="Design">🎨</a></td>
     <td align="center"><a href="https://peterampazzo.com"><img src="https://avatars0.githubusercontent.com/u/4621567?v=4" width="100px;" alt=""/><br /><sub><b>Pietro Rampazzo</b></sub></a><br /><a href="https://github.com/virtualdojo/virtualdojo-rooms/commits?author=peterampazzo" title="Code">💻</a> <a href="#ideas-peterampazzo" title="Ideas, Planning, & Feedback">🤔</a></td>
   </tr>
 </table>
