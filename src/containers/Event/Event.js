@@ -205,7 +205,7 @@ function EditEvent({ user, event }) {
           <TabPanel value={tabIndex} index={1} dir={theme.direction}>
             <Document isOpen={true}></Document>
           </TabPanel>
-          <TabPanel value={tabIndex} index={0} dir={theme.direction}>
+          <TabPanel value={tabIndex} index={2} dir={theme.direction}>
             <Users
               user={user}
               event={event}
