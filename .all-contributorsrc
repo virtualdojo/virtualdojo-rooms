@@ -25,6 +25,16 @@
         "code",
         "design"
       ]
+    },
+    {
+      "login": "peterampazzo",
+      "name": "Pietro Rampazzo",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/4621567?v=4",
+      "profile": "https://peterampazzo.com",
+      "contributions": [
+        "code",
+        "ideas"
+      ]
     }
   ],
   "contributorsPerLine": 7,
