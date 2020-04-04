@@ -64,23 +64,23 @@ function App() {
       });
   }, [eventId, setEventId]);
 
-  function onEventCreate(eventId, userName) {
-    setEventId(eventId);
-    FirestoreService.getEvent(eventId)
-      .then((event) => {
-        if (event.exists) {
-          setError(null);
-          setEventMeta(event.data());
-        } else {
-          setError("event-not-found");
-          setEventId();
-        }
-      })
-      .catch(() => {
-        setError("event-get-fail");
-      })
-      .then(() => FirestoreService.isUserRegistered(eventId, userId))
-      .then((result) => setUser(result));
+  async function onEventCreate(eventId, userName) {
+    try {
+      const event = await FirestoreService.getEvent(eventId);
+      if (!event.exists) {
+        setError("event-not-found");
+        setEventId();
+        return;
+      }
+      const user = await FirestoreService.isUserRegistered(eventId, userId);
+      setEventId(eventId);
+      setUser(user);
+      setEventMeta(event.data());
+      setError(null);
+    } catch (err) {
+      console.log(err);
+      setError("event-get-fail");
+    }
   }
 
   function onCloseEvent() {
@@ -129,7 +129,10 @@ function App() {
         <ErrorMessage errorCode={error}></ErrorMessage>
         <JoinEvent
           users={eventMeta.users}
-          {...{ eventId, onSelectUser, onCloseEvent, userId }}
+          event={{ eventId, ...eventMeta }}
+          onSelectUser={onSelectUser}
+          onCloseEvent={onCloseEvent}
+          userId={userId}
         />
       </div>
     );

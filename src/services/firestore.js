@@ -1,6 +1,7 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import { v4 as uuidv4 } from "uuid";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -21,11 +22,13 @@ export const createEvent = async (
   userName,
   userId
 ) => {
+  const defaultRoomId = uuidv4();
   const docRef = await db.collection("events").add({
     created: firebase.firestore.FieldValue.serverTimestamp(),
     createdBy: userId,
     name: eventName,
     password: eventPassword,
+    defaultRoomId,
     users: [
       {
         userId: userId,
@@ -33,6 +36,7 @@ export const createEvent = async (
       },
     ],
   });
+  await addRoom("all", docRef.id, defaultRoomId);
   await db.collection("events").doc(docRef.id).collection("users").add({
     userId: userId,
     userName: userName,
@@ -40,6 +44,7 @@ export const createEvent = async (
     createdBy: userId,
     isMentor: true,
   });
+  await addUserToRoom(userId, defaultRoomId, docRef.id);
   return docRef;
 };
 
@@ -93,6 +98,7 @@ export const addUserToEvent = async (
   userName,
   eventPassword,
   eventId,
+  defaultRoomId,
   userId,
   isMentor = false
 ) => {
@@ -109,16 +115,22 @@ export const addUserToEvent = async (
     throw new Error("duplicate-item-error");
   }
 
-  return await db.collection("events").doc(eventId).collection("users").add({
-    userId: userId,
-    userName: userName,
-    created: firebase.firestore.FieldValue.serverTimestamp(),
-    createdBy: userId,
-    isMentor,
-  });
+  const user = await db
+    .collection("events")
+    .doc(eventId)
+    .collection("users")
+    .add({
+      userId: userId,
+      userName: userName,
+      created: firebase.firestore.FieldValue.serverTimestamp(),
+      createdBy: userId,
+      isMentor,
+    });
+  await addUserToRoom(userId, defaultRoomId, eventId);
+  return user;
 };
 
-export const addRoom = async (roomId, roomName, eventId) => {
+export const addRoom = async (roomName, eventId, roomId = uuidv4()) => {
   return getEventUsers(eventId)
     .then((querySnapshot) => querySnapshot.docs)
     .then((eventUsers) => undefined)

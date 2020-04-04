@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
-import { v4 as uuidv4 } from "uuid";
 import "./AddRoom.css";
 import * as FirestoreService from "../../../../services/firestore";
 import ErrorMessage from "../../../../components/ErrorMessage/ErrorMessage";
@@ -19,9 +18,8 @@ function AddRoom(props) {
       setError("user-desc-req");
       return;
     }
-    const roomId = uuidv4();
 
-    FirestoreService.addRoom(roomId, roomName, eventId)
+    FirestoreService.addRoom(roomName, eventId)
       .then(() => document.addItemForm.reset())
       .catch((reason) => {
         if (reason.message === "duplicate-item-error") {

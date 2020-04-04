@@ -5,7 +5,7 @@ import * as FirestoreService from "../../services/firestore";
 import "./JoinEvent.css";
 
 function JoinEvent(props) {
-  const { eventId, onSelectUser, userId } = props;
+  const { event, onSelectUser, userId } = props;
 
   const [error, setError] = useState();
 
@@ -25,7 +25,13 @@ function JoinEvent(props) {
       return;
     }
 
-    FirestoreService.addUserToEvent(userName, eventPassword, eventId, userId)
+    FirestoreService.addUserToEvent(
+      userName,
+      eventPassword,
+      event.eventId,
+      event.defaultRoomId,
+      userId
+    )
       .then(() => {
         localStorage.setItem("userName", userName);
         onSelectUser(userName);

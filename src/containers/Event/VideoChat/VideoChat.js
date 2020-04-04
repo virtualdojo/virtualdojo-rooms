@@ -19,7 +19,7 @@ function VideoChat({ user, room, event, isMenuOpen }) {
     width: "100%",
     height: "100%",
   };
-  const roomId = room ? room.roomId : "virtualdojo-test-room-random";
+  const roomId = room ? room.roomId : event.defaultRoomId;
 
   useEffect(() => {
     function startConference() {
