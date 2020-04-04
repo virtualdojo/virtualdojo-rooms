@@ -4,17 +4,45 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 https://www.virtualdojo.it/
 
-Create and manage event with multiple video chat rooms
+Create and manage classroom sessions with multiple video chat rooms. 
 
 ## Motivations
-WIP
+The idea is born from various [CoderDojo](https://coderdojo.com/) mentors that were looking for an open source tool with the following characteristics:
 
+- Can create and manage classroom sessions (we call it events) with an high number participants (more than 50)
+- Is meant to be used by multiple teachers(mentors) in the same classroom
+- Provides basic video/audio/text chat capabilities
+- Has an easy way to share participants' screen at the same time
+- Enables teachers to move participants automatically between rooms
+- Integrates a document viewer, usually we have a small set of topics per events 
 
-## Dev
-WIP
+If want to know more, we have some blog posts about our story ([Part1](https://medium.com/@angiulina1984/tutto-quello-che-serve-sapere-per-organizzare-un-virtual-dojo-8f3e5ec45a08) - [Part2](https://medium.com/@gbonanome/virtualdojo-seconda-iterazione-4a9299bd4521)). The posts are in Italian but we're planning to translate them in the future.
+
+Most of the contributors are mentor from several CoderDojo organizations in Italy, we're not directly affiliated with CoderDojo Foundation.
+
+## Development
+Create a new Firebase project and copy and rename the `.env` file to `.env.development.local` and add your Firebase Web credentials. Remember to enable anonymous authentication.
+
+To start development run the following commands:
+
+```
+npm i
+npm start
+```
+
+To deploy in production you have to create a new Firebase Web app and add the credentials to `.env.production.local`. Install the Firebase CLI and init your project with hosting enabled, then run:
+
+```
+npm run deploy
+```
+
+## Technologies
+
+- **Jitsi**: Video/audio/text chat
+- **Firebase**: Hosting and Database with subscriptions
+- **React**: Frontend
 
 ## Contributors
-WIP
 
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 <!-- prettier-ignore-start -->
@@ -34,4 +62,4 @@ WIP
 
 <a href="https://www.tes.com"><img src="https://www.tes.com/logo.svg?variation=black" height="50px" /></a>
 
-Thanks Tes for giving me the time to work and release it as an open source project.  
+Some of the contributors are Tes employees. Thanks Tes for giving time to develop and release this tool as an open source project.

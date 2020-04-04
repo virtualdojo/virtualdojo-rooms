@@ -17,16 +17,6 @@
       ]
     },
     {
-      "login": "esthercodes",
-      "name": "Esther",
-      "avatar_url": "https://avatars2.githubusercontent.com/u/8407403?v=4",
-      "profile": "https://github.com/esthercodes",
-      "contributions": [
-        "code",
-        "design"
-      ]
-    },
-    {
       "login": "peterampazzo",
       "name": "Pietro Rampazzo",
       "avatar_url": "https://avatars0.githubusercontent.com/u/4621567?v=4",
@@ -34,6 +24,16 @@
       "contributions": [
         "code",
         "ideas"
+      ]
+    },
+        {
+      "login": "esthercodes",
+      "name": "Esther",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/8407403?v=4",
+      "profile": "https://github.com/esthercodes",
+      "contributions": [
+        "code",
+        "design"
       ]
     }
   ],
