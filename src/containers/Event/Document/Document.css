@@ -1,4 +1,14 @@
 .Document-frame {
+  position: relative;
   width: 100%;
-  height: 90%;
+  padding-top: 40%;
+  overflow: hidden;
+}
+
+.Document-frame iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
