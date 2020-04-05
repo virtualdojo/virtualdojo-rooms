@@ -4,17 +4,18 @@
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 https://www.virtualdojo.it/
 
-Create and manage classroom sessions with multiple video chat rooms. 
+Create and manage classroom sessions with multiple video chat rooms. It can also be useful to organise small conference or meetup with various topics.
 
 ## Motivations
 The idea is born from various [CoderDojo](https://coderdojo.com/) mentors that were looking for an open source tool with the following characteristics:
 
-- Can create and manage classroom sessions (we call it events) with an high number participants (more than 50)
+- Can create and manage classroom sessions (we call it events) with more than 50 participants
 - Is meant to be used by multiple teachers(mentors) in the same classroom
 - Provides basic video/audio/text chat capabilities
 - Has an easy way to share participants' screen at the same time
+- Creates new rooms on the fly
 - Enables teachers to move participants automatically between rooms
-- Integrates a document viewer, usually we have a small set of topics per events 
+- Integrates a document viewer (usually we have a small set of topics per events)
 
 If want to know more, we have some blog posts about our story ([Part1](https://medium.com/@angiulina1984/tutto-quello-che-serve-sapere-per-organizzare-un-virtual-dojo-8f3e5ec45a08) - [Part2](https://medium.com/@gbonanome/virtualdojo-seconda-iterazione-4a9299bd4521)). The posts are in Italian but we're planning to translate them in the future.
 
@@ -41,6 +42,7 @@ npm run deploy
 - **Jitsi**: Video/audio/text chat
 - **Firebase**: Hosting and Database with subscriptions
 - **React**: Frontend
+- **Comic Neue**: A font that looks similar to Comic Sans 🎨
 
 ## Contributors
 
