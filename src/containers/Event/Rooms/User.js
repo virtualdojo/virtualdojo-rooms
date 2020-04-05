@@ -1,14 +1,42 @@
 import React from "react";
 import * as FirestoreService from "../../../services/firestore";
 import { useDrag } from "react-dnd";
-import { Button, Paper, Typography } from "@material-ui/core";
+import { Typography, Avatar, Badge, Grid, Popover } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+
+const useStyles = makeStyles((theme) => ({
+  popover: {
+    pointerEvents: "none",
+  },
+  paper: {
+    padding: theme.spacing(1),
+  },
+}));
 
 const ItemTypes = {
   USER: "user",
 };
 
-function User({ eventId, user, currentUser, inRoom }) {
-  const [isSelected, setIsSelected] = React.useState(false);
+const SmallAvatar = withStyles((theme) => ({
+  root: {
+    width: 22,
+    height: 22,
+    border: `2px solid ${theme.palette.background.paper}`,
+  },
+}))(Avatar);
+
+function User({ eventId, user, currentUser, inRoom, avatarColor }) {
+  const classes = useStyles();
+  const [anchorEl, setAnchorEl] = React.useState(null);
+
+  const handlePopoverOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+  };
+
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
     canDrag: currentUser.isMentor,
@@ -27,38 +55,56 @@ function User({ eventId, user, currentUser, inRoom }) {
     }),
   });
 
-  const isCurrentUser = currentUser && currentUser.userId === user.userId;
-
-  const styles = {
-    opacity: isDragging ? 0.4 : 1,
-    width: inRoom ? "90%" : "100%",
-    margin: "0 auto 5px auto",
-  };
-
+  const popoverOpen = !isDragging && Boolean(anchorEl);
+  const initials = user.userName
+    .split(" ")
+    .map((s) => s[0].toUpperCase())
+    .concat();
   return (
-    <div ref={drag} style={styles} onClick={() => setIsSelected(!isSelected)}>
-      <Paper elevation={3} style={{ padding: 5 }}>
-        <Typography variant={inRoom ? "subtitle1" : "body2"}>
-          {`${user.userName} - (${user.isMentor ? "Mentor" : "Ninja"})`}
-          {isSelected && !inRoom && currentUser.isMentor && !isCurrentUser && (
-            <Button
-              variant="contained"
-              color="primary"
-              size="small"
-              style={{ display: "block", margin: "5px auto" }}
-              onClick={() =>
-                FirestoreService.setUserIsMentor(
-                  user.userId,
-                  eventId,
-                  !user.isMentor
-                )
-              }
-            >{`Set as ${user.isMentor ? "Ninja" : "Mentor"}`}</Button>
-          )}
-          {isCurrentUser && " (me)"}
-        </Typography>
-      </Paper>
-    </div>
+    <Grid
+      item
+      xs={2}
+      ref={drag}
+      style={{ opacity: isDragging ? "0.4" : "1" }}
+      onMouseEnter={handlePopoverOpen}
+      onMouseLeave={handlePopoverClose}
+    >
+      {user.isMentor ? (
+        <Badge
+          overlap="circle"
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "right",
+          }}
+          badgeContent={<SmallAvatar>{"M"}</SmallAvatar>}
+        >
+          <Avatar style={{ ...avatarColor }}>{initials}</Avatar>
+        </Badge>
+      ) : (
+        <Avatar style={{ ...avatarColor }}>{initials}</Avatar>
+      )}
+      <Popover
+        id="mouse-over-popover"
+        className={classes.popover}
+        classes={{
+          paper: classes.paper,
+        }}
+        open={popoverOpen}
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "left",
+        }}
+        onClose={handlePopoverClose}
+        disableRestoreFocus
+      >
+        <Typography>{user.userName}</Typography>
+      </Popover>
+    </Grid>
   );
 }
 

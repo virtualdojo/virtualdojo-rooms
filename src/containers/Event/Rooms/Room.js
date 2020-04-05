@@ -1,7 +1,7 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
-import { Typography, Card } from "@material-ui/core";
+import { Typography, Card, Grid } from "@material-ui/core";
 
 import User from "./User";
 
@@ -20,40 +20,55 @@ function Room({ eventId, room, users, currentUser }) {
       canDrop: monitor.canDrop(),
     }),
   });
-  const isActive = canDrop && isOver;
   const { palette } = useTheme();
   const theme = {
-    default: palette.secondary.main,
-    active: palette.secondary.main,
-    hover: palette.primary.main,
+    background: {
+      default: palette.primary.main,
+      active: palette.secondary.main,
+      hover: palette.primary.main,
+    },
+    text: {
+      default: palette.secondary.main,
+      active: palette.primary.main,
+      hover: palette.secondary.main,
+    },
   };
 
+  const isActive = canDrop && isOver;
   const isUserInThisRoom = users.find((u) => u.userId === currentUser.userId);
-
-  let backgroundColor = isUserInThisRoom ? theme.hover : theme.default;
-  if (isActive) {
-    backgroundColor = theme.active;
+  let activeClass = "default";
+  if (isUserInThisRoom || isActive) {
+    activeClass = "active";
   } else if (canDrop) {
-    backgroundColor = theme.hover;
+    activeClass = "hover";
   }
 
   return (
-    <Card ref={drop} style={{ backgroundColor, marginBottom: 10, padding: 5 }}>
-      <Typography
-        variant="h5"
-        color={isUserInThisRoom ? "secondary" : "primary"}
-      >
+    <Card
+      ref={drop}
+      style={{
+        backgroundColor: theme.background[activeClass],
+        padding: "15px",
+      }}
+    >
+      <Typography variant="h5" style={{ color: theme.text[activeClass] }}>
         {room.roomName}
       </Typography>
-      {users.map((u) => (
-        <User
-          inRoom
-          key={u.userId}
-          user={u}
-          currentUser={currentUser}
-          eventId={eventId}
-        ></User>
-      ))}
+      <Grid container spacing={2}>
+        {users.map((u) => (
+          <User
+            inRoom
+            key={u.userId}
+            user={u}
+            currentUser={currentUser}
+            eventId={eventId}
+            avatarColor={{
+              background: theme.text[activeClass],
+              color: theme.background[activeClass],
+            }}
+          ></User>
+        ))}
+      </Grid>
     </Card>
   );
 }
