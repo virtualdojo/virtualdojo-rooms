@@ -63,7 +63,7 @@ function User({ eventId, user, currentUser, inRoom, avatarColor }) {
   return (
     <Grid
       item
-      xs={2}
+      xs={4}
       ref={drag}
       style={{ opacity: isDragging ? "0.4" : "1" }}
       onMouseEnter={handlePopoverOpen}

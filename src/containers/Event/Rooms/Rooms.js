@@ -52,11 +52,11 @@ function Dashboard({
           container
           item
           xs={12}
-          spacing={4}
+          spacing={2}
           style={{ marginLeft: "10px", marginRight: "15px" }}
         >
           {eventRooms.map((item) => (
-            <Grid item xs={3} key={item.roomId}>
+            <Grid item container xs={3} key={item.roomId}>
               <Room
                 room={item}
                 eventId={event.eventId}

@@ -54,7 +54,7 @@ function Room({ eventId, room, users, currentUser }) {
       <Typography variant="h5" style={{ color: theme.text[activeClass] }}>
         {room.roomName}
       </Typography>
-      <Grid container spacing={2}>
+      <Grid item container spacing={3}>
         {users.map((u) => (
           <User
             inRoom
