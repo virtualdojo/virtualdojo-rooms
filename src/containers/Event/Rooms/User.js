@@ -63,8 +63,7 @@ function User({ eventId, user, currentUser, inRoom, avatarColor }) {
   return (
     <Grid
       item
-      xs={4}
-      ref={drag}
+      xs
       style={{ opacity: isDragging ? "0.4" : "1" }}
       onMouseEnter={handlePopoverOpen}
       onMouseLeave={handlePopoverClose}
@@ -77,11 +76,14 @@ function User({ eventId, user, currentUser, inRoom, avatarColor }) {
             horizontal: "right",
           }}
           badgeContent={<SmallAvatar>{"M"}</SmallAvatar>}
+          ref={drag}
         >
           <Avatar style={{ ...avatarColor }}>{initials}</Avatar>
         </Badge>
       ) : (
-        <Avatar style={{ ...avatarColor }}>{initials}</Avatar>
+        <Avatar style={{ ...avatarColor }} ref={drag}>
+          {initials}
+        </Avatar>
       )}
       <Popover
         id="mouse-over-popover"

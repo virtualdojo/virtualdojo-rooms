@@ -1,7 +1,7 @@
 import React from "react";
 import { useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
-import { Typography, Card, Grid } from "@material-ui/core";
+import { Typography, Paper, Grid } from "@material-ui/core";
 
 import User from "./User";
 
@@ -37,24 +37,25 @@ function Room({ eventId, room, users, currentUser }) {
   const isActive = canDrop && isOver;
   const isUserInThisRoom = users.find((u) => u.userId === currentUser.userId);
   let activeClass = "default";
-  if (isUserInThisRoom || isActive) {
+  if ((isUserInThisRoom && !canDrop) || isActive) {
     activeClass = "active";
   } else if (canDrop) {
     activeClass = "hover";
   }
 
   return (
-    <Card
+    <Paper
       ref={drop}
       style={{
         backgroundColor: theme.background[activeClass],
         padding: "15px",
+        flexGrow: 1,
       }}
     >
       <Typography variant="h5" style={{ color: theme.text[activeClass] }}>
         {room.roomName}
       </Typography>
-      <Grid item container spacing={3}>
+      <Grid item container xs={12} spacing={1}>
         {users.map((u) => (
           <User
             inRoom
@@ -69,7 +70,7 @@ function Room({ eventId, room, users, currentUser }) {
           ></User>
         ))}
       </Grid>
-    </Card>
+    </Paper>
   );
 }
 

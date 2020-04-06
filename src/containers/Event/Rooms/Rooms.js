@@ -39,9 +39,9 @@ function Dashboard({
   return (
     <>
       <ErrorMessage errorCode={error}></ErrorMessage>
-      <Grid container spacing={3}>
+      <Grid container>
         {userMeta.isMentor && (
-          <Grid item xs={12}>
+          <Grid item xs>
             <div style={theme.listItem}>
               <AddRoom userId={user.userId} eventId={event.eventId} />
             </div>
@@ -53,10 +53,10 @@ function Dashboard({
           item
           xs={12}
           spacing={2}
-          style={{ marginLeft: "10px", marginRight: "15px" }}
+          style={{ margin: "10px", marginRight: "15px" }}
         >
           {eventRooms.map((item) => (
-            <Grid item container xs={3} key={item.roomId}>
+            <Grid item container xs={3} key={item.roomId} spacing={1}>
               <Room
                 room={item}
                 eventId={event.eventId}
