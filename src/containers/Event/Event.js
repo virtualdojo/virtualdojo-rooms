@@ -28,11 +28,7 @@ function TabPanel(props) {
       hidden={value !== index}
       id={`full-width-tabpanel-${index}`}
       aria-labelledby={`full-width-tab-${index}`}
-      style={{
-        overflowY: "auto",
-        overflowX: "hidden",
-        height: "100%",
-      }}
+      className="Tab-Panel"
       {...other}
     >
       {children}
@@ -55,6 +51,10 @@ function EditEvent({ user, event }) {
 
   const theme = {
     container: { background: palette.primary.main },
+    navbar: {
+      background: palette.primary.main,
+      color: palette.background.default,
+    },
     modal: { background: palette.background.default },
     listItem: { background: palette.grey[200] },
   };
@@ -138,25 +138,20 @@ function EditEvent({ user, event }) {
         }
         style={theme.modal}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-          }}
-        >
-          <IconButton color="primary" onClick={() => setIsModalOpen(false)}>
+        <div className="NavBar" style={theme.navbar}>
+          <IconButton color="default" onClick={() => setIsModalOpen(false)}>
             <CancelIcon fontSize="large" />
           </IconButton>
           <Divider orientation="vertical" flexItem />
           <IconButton
-            color="primary"
+            color="default"
             onClick={() => setTabIndex(0)}
             disabled={tabIndex === 0}
           >
             <MeetingRoomRoundedIcon fontSize="large" />
           </IconButton>
           <IconButton
-            color="primary"
+            color="default"
             onClick={() => setTabIndex(1)}
             disabled={tabIndex === 1}
           >
@@ -165,7 +160,7 @@ function EditEvent({ user, event }) {
           <Divider orientation="vertical" flexItem />
           {userMeta.isMentor && (
             <IconButton
-              color="primary"
+              color="default"
               onClick={() => setTabIndex(2)}
               disabled={tabIndex === 2}
             >
@@ -181,7 +176,7 @@ function EditEvent({ user, event }) {
               marginRight: "140px",
             }}
           >
-            <Typography variant="h5" color="primary">
+            <Typography variant="h5" color="default">
               {event.name}
             </Typography>
           </div>

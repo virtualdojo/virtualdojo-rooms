@@ -20,7 +20,8 @@
   transition: 0.2s linear;
   opacity: 1;
   transform: translateX(0px);
-  overflow-y: hidden;
+  transform: none;
+  overflow-y: auto;
   overflow-x: hidden;
 }
 
@@ -30,3 +31,23 @@
   transition: 0.1s linear;
 }
 
+.NavBar {
+  z-index: 1002;
+  position: fixed;
+  top: 40px;
+  left: 40px;
+  right: 40px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border: white 1px solid;
+  display: flex;
+  flex-direction: row;
+}
+
+.Tab-Panel{
+  position: relative;
+  padding-top: 80px;
+  width: 100%;
+  height: auto;
+  background-color: white;
+}
