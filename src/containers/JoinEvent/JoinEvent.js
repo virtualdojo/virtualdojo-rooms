@@ -47,25 +47,25 @@ function JoinEvent(props) {
   };
 
   return (
-    <div className={"main-container"} style={theme.container}>
-      <div className={"Create-modal"} style={theme.modal}>
-        <Typography
-          variant="h3"
-          align="center"
-          color="secondary"
-          style={{ marginTop: "20px", marginBottom: "10px" }}
-        >
-          VirtualDojo Rooms
-        </Typography>
+    <div className={"Join-container"} style={theme.container}>
+      <Typography
+        variant="h3"
+        align="center"
+        color="primary"
+        style={{ marginTop: "20px", marginBottom: "10px" }}
+      >
+        VirtualDojo Rooms
+      </Typography>
+      <div className={"Join-modal"} style={theme.modal}>
         <Typography
           variant="h5"
-          align="center"
           color="secondary"
+          align="center"
           style={{ marginBottom: "15px" }}
         >
-          Please insert the following information:
+          Join the Dojo!
         </Typography>
-        <form name="addUserForm" className={"add-container"}>
+        <form name="addUserForm" className={"Join-form-container"}>
           <TextField
             label="Your Full Name"
             name="userName"
@@ -88,7 +88,7 @@ function JoinEvent(props) {
             type="submit"
             onClick={addNewUser}
           >
-            {`Join the event`}
+            {`Join`}
           </Button>
         </form>
         <ErrorMessage errorCode={error}></ErrorMessage>

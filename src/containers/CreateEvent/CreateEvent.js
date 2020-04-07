@@ -48,25 +48,25 @@ function CreateEvent(props) {
   };
 
   return (
-    <div className={"main-container"} style={theme.container}>
+    <div className={"Create-container"} style={theme.container}>
+      <Typography
+        variant="h3"
+        color="primary"
+        align="center"
+        style={{ marginTop: "20px", marginBottom: "10px" }}
+      >
+        VirtualDojo Rooms
+      </Typography>
       <div className={"Create-modal"} style={theme.modal}>
-        <Typography
-          variant="h3"
-          color="secondary"
-          align="center"
-          style={{ marginTop: "20px", marginBottom: "10px" }}
-        >
-          VirtualDojo Rooms
-        </Typography>
         <Typography
           variant="h5"
           color="secondary"
           align="center"
           style={{ marginBottom: "15px" }}
         >
-          Please insert the following information:
+          Fill the form and start a new Dojo!
         </Typography>
-        <form name="createListForm" className={"create-container"}>
+        <form name="createListForm" className={"Create-form-container"}>
           <TextField
             label="Your Full Name"
             name="userName"
