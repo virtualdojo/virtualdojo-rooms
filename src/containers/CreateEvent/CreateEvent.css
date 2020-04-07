@@ -12,16 +12,13 @@
 
 .Create-modal {
   position: absolute;
-  top: 50px;
-  bottom: 50px;
-  left: 15%;
-  right: 15%;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  width: 350px;
+  height: 90%;
+  margin: auto;
   border-radius: 15px;
-  z-index: 1000;
-  transition: 0.2s linear;
-  opacity: 1;
-  transform: translateX(0px);
-  transform: none;
   overflow-y: auto;
-  overflow-x: hidden;
 }
