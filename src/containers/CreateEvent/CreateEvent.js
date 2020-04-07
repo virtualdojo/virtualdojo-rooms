@@ -45,7 +45,6 @@ function CreateEvent(props) {
   const theme = {
     container: { background: palette.background.default },
     modal: { background: palette.primary.main },
-    listItem: { background: palette.grey[200] },
   };
 
   return (
