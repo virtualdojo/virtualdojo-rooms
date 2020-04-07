@@ -50,7 +50,7 @@ function EditEvent({ user, event }) {
   };
 
   const theme = {
-    container: { background: palette.primary.main },
+    container: { background: palette.background.black },
     navbar: {
       background: palette.primary.main,
       color: palette.background.default,
