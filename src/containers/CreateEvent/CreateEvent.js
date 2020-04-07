@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
+import { useTheme } from "@material-ui/core/styles";
 import * as FirestoreService from "../../services/firestore";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import "./CreateEvent.css";
@@ -8,6 +9,7 @@ function CreateEvent(props) {
   const { onCreate, userId } = props;
 
   const [error, setError] = useState();
+  const { palette } = useTheme();
 
   function createEvent(e) {
     e.preventDefault();
@@ -40,56 +42,65 @@ function CreateEvent(props) {
       });
   }
 
+  const theme = {
+    container: { background: palette.background.default },
+    modal: { background: palette.primary.main },
+  };
+
   return (
-    <div className={"create-container"}>
-      <Typography
-        variant="h3"
-        color="secondary"
-        style={{ marginBottom: "80px" }}
-      >
-        VirtualDojo Rooms
-      </Typography>
-      <Typography
-        variant="h5"
-        color="secondary"
-        style={{ marginBottom: "30px" }}
-      >
-        Please insert the following information:
-      </Typography>
-      <form name="createListForm" className={"create-container"}>
-        <TextField
-          label="Your Full Name"
-          name="userName"
-          variant="filled"
-          color="primary"
-          style={{ marginBottom: "30px", backgroundColor: "white" }}
-        />
-        <TextField
-          label="Event Name"
-          name="eventName"
-          variant="filled"
-          color="primary"
-          style={{ marginBottom: "30px", backgroundColor: "white" }}
-        />
-        <TextField
-          label="Event Password"
-          name="eventPassword"
-          variant="filled"
-          color="primary"
-          style={{ marginBottom: "30px", backgroundColor: "white" }}
-        />
-        <Button
-          variant="contained"
+    <div className={"main-container"} style={theme.container}>
+      <div className={"Create-modal"} style={theme.modal}>
+        <Typography
+          variant="h3"
           color="secondary"
-          size="large"
-          style={{ fontWeight: 600 }}
-          type="submit"
-          onClick={createEvent}
+          align="center"
+          style={{ marginTop: "20px", marginBottom: "10px" }}
         >
-          {`Create event`}
-        </Button>
-      </form>
-      <ErrorMessage errorCode={error}></ErrorMessage>
+          VirtualDojo Rooms
+        </Typography>
+        <Typography
+          variant="h5"
+          color="secondary"
+          align="center"
+          style={{ marginBottom: "15px" }}
+        >
+          Please insert the following information:
+        </Typography>
+        <form name="createListForm" className={"create-container"}>
+          <TextField
+            label="Your Full Name"
+            name="userName"
+            variant="filled"
+            color="primary"
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
+          />
+          <TextField
+            label="Event Name"
+            name="eventName"
+            variant="filled"
+            color="primary"
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
+          />
+          <TextField
+            label="Event Password"
+            name="eventPassword"
+            variant="filled"
+            color="primary"
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
+          />
+          <Button
+            variant="contained"
+            color="secondary"
+            size="large"
+            style={{ fontWeight: 600 }}
+            type="submit"
+            onClick={createEvent}
+          >
+            {`Create event`}
+          </Button>
+        </form>
+        <ErrorMessage errorCode={error}></ErrorMessage>
+      </div>
     </div>
   );
 }
