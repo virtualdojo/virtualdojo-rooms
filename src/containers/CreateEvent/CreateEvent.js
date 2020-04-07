@@ -43,7 +43,7 @@ function CreateEvent(props) {
   }
 
   const theme = {
-    container: { background: palette.background.black },
+    container: { background: palette.background.default },
     modal: { background: palette.primary.main },
     listItem: { background: palette.grey[200] },
   };
@@ -55,7 +55,7 @@ function CreateEvent(props) {
           variant="h3"
           color="secondary"
           align="center"
-          style={{ marginTop: "20px", marginBottom: "40px" }}
+          style={{ marginTop: "20px", marginBottom: "10px" }}
         >
           VirtualDojo Rooms
         </Typography>
@@ -63,7 +63,7 @@ function CreateEvent(props) {
           variant="h5"
           color="secondary"
           align="center"
-          style={{ marginBottom: "30px" }}
+          style={{ marginBottom: "15px" }}
         >
           Please insert the following information:
         </Typography>
@@ -73,21 +73,21 @@ function CreateEvent(props) {
             name="userName"
             variant="filled"
             color="primary"
-            style={{ marginBottom: "30px", backgroundColor: "white" }}
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <TextField
             label="Event Name"
             name="eventName"
             variant="filled"
             color="primary"
-            style={{ marginBottom: "30px", backgroundColor: "white" }}
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <TextField
             label="Event Password"
             name="eventPassword"
             variant="filled"
             color="primary"
-            style={{ marginBottom: "30px", backgroundColor: "white" }}
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <Button
             variant="contained"
