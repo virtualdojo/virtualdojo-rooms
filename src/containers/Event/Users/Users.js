@@ -97,13 +97,19 @@ function Users({
                     aria-label="promote"
                     color="primary"
                     onClick={() => followMe(u, myRoom.roomId, event.eventId)}
-                    // disabled={myRoom.roomId === u.roomId}
+                    disabled={myRoom.roomId === u.roomId}
                   >
                     <Tooltip
-                      title={u.isMentor ? "Follow me" : "Same room"}
+                      title={
+                        myRoom.roomId === u.roomId ? "Follow me" : "Same room"
+                      }
                       placement="bottom"
                     >
-                      {u.isMentor ? <ExploreIcon /> : <ExploreOffIcon />}
+                      {myRoom.roomId === u.roomId ? (
+                        <ExploreIcon />
+                      ) : (
+                        <ExploreOffIcon />
+                      )}
                     </Tooltip>
                   </IconButton>
                 </TableCell>
