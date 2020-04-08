@@ -37,8 +37,7 @@ function Users({
   eventRoomsUsers,
 }) {
   // get user room id
-  const myRoom = eventRoomsUsers.find((u) => u.userId === user.userId);
-
+  const myRoom = eventRoomsUsers.find((u) => u.userId === user.userId) || user;
   // map users to room
   const usersWithRoom = eventUsers.map((u) => {
     const userRoom = eventRoomsUsers.find((ru) => ru.userId === u.userId);
