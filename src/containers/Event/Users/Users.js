@@ -13,12 +13,11 @@ import {
 import {
   Domain as DomainIcon,
   EmojiEmotions as EmojiIcon,
+  Explore as ExploreIcon,
+  ExploreOff as ExploreOffIcon,
+  ControlCamera as ControlCameraIcon,
+  SupervisedUserCircle as SupervisedUserCircleIcon,
 } from "@material-ui/icons";
-
-import ExploreIcon from "@material-ui/icons/Explore";
-import ExploreOffIcon from "@material-ui/icons/ExploreOff";
-import ControlCameraIcon from "@material-ui/icons/ControlCamera";
-import SupervisedUserCircleIcon from "@material-ui/icons/SupervisedUserCircle";
 
 import * as FirestoreService from "../../../services/firestore";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
