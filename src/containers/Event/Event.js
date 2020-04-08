@@ -7,6 +7,7 @@ import {
   DescriptionRounded as DocumentIcon,
   PeopleAltRounded as PeopleAltRoundedIcon,
   MeetingRoomRounded as MeetingRoomRoundedIcon,
+  Settings as SettingsIcon,
 } from "@material-ui/icons";
 
 import { store } from "../../store.js";
@@ -14,6 +15,7 @@ import { store } from "../../store.js";
 import Rooms from "./Rooms/Rooms";
 import Users from "./Users/Users";
 import Document from "./Document/Document";
+import Settings from "./Settings/Settings";
 import VideoChat from "./VideoChat/VideoChat";
 
 import "./Event.css";
@@ -111,13 +113,22 @@ function EditEvent() {
           </IconButton>
           <Divider orientation="vertical" flexItem />
           {currentUser.isMentor && (
-            <IconButton
-              color="default"
-              onClick={() => setTabIndex(2)}
-              disabled={tabIndex === 2}
-            >
-              <PeopleAltRoundedIcon fontSize="large" />
-            </IconButton>
+            <>
+              <IconButton
+                color="default"
+                onClick={() => setTabIndex(2)}
+                disabled={tabIndex === 2}
+              >
+                <PeopleAltRoundedIcon fontSize="large" />
+              </IconButton>
+              <IconButton
+                color="default"
+                onClick={() => setTabIndex(3)}
+                disabled={tabIndex === 3}
+              >
+                <SettingsIcon fontSize="large" />
+              </IconButton>
+            </>
           )}
           <div
             style={{
@@ -147,6 +158,9 @@ function EditEvent() {
           </TabPanel>
           <TabPanel value={tabIndex} index={2} dir={theme.direction}>
             <Users />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={3} dir={theme.direction}>
+            <Settings />
           </TabPanel>
         </SwipeableViews>
       </div>
