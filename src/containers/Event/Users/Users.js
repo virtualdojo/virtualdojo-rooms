@@ -100,14 +100,14 @@ function Users({
                   >
                     <Tooltip
                       title={
-                        myRoom.roomId === u.roomId ? "Follow me" : "Same room"
+                        myRoom.roomId === u.roomId ? "Same room" : "Follow me"
                       }
                       placement="bottom"
                     >
                       {myRoom.roomId === u.roomId ? (
-                        <ExploreIcon />
-                      ) : (
                         <ExploreOffIcon />
+                      ) : (
+                        <ExploreIcon />
                       )}
                     </Tooltip>
                   </IconButton>
