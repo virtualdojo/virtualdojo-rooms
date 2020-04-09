@@ -205,3 +205,12 @@ export const setUserIsMentor = (userId, eventId, isMentor) => {
       console.warn(`User not found ${userId}`);
     });
 };
+
+export const setDate = (eventId, period, date) => {
+  return db
+    .collection("events")
+    .doc(eventId)
+    .get()
+    .then((querySnapshot) => querySnapshot.docs)
+    .then((event) => event.data()[period] === date);
+};
