@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import { IconButton, Typography, Divider } from "@material-ui/core";
 import SwipeableViews from "react-swipeable-views";
@@ -9,7 +9,7 @@ import {
   MeetingRoomRounded as MeetingRoomRoundedIcon,
 } from "@material-ui/icons";
 
-import * as FirestoreService from "../../services/firestore";
+import { store } from "../../store.js";
 
 import Rooms from "./Rooms/Rooms";
 import Users from "./Users/Users";
@@ -36,15 +36,13 @@ function TabPanel(props) {
   );
 }
 
-function EditEvent({ user, event }) {
-  const [eventUsers, setEventUsers] = useState([]);
-  const [eventRooms, setEventRooms] = useState([]);
-  const [eventRoomsUsers, setEventRoomsUsers] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+function EditEvent() {
+  const {
+    state: { currentUser, event, users, rooms, roomsUsers, error },
+  } = useContext(store);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
-  const [error, setError] = useState();
   const { palette } = useTheme();
-
   const handleChangeIndex = (index) => {
     setTabIndex(index);
   };
@@ -59,49 +57,9 @@ function EditEvent({ user, event }) {
     listItem: { background: palette.grey[200] },
   };
 
-  useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventUsers(event.eventId, {
-      next: (querySnapshot) => {
-        const updatedEventUsers = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        setEventUsers(updatedEventUsers);
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [event.eventId, setEventUsers]);
-
-  useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventRooms(event.eventId, {
-      next: (querySnapshot) => {
-        const updatedEventRooms = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        setEventRooms(updatedEventRooms);
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [event.eventId, setEventRooms]);
-
-  useEffect(() => {
-    const unsubscribe = FirestoreService.streamEventRoomsUsers(event.eventId, {
-      next: (querySnapshot) => {
-        const updatedEventRoomsUsers = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        setEventRoomsUsers(updatedEventRoomsUsers);
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [event.eventId, setEventRoomsUsers]);
-
-  const userMeta = eventUsers.find((u) => u.userId === user.userId) || user;
-  const userRoom = eventRoomsUsers.find((ru) => ru.userId === user.userId);
+  const userRoom = roomsUsers.find((ru) => ru.userId === currentUser.userId);
   const userRoomDetails =
-    userRoom && eventRooms.find((er) => er.roomId === userRoom.roomId);
+    userRoom && rooms.find((er) => er.roomId === userRoom.roomId);
   return (
     <div className="main-container" style={theme.container}>
       {!isModalOpen && (
@@ -127,7 +85,7 @@ function EditEvent({ user, event }) {
         </div>
       )}
       <VideoChat
-        user={userMeta}
+        user={currentUser}
         room={userRoomDetails}
         isMenuOpen={isModalOpen}
         event={event}
@@ -158,7 +116,7 @@ function EditEvent({ user, event }) {
             <DocumentIcon fontSize="large" />
           </IconButton>
           <Divider orientation="vertical" flexItem />
-          {userMeta.isMentor && (
+          {currentUser.isMentor && (
             <IconButton
               color="default"
               onClick={() => setTabIndex(2)}
@@ -188,13 +146,13 @@ function EditEvent({ user, event }) {
         >
           <TabPanel value={tabIndex} index={0} dir={theme.direction}>
             <Rooms
-              user={user}
+              user={currentUser}
               event={event}
               error={error}
-              userMeta={userMeta}
-              eventUsers={eventUsers}
-              eventRooms={eventRooms}
-              eventRoomsUsers={eventRoomsUsers}
+              userMeta={currentUser}
+              eventUsers={users}
+              eventRooms={rooms}
+              eventRoomsUsers={roomsUsers}
             />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} dir={theme.direction}>
@@ -205,13 +163,13 @@ function EditEvent({ user, event }) {
           </TabPanel>
           <TabPanel value={tabIndex} index={2} dir={theme.direction}>
             <Users
-              user={user}
+              user={currentUser}
               event={event}
               error={error}
-              userMeta={userMeta}
-              eventUsers={eventUsers}
-              eventRooms={eventRooms}
-              eventRoomsUsers={eventRoomsUsers}
+              userMeta={currentUser}
+              eventUsers={users}
+              eventRooms={rooms}
+              eventRoomsUsers={roomsUsers}
             />
           </TabPanel>
         </SwipeableViews>

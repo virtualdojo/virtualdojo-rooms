@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
+
 import * as FirestoreService from "./services/firestore";
+import { store } from "./store.js";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
@@ -13,9 +15,12 @@ import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import useQueryString from "./hooks/useQueryString";
 
 function App() {
-  const [user, setUser] = useState();
+  const {
+    state: { currentUser, event },
+    setCurrentUser,
+    setEvent,
+  } = useContext(store);
   const [userId, setUserId] = useState();
-  const [eventMeta, setEventMeta] = useState();
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,7 +44,7 @@ function App() {
             .then((event) => {
               if (event.exists) {
                 setError(null);
-                setEventMeta(event.data());
+                setEvent({ eventId, ...event.data() });
               } else {
                 setError("event-not-found");
                 setEventId();
@@ -54,7 +59,7 @@ function App() {
                 userCredential.user.uid
               )
             )
-            .then((result) => setUser(result));
+            .then((result) => setCurrentUser(result));
         }
       })
       .then(() => setIsLoading(false))
@@ -62,7 +67,7 @@ function App() {
         setError("anonymous-auth-failed");
         setIsLoading(false);
       });
-  }, [eventId, setEventId]);
+  }, []);
 
   async function onEventCreate(eventId, userName) {
     try {
@@ -74,25 +79,26 @@ function App() {
       }
       const user = await FirestoreService.isUserRegistered(eventId, userId);
       setEventId(eventId);
-      setUser(user);
-      setEventMeta(event.data());
+      setCurrentUser(user);
+      setEvent({ eventId, ...event.data() });
       setError(null);
     } catch (err) {
-      console.log(err);
       setError("event-get-fail");
     }
   }
 
   function onCloseEvent() {
     setEventId();
-    setEventMeta();
-    setUser();
+    setEvent();
+    setCurrentUser();
   }
 
-  function onSelectUser(userName) {
-    setUser(userName);
-    FirestoreService.getEvent(eventId)
-      .then((updatedEvent) => setEventMeta(updatedEvent.data()))
+  function onSelectUser() {
+    /*FirestoreService.getEvent(eventId)
+      .then((updatedEvent) => setEvent({ eventId, ...updatedEvent.data() }))
+      .then(() => */
+    FirestoreService.isUserRegistered(eventId, userId)
+      .then((result) => setCurrentUser(result))
       .catch(() => setError("event-get-fail"));
   }
 
@@ -115,25 +121,19 @@ function App() {
         </Typography>
       </div>
     );
-  if (eventMeta && user) {
+  if (event && currentUser) {
     return (
       <DndProvider backend={Backend}>
         <div style={theme.container}>
-          <Event user={user} event={{ eventId, ...eventMeta }} />
+          <Event user={currentUser} event={event} />
         </div>
       </DndProvider>
     );
-  } else if (eventMeta) {
+  } else if (event) {
     return (
       <div style={theme.container}>
         <ErrorMessage errorCode={error}></ErrorMessage>
-        <JoinEvent
-          users={eventMeta.users}
-          event={{ eventId, ...eventMeta }}
-          onSelectUser={onSelectUser}
-          onCloseEvent={onCloseEvent}
-          userId={userId}
-        />
+        <JoinEvent event={event} onSelectUser={onSelectUser} userId={userId} />
       </div>
     );
   }

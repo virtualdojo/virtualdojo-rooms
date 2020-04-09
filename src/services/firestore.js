@@ -56,6 +56,10 @@ export const getEventUsers = (eventId) => {
   return db.collection("events").doc(eventId).collection("users").get();
 };
 
+export const streamEvent = (eventId, observer) => {
+  return db.collection("events").doc(eventId).onSnapshot(observer);
+};
+
 export const streamEventUsers = (eventId, observer) => {
   return db
     .collection("events")

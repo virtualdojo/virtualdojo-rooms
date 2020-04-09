@@ -1,33 +1,16 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import "./AddRoom.css";
-import * as FirestoreService from "../../../../services/firestore";
 import ErrorMessage from "../../../../components/ErrorMessage/ErrorMessage";
+import { store } from "../../../store.js";
 
-function AddRoom(props) {
-  const { eventId } = props;
-
-  const [error, setError] = useState("");
+function AddRoom() {
+  const { addRoom, error } = useContext(store);
 
   function addItem(e) {
     e.preventDefault();
-    setError(null);
-
     const roomName = document.addItemForm.roomName.value;
-    if (!roomName) {
-      setError("user-desc-req");
-      return;
-    }
-
-    FirestoreService.addRoom(roomName, eventId)
-      .then(() => document.addItemForm.reset())
-      .catch((reason) => {
-        if (reason.message === "duplicate-item-error") {
-          setError(reason.message);
-        } else {
-          setError("add-list-item-error");
-        }
-      });
+    addRoom(roomName).then(() => document.addItemForm.reset());
   }
 
   return (
