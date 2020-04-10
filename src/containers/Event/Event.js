@@ -37,9 +37,7 @@ function TabPanel(props) {
 }
 
 function EditEvent() {
-  const {
-    state: { currentUser, event, users, rooms, roomsUsers, error },
-  } = useContext(store);
+  const { currentUser, event } = useContext(store);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const { palette } = useTheme();
@@ -57,9 +55,6 @@ function EditEvent() {
     listItem: { background: palette.grey[200] },
   };
 
-  const userRoom = roomsUsers.find((ru) => ru.userId === currentUser.userId);
-  const userRoomDetails =
-    userRoom && rooms.find((er) => er.roomId === userRoom.roomId);
   return (
     <div className="main-container" style={theme.container}>
       {!isModalOpen && (
@@ -86,7 +81,6 @@ function EditEvent() {
       )}
       <VideoChat
         user={currentUser}
-        room={userRoomDetails}
         isMenuOpen={isModalOpen}
         event={event}
       ></VideoChat>
@@ -145,15 +139,7 @@ function EditEvent() {
           onChangeIndex={handleChangeIndex}
         >
           <TabPanel value={tabIndex} index={0} dir={theme.direction}>
-            <Rooms
-              user={currentUser}
-              event={event}
-              error={error}
-              userMeta={currentUser}
-              eventUsers={users}
-              eventRooms={rooms}
-              eventRoomsUsers={roomsUsers}
-            />
+            <Rooms />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} dir={theme.direction}>
             <Document
@@ -162,15 +148,7 @@ function EditEvent() {
             ></Document>
           </TabPanel>
           <TabPanel value={tabIndex} index={2} dir={theme.direction}>
-            <Users
-              user={currentUser}
-              event={event}
-              error={error}
-              userMeta={currentUser}
-              eventUsers={users}
-              eventRooms={rooms}
-              eventRoomsUsers={roomsUsers}
-            />
+            <Users />
           </TabPanel>
         </SwipeableViews>
       </div>

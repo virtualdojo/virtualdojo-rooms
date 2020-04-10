@@ -1,20 +1,21 @@
 import React, { useContext } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
-import "./AddRoom.css";
-import ErrorMessage from "../../../../components/ErrorMessage/ErrorMessage";
+import "./Rooms.css";
 import { store } from "../../../store.js";
 
 function AddRoom() {
-  const { addRoom, error } = useContext(store);
+  const { addRoom } = useContext(store);
 
   function addItem(e) {
     e.preventDefault();
     const roomName = document.addItemForm.roomName.value;
-    addRoom(roomName).then(() => document.addItemForm.reset());
+    addRoom(roomName).then(
+      () => document.addItemForm && document.addItemForm.reset()
+    );
   }
 
   return (
-    <form name="addItemForm" className="AddRoom-container">
+    <form name="addItemForm" className="Rooms-AddRoom-container">
       <Typography variant="h5" style={{ marginRight: "20px" }}>
         Create new room:
       </Typography>
@@ -29,7 +30,6 @@ function AddRoom() {
       >
         Add
       </Button>
-      <ErrorMessage errorCode={error}></ErrorMessage>
     </form>
   );
 }

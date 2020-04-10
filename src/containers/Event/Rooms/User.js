@@ -1,5 +1,4 @@
 import React from "react";
-import * as FirestoreService from "../../../services/firestore";
 import { useDrag } from "react-dnd";
 import { Typography, Avatar, Badge, Grid, Popover } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -25,7 +24,7 @@ const SmallAvatar = withStyles((theme) => ({
   },
 }))(Avatar);
 
-function User({ eventId, user, currentUser, inRoom, avatarColor }) {
+function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -43,11 +42,7 @@ function User({ eventId, user, currentUser, inRoom, avatarColor }) {
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
       if (item && dropResult) {
-        FirestoreService.addUserToRoom(
-          user.userId,
-          dropResult.room.roomId,
-          eventId
-        );
+        changeRoom(user.userId, dropResult.room.roomId);
       }
     },
     collect: (monitor) => ({

@@ -3,6 +3,7 @@ import React, {
   useReducer,
   useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import * as FirestoreService from "./services/firestore";
 
@@ -29,6 +30,8 @@ const StateProvider = ({ children }) => {
         return { ...state, rooms: action.payload };
       case "SET_EVENT_ROOMS_USERS":
         return { ...state, roomsUsers: action.payload };
+      case "SET_ERROR":
+        return { ...state, error: action.payload };
       default:
         throw new Error();
     }
@@ -132,8 +135,71 @@ const StateProvider = ({ children }) => {
     return unsubscribe;
   }, [eventId, dispatch, setError]);
 
+  const toggleIsMentor = useCallback(
+    (user) =>
+      FirestoreService.setUserIsMentor(user.userId, eventId, !user.isMentor),
+    [eventId]
+  );
+
+  const changeRoom = useCallback(
+    (userId, roomId) => FirestoreService.addUserToRoom(userId, roomId, eventId),
+    [eventId]
+  );
+
+  const usersWithRoom = useMemo(() => {
+    return state.users.map((u) => {
+      const userRoom = state.roomsUsers.find((ru) => ru.userId === u.userId);
+      if (userRoom) {
+        const roomMeta = state.rooms.find((r) => r.roomId === userRoom.roomId);
+        if (roomMeta) {
+          return {
+            ...u,
+            room: roomMeta,
+          };
+        }
+      }
+      return {
+        ...u,
+        room: {},
+      };
+    });
+  }, [state.users, state.rooms, state.roomsUsers]);
+
+  const roomsWithUsers = useMemo(() => {
+    return state.rooms.map((r) => {
+      const usersInRoom = state.roomsUsers
+        .filter((ru) => ru.roomId === r.roomId)
+        .map((ru) => ru.userId);
+      const users = state.users.filter((u) => usersInRoom.includes(u.userId));
+      return {
+        ...r,
+        users,
+      };
+    });
+  }, [state.users, state.rooms, state.roomsUsers]);
+
+  const currentUserWithRoom = useMemo(() => {
+    return (
+      state.currentUser &&
+      usersWithRoom.find((u) => u.userId === state.currentUser.userId)
+    );
+  }, [state.currentUser, usersWithRoom]);
+
   return (
-    <Provider value={{ state, setError, setCurrentUser, setEvent, addRoom }}>
+    <Provider
+      value={{
+        event: state.event,
+        currentUser: currentUserWithRoom,
+        users: usersWithRoom,
+        rooms: roomsWithUsers,
+        setError,
+        setCurrentUser,
+        setEvent,
+        addRoom,
+        toggleIsMentor,
+        changeRoom,
+      }}
+    >
       {children}
     </Provider>
   );

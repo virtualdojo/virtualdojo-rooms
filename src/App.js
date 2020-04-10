@@ -15,11 +15,7 @@ import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import useQueryString from "./hooks/useQueryString";
 
 function App() {
-  const {
-    state: { currentUser, event },
-    setCurrentUser,
-    setEvent,
-  } = useContext(store);
+  const { currentUser, event, setCurrentUser, setEvent } = useContext(store);
   const [userId, setUserId] = useState();
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(true);
@@ -67,6 +63,7 @@ function App() {
         setError("anonymous-auth-failed");
         setIsLoading(false);
       });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function onEventCreate(eventId, userName) {
@@ -87,16 +84,7 @@ function App() {
     }
   }
 
-  function onCloseEvent() {
-    setEventId();
-    setEvent();
-    setCurrentUser();
-  }
-
   function onSelectUser() {
-    /*FirestoreService.getEvent(eventId)
-      .then((updatedEvent) => setEvent({ eventId, ...updatedEvent.data() }))
-      .then(() => */
     FirestoreService.isUserRegistered(eventId, userId)
       .then((result) => setCurrentUser(result))
       .catch(() => setError("event-get-fail"));

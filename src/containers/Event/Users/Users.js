@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   TableContainer,
   Table,
@@ -19,42 +19,13 @@ import {
   SupervisedUserCircle as SupervisedUserCircleIcon,
 } from "@material-ui/icons";
 
-import * as FirestoreService from "../../../services/firestore";
+import { store } from "../../../store.js";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
-const toggleIsMentor = (u, eventId) =>
-  FirestoreService.setUserIsMentor(u.userId, eventId, !u.isMentor);
-
-const changeRoom = (u, room, eventId) =>
-  FirestoreService.addUserToRoom(u.userId, room, eventId);
-
-function Users({
-  user,
-  event,
-  error,
-  userMeta,
-  eventUsers,
-  eventRooms,
-  eventRoomsUsers,
-}) {
-  // get user room id
-  const myRoom = eventRoomsUsers.find((u) => u.userId === user.userId) || user;
-  // map users to room
-  const usersWithRoom = eventUsers.map((u) => {
-    const userRoom = eventRoomsUsers.find((ru) => ru.userId === u.userId);
-    if (userRoom) {
-      const roomMeta = eventRooms.find((r) => r.roomId === userRoom.roomId);
-      if (roomMeta) {
-        return {
-          ...u,
-          ...roomMeta,
-        };
-      }
-    }
-    return {
-      ...u,
-    };
-  });
+function Users() {
+  const { currentUser, users, error, changeRoom, toggleIsMentor } = useContext(
+    store
+  );
   return (
     <>
       <ErrorMessage errorCode={error}></ErrorMessage>
@@ -71,19 +42,19 @@ function Users({
             </TableRow>
           </TableHead>
           <TableBody>
-            {usersWithRoom.map((u) => (
+            {users.map((u) => (
               <TableRow key={u.userId}>
                 <TableCell component="th" scope="row">
                   {u.userName}
                 </TableCell>
-                <TableCell>{u.roomName}</TableCell>
+                <TableCell>{u.room.roomName}</TableCell>
                 <TableCell>{u.isMentor ? "Mentor" : "Ninja"}</TableCell>
                 <TableCell align="right">
                   <IconButton
                     aria-label="promote"
                     color="primary"
-                    onClick={() => toggleIsMentor(u, event.eventId)}
-                    disabled={user.userId === u.userId}
+                    onClick={() => toggleIsMentor(u)}
+                    disabled={currentUser.userId === u.userId}
                   >
                     <Tooltip
                       title={u.isMentor ? "Set as Ninja" : "Set as Mentor"}
@@ -97,16 +68,20 @@ function Users({
                   <IconButton
                     aria-label="promote"
                     color="primary"
-                    onClick={() => changeRoom(u, myRoom.roomId, event.eventId)}
-                    disabled={myRoom.roomId === u.roomId}
+                    onClick={() =>
+                      changeRoom(u.userId, currentUser.room.roomId)
+                    }
+                    disabled={currentUser.room.roomId === u.room.roomId}
                   >
                     <Tooltip
                       title={
-                        myRoom.roomId === u.roomId ? "Same room" : "Follow me"
+                        currentUser.room.roomId === u.room.roomId
+                          ? "Same room"
+                          : "Follow me"
                       }
                       placement="bottom"
                     >
-                      {myRoom.roomId === u.roomId ? (
+                      {currentUser.room.roomId === u.room.roomId ? (
                         <ExploreOffIcon />
                       ) : (
                         <ExploreIcon />
@@ -118,18 +93,20 @@ function Users({
                   <IconButton
                     aria-label="promote"
                     color="primary"
-                    onClick={() => changeRoom(user, u.roomId, event.eventId)}
-                    disabled={myRoom.roomId === u.roomId}
+                    onClick={() =>
+                      changeRoom(currentUser.userId, u.room.roomId)
+                    }
+                    disabled={currentUser.room.roomId === u.room.roomId}
                   >
                     <Tooltip
                       title={
-                        myRoom.roomId === u.roomId
+                        currentUser.room.roomId === u.room.roomId
                           ? "Same room"
                           : "Follow Ninja"
                       }
                       placement="bottom"
                     >
-                      {myRoom.roomId === u.roomId ? (
+                      {currentUser.room.roomId === u.room.roomId ? (
                         <SupervisedUserCircleIcon />
                       ) : (
                         <ControlCameraIcon />

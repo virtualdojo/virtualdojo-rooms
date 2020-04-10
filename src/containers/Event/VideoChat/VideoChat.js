@@ -1,12 +1,15 @@
 /* global JitsiMeetExternalAPI  */
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
+
+import { store } from "../../../store.js";
 import "./VideoChat.css";
 
 const isVideoEnabled = process.env.NODE_ENV === "production" ? true : false;
 
 let api;
 
-function VideoChat({ user, room, event, isMenuOpen }) {
+function VideoChat({ isMenuOpen }) {
+  const { currentUser, event } = useContext(store);
   const [loading, setLoading] = useState(true);
 
   const containerStyle = {
@@ -19,7 +22,9 @@ function VideoChat({ user, room, event, isMenuOpen }) {
     width: "100%",
     height: "100%",
   };
-  const roomId = room ? room.roomId : event.defaultRoomId;
+  const roomId = currentUser.room
+    ? currentUser.room.roomId
+    : event.defaultRoomId;
 
   useEffect(() => {
     function startConference() {
@@ -36,15 +41,15 @@ function VideoChat({ user, room, event, isMenuOpen }) {
             disableSimulcast: false,
           },
           userInfo: {
-            displayName: user.userName,
-            email: user.userId,
+            displayName: currentUser.userName,
+            email: currentUser.userId,
           },
         };
 
         api = new JitsiMeetExternalAPI(domain, options);
         api.addEventListener("videoConferenceJoined", () => {
-          api.executeCommand("displayName", user.userName);
-          api.executeCommand("email", user.userId);
+          api.executeCommand("displayName", currentUser.userName);
+          api.executeCommand("email", currentUser.userId);
           api.executeCommand("password", event.password);
           setLoading(false);
         });
@@ -66,7 +71,7 @@ function VideoChat({ user, room, event, isMenuOpen }) {
     } else {
       setLoading(false);
     }
-  }, [event.password, roomId, user.isMentor, user.userId, user.userName]);
+  }, [currentUser.userId, currentUser.userName, event.password, roomId]);
 
   return (
     <div style={containerStyle}>

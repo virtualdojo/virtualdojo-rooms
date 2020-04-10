@@ -1,15 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
 import { Typography, Paper, Grid } from "@material-ui/core";
 
+import { store } from "../../../store.js";
 import User from "./User";
 
 const ItemTypes = {
   USER: "user",
 };
 
-function Room({ eventId, room, users, currentUser }) {
+function Room({ room }) {
+  const { currentUser, changeRoom } = useContext(store);
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -35,7 +37,7 @@ function Room({ eventId, room, users, currentUser }) {
   };
 
   const isActive = canDrop && isOver;
-  const isUserInThisRoom = users.find((u) => u.userId === currentUser.userId);
+  const isUserInThisRoom = currentUser.room.roomId === room.roomId;
   let activeClass = "default";
   if ((isUserInThisRoom && !canDrop) || isActive) {
     activeClass = "active";
@@ -56,13 +58,13 @@ function Room({ eventId, room, users, currentUser }) {
         {room.roomName}
       </Typography>
       <Grid item container xs={12} spacing={1}>
-        {users.map((u) => (
+        {room.users.map((u) => (
           <User
             inRoom
             key={u.userId}
             user={u}
+            changeRoom={changeRoom}
             currentUser={currentUser}
-            eventId={eventId}
             avatarColor={{
               background: theme.text[activeClass],
               color: theme.background[activeClass],
