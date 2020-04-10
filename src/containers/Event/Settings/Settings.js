@@ -1,75 +1,55 @@
-import React, { useState } from "react";
-import { TextField, Button } from "@material-ui/core";
+import React, { useState, useContext, useEffect } from "react";
+import { Button } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-import * as FirestoreService from "../../../services/firestore";
-import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
+
+import { store } from "../../../store.js";
 
 import "./Settings.css";
 
-function Settings({ event }) {
-  const [error, setError] = useState();
-  const [selectedDate, handleDateChange] = useState(new Date());
+function Settings() {
+  const { event, updatePublicPeriod } = useContext(store);
+  const [startDate, setStartDate] = useState(
+    event.publicPeriod.startDate.toDate()
+  );
+  const [endDate, setEndDate] = useState(event.publicPeriod.endDate.toDate());
 
-  function setDate(e) {
-    e.preventDefault();
-    setError(null);
-
-    const start = document.setDateForm.startDate.value;
-    if (!start) {
-      setError("user-desc-req");
-      return;
-    }
-    FirestoreService.setDate(event.eventId, "startDate", start).catch(
-      (reason) => {
-        setError("create-list-error");
-      }
-    );
-  }
-
-  function EditDate(props) {
-    return (
-      <>
-        <form name="setDateForm">
-          {props.children}
-          <Button
-            variant="contained"
-            color="secondary"
-            size="large"
-            style={{ marginLeft: "20px", fontWeight: 600 }}
-            type="submit"
-            onClick={props.function}
-          >
-            {`Edit`}
-          </Button>
-        </form>
-        <ErrorMessage errorCode={error}></ErrorMessage>
-      </>
-    );
-  }
+  // avoid dates inconsistency if changed from another client
+  useEffect(() => {
+    setStartDate(event.publicPeriod.startDate.toDate());
+    setEndDate(event.publicPeriod.endDate.toDate());
+  }, [event.publicPeriod]);
 
   return (
     <div className="Settings-container">
-      <EditDate function={setDate} error={error}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <DateTimePicker
-            label="Event Start Date"
-            inputVariant="outlined"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
-        </MuiPickersUtilsProvider>
-      </EditDate>
-      <EditDate function={setDate} error={error}>
-        <MuiPickersUtilsProvider utils={DateFnsUtils}>
-          <DateTimePicker
-            label="Event End Date"
-            inputVariant="outlined"
-            value={selectedDate}
-            onChange={handleDateChange}
-          />
-        </MuiPickersUtilsProvider>
-      </EditDate>
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <DateTimePicker
+          label="Event Start Date"
+          inputVariant="outlined"
+          value={startDate}
+          onChange={setStartDate}
+        />
+      </MuiPickersUtilsProvider>
+
+      <MuiPickersUtilsProvider utils={DateFnsUtils}>
+        <DateTimePicker
+          label="Event End Date"
+          inputVariant="outlined"
+          value={endDate}
+          onChange={setEndDate}
+        />
+      </MuiPickersUtilsProvider>
+
+      <Button
+        variant="contained"
+        color="secondary"
+        size="large"
+        style={{ marginLeft: "20px", fontWeight: 600 }}
+        type="submit"
+        onClick={() => updatePublicPeriod({ startDate, endDate })}
+      >
+        {`Edit`}
+      </Button>
     </div>
   );
 }

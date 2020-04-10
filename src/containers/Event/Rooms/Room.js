@@ -9,12 +9,8 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import {
-  Domain as DomainIcon,
-  EmojiEmotions as EmojiIcon,
   Explore as ExploreIcon,
   ExploreOff as ExploreOffIcon,
-  ControlCamera as ControlCameraIcon,
-  SupervisedUserCircle as SupervisedUserCircleIcon,
 } from "@material-ui/icons";
 
 import { store } from "../../../store.js";

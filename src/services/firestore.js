@@ -23,9 +23,8 @@ export const createEvent = async (
   userId
 ) => {
   const defaultRoomId = uuidv4();
-  const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
   const docRef = await db.collection("events").add({
-    created: serverTimestamp,
+    created: firebase.firestore.FieldValue.serverTimestamp(),
     createdBy: userId,
     name: eventName,
     password: eventPassword,
@@ -36,7 +35,10 @@ export const createEvent = async (
         name: userName,
       },
     ],
-    dates: [serverTimestamp, serverTimestamp],
+    publicPeriod: {
+      startDate: firebase.firestore.FieldValue.serverTimestamp(),
+      endDate: firebase.firestore.FieldValue.serverTimestamp(),
+    },
   });
   await addRoom("all", docRef.id, defaultRoomId);
   await db.collection("events").doc(docRef.id).collection("users").add({
@@ -206,11 +208,14 @@ export const setUserIsMentor = (userId, eventId, isMentor) => {
     });
 };
 
-export const setDate = (eventId, period, date) => {
+export const updateEventPublicPeriod = (eventId, { startDate, endDate }) => {
   return db
     .collection("events")
     .doc(eventId)
-    .get()
-    .then((querySnapshot) => querySnapshot.docs)
-    .then((event) => event.data()[period] === date);
+    .update({
+      publicPeriod: {
+        startDate: firebase.firestore.Timestamp.fromDate(startDate),
+        endDate: firebase.firestore.Timestamp.fromDate(endDate),
+      },
+    });
 };

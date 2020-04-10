@@ -79,6 +79,21 @@ const StateProvider = ({ children }) => {
     [eventId, setError]
   );
 
+  const updatePublicPeriod = useCallback(
+    async (period) => {
+      if (!period) {
+        setError("user-desc-req");
+        return;
+      }
+      try {
+        await FirestoreService.updateEventPublicPeriod(eventId, period);
+      } catch (reason) {
+        setError(reason.message);
+      }
+    },
+    [eventId, setError]
+  );
+
   useEffect(() => {
     if (!eventId) return;
     const unsubscribe = FirestoreService.streamEvent(eventId, {
@@ -198,6 +213,7 @@ const StateProvider = ({ children }) => {
         addRoom,
         toggleIsMentor,
         changeRoom,
+        updatePublicPeriod,
       }}
     >
       {children}

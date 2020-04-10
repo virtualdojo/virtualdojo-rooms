@@ -80,6 +80,7 @@ function App() {
       setEvent({ eventId, ...event.data() });
       setError(null);
     } catch (err) {
+      console.log(err);
       setError("event-get-fail");
     }
   }
