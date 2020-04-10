@@ -23,8 +23,9 @@ export const createEvent = async (
   userId
 ) => {
   const defaultRoomId = uuidv4();
+  const serverTimestamp = firebase.firestore.FieldValue.serverTimestamp();
   const docRef = await db.collection("events").add({
-    created: firebase.firestore.FieldValue.serverTimestamp(),
+    created: serverTimestamp,
     createdBy: userId,
     name: eventName,
     password: eventPassword,
@@ -35,8 +36,7 @@ export const createEvent = async (
         name: userName,
       },
     ],
-    startDate: firebase.firestore.FieldValue.serverTimestamp(),
-    endDate: firebase.firestore.FieldValue.serverTimestamp(),
+    dates: [serverTimestamp, serverTimestamp],
   });
   await addRoom("all", docRef.id, defaultRoomId);
   await db.collection("events").doc(docRef.id).collection("users").add({
