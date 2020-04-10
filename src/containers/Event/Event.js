@@ -128,9 +128,7 @@ function EditEvent() {
               marginRight: "140px",
             }}
           >
-            <Typography variant="h5" color="default">
-              {event.name}
-            </Typography>
+            <Typography variant="h5">{event.name}</Typography>
           </div>
         </div>
         <SwipeableViews

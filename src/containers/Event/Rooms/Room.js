@@ -1,7 +1,21 @@
 import React, { useContext } from "react";
 import { useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
-import { Typography, Paper, Grid } from "@material-ui/core";
+import {
+  Typography,
+  Paper,
+  Grid,
+  IconButton,
+  Tooltip,
+} from "@material-ui/core";
+import {
+  Domain as DomainIcon,
+  EmojiEmotions as EmojiIcon,
+  Explore as ExploreIcon,
+  ExploreOff as ExploreOffIcon,
+  ControlCamera as ControlCameraIcon,
+  SupervisedUserCircle as SupervisedUserCircleIcon,
+} from "@material-ui/icons";
 
 import { store } from "../../../store.js";
 import User from "./User";
@@ -54,9 +68,44 @@ function Room({ room }) {
         flexGrow: 1,
       }}
     >
-      <Typography variant="h5" style={{ color: theme.text[activeClass] }}>
-        {room.roomName}
-      </Typography>
+      <Grid item container xs={12} spacing={1}>
+        <Grid item xs={10}>
+          <Typography
+            variant="h5"
+            style={{ color: theme.text[activeClass], maxWidth: "150px" }}
+            noWrap={true}
+          >
+            {room.roomName}
+          </Typography>
+        </Grid>
+        <Grid item xs={1}>
+          {currentUser.isMentor && (
+            <IconButton
+              aria-label="promote"
+              color="secondary"
+              onClick={() => changeRoom(currentUser.userId, room.roomId)}
+              disabled={currentUser.room.roomId === room.roomId}
+              style={{ padding: 0 }}
+            >
+              <Tooltip
+                title={
+                  currentUser.room.roomId === room.roomId
+                    ? "You are in this room"
+                    : "Explore this room"
+                }
+                placement="bottom"
+                key={currentUser.room.roomId === room.roomId}
+              >
+                {currentUser.room.roomId === room.roomId ? (
+                  <ExploreOffIcon />
+                ) : (
+                  <ExploreIcon />
+                )}
+              </Tooltip>
+            </IconButton>
+          )}
+        </Grid>
+      </Grid>
       <Grid item container xs={12} spacing={1}>
         {room.users.map((u) => (
           <User

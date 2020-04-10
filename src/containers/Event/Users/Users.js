@@ -36,7 +36,7 @@ function Users() {
               <TableCell>Name</TableCell>
               <TableCell>Room</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell align="right">Actions</TableCell>
+              <TableCell align="right">Change Type</TableCell>
               <TableCell align="right">Follow Me</TableCell>
               <TableCell align="right">Follow Ninja</TableCell>
             </TableRow>
@@ -59,6 +59,7 @@ function Users() {
                     <Tooltip
                       title={u.isMentor ? "Set as Ninja" : "Set as Mentor"}
                       placement="bottom"
+                      key={u.isMentor}
                     >
                       {u.isMentor ? <EmojiIcon /> : <DomainIcon />}
                     </Tooltip>
@@ -80,6 +81,7 @@ function Users() {
                           : "Follow me"
                       }
                       placement="bottom"
+                      key={currentUser.room.roomId === u.room.roomId}
                     >
                       {currentUser.room.roomId === u.room.roomId ? (
                         <ExploreOffIcon />
@@ -105,6 +107,7 @@ function Users() {
                           : "Follow Ninja"
                       }
                       placement="bottom"
+                      key={currentUser.room.roomId === u.room.roomId}
                     >
                       {currentUser.room.roomId === u.room.roomId ? (
                         <SupervisedUserCircleIcon />
