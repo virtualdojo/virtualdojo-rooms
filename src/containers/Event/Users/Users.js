@@ -13,12 +13,20 @@ import {
 import {
   Domain as DomainIcon,
   EmojiEmotions as EmojiIcon,
+  Explore as ExploreIcon,
+  ExploreOff as ExploreOffIcon,
+  ControlCamera as ControlCameraIcon,
+  SupervisedUserCircle as SupervisedUserCircleIcon,
 } from "@material-ui/icons";
+
 import * as FirestoreService from "../../../services/firestore";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
 const toggleIsMentor = (u, eventId) =>
   FirestoreService.setUserIsMentor(u.userId, eventId, !u.isMentor);
+
+const changeRoom = (u, room, eventId) =>
+  FirestoreService.addUserToRoom(u.userId, room, eventId);
 
 function Users({
   user,
@@ -29,6 +37,8 @@ function Users({
   eventRooms,
   eventRoomsUsers,
 }) {
+  // get user room id
+  const myRoom = eventRoomsUsers.find((u) => u.userId === user.userId) || user;
   // map users to room
   const usersWithRoom = eventUsers.map((u) => {
     const userRoom = eventRoomsUsers.find((ru) => ru.userId === u.userId);
@@ -56,6 +66,8 @@ function Users({
               <TableCell>Room</TableCell>
               <TableCell>Type</TableCell>
               <TableCell align="right">Actions</TableCell>
+              <TableCell align="right">Follow Me</TableCell>
+              <TableCell align="right">Follow Ninja</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -78,6 +90,50 @@ function Users({
                       placement="bottom"
                     >
                       {u.isMentor ? <EmojiIcon /> : <DomainIcon />}
+                    </Tooltip>
+                  </IconButton>
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton
+                    aria-label="promote"
+                    color="primary"
+                    onClick={() => changeRoom(u, myRoom.roomId, event.eventId)}
+                    disabled={myRoom.roomId === u.roomId}
+                  >
+                    <Tooltip
+                      title={
+                        myRoom.roomId === u.roomId ? "Same room" : "Follow me"
+                      }
+                      placement="bottom"
+                    >
+                      {myRoom.roomId === u.roomId ? (
+                        <ExploreOffIcon />
+                      ) : (
+                        <ExploreIcon />
+                      )}
+                    </Tooltip>
+                  </IconButton>
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton
+                    aria-label="promote"
+                    color="primary"
+                    onClick={() => changeRoom(user, u.roomId, event.eventId)}
+                    disabled={myRoom.roomId === u.roomId}
+                  >
+                    <Tooltip
+                      title={
+                        myRoom.roomId === u.roomId
+                          ? "Same room"
+                          : "Follow Ninja"
+                      }
+                      placement="bottom"
+                    >
+                      {myRoom.roomId === u.roomId ? (
+                        <SupervisedUserCircleIcon />
+                      ) : (
+                        <ControlCameraIcon />
+                      )}
                     </Tooltip>
                   </IconButton>
                 </TableCell>
