@@ -4,6 +4,7 @@ import {
   FormControlLabel,
   Checkbox,
   TextField,
+  Typography,
 } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -43,6 +44,13 @@ function Settings() {
   return (
     <div className="Settings-container">
       <div className="Edit-container">
+        <Typography
+          variant="h5"
+          align="center"
+          style={{ marginBottom: "20px" }}
+        >
+          Event settings:
+        </Typography>
         <TextField
           label="Jitsi server"
           name="jitsiServer"
@@ -52,54 +60,57 @@ function Settings() {
           variant="outlined"
           style={{ marginBottom: "20px" }}
         />
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <DateTimePicker
-          label="Event Start Date"
-          inputVariant="outlined"
-          value={startDate}
-          onChange={setStartDate}
-          style={{ marginBottom: "20px" }}
-         />
-            </MuiPickersUtilsProvider>
-          
-          <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <DateTimePicker
-          label="Event End Date"
-          inputVariant="outlined"
-          value={endDate}
-          onChange={setEndDate}
-          style={{ marginBottom: "20px" }}
-        />
-      </MuiPickersUtilsProvider>
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={hasFreeMovement}
-            onChange={(event) => setHasFreeMovement(event.target.checked)}
-            name="freeMovement"
-            color="primary"
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <DateTimePicker
+            label="Event Start Date"
+            inputVariant="outlined"
+            value={startDate}
+            onChange={setStartDate}
+            style={{ marginBottom: "20px" }}
           />
-        }
-        label="Enable users free movement between rooms"
-      />
-      <Button
-        variant="contained"
-        color="secondary"
-        size="large"
-        style={{ margin: "0 auto", fontWeight: 600 }}
-        type="submit"
-        onClick={() => {
-          updatePublicPeriod({ startDate, endDate });
-          setEventHasFreeMovement(hasFreeMovement);
-          setEventJitsiServer(jitsiServer);
-        }}
-      >
-        {`Update settings`}
-      </Button>
-   </div>
-   <div className="Edit-container">
-    <Docs />
-   </div>
+        </MuiPickersUtilsProvider>
+
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <DateTimePicker
+            label="Event End Date"
+            inputVariant="outlined"
+            value={endDate}
+            onChange={setEndDate}
+            style={{ marginBottom: "20px" }}
+          />
+        </MuiPickersUtilsProvider>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={hasFreeMovement}
+              onChange={(event) => setHasFreeMovement(event.target.checked)}
+              name="freeMovement"
+              color="primary"
+            />
+          }
+          label="Enable users free movement between rooms"
+        />
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          style={{ margin: "0 auto", fontWeight: 600 }}
+          type="submit"
+          onClick={() => {
+            updatePublicPeriod({ startDate, endDate });
+            setEventHasFreeMovement(hasFreeMovement);
+            setEventJitsiServer(jitsiServer);
+          }}
+        >
+          {`Update settings`}
+        </Button>
+      </div>
+      <div className="Edit-container">
+        <AddDoc eventId={event.eventId} />
+      </div>
+      <div className="Edit-container">
+        <Docs />
+      </div>
     </div>
   );
 }
