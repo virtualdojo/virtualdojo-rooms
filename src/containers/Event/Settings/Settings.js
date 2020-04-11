@@ -6,6 +6,7 @@ import DateFnsUtils from "@date-io/date-fns";
 import { store } from "../../../store.js";
 
 import "./Settings.css";
+import AddDoc from "./AddDoc";
 
 function Settings() {
   const {
@@ -19,7 +20,6 @@ function Settings() {
   );
   const [endDate, setEndDate] = useState(event.publicPeriod.endDate.toDate());
 
-  console.log(hasFreeMovement);
   // avoid state inconsistency if changed from another client
   useEffect(() => {
     setStartDate(event.publicPeriod.startDate.toDate());
@@ -31,50 +31,55 @@ function Settings() {
 
   return (
     <div className="Settings-container">
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={hasFreeMovement}
-            onChange={(event) => setHasFreeMovement(event.target.checked)}
-            name="freeMovement"
-            color="primary"
+      <div className="Edit-container">
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={hasFreeMovement}
+              onChange={(event) => setHasFreeMovement(event.target.checked)}
+              name="freeMovement"
+              color="primary"
+            />
+          }
+          label="Enable users free movement between rooms"
+        />
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <DateTimePicker
+            label="Event Start Date"
+            inputVariant="outlined"
+            value={startDate}
+            onChange={setStartDate}
+            style={{ marginTop: "20px", marginBottom: "20px" }}
           />
-        }
-        label="Enable users free movement between rooms"
-      />
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <DateTimePicker
-          label="Event Start Date"
-          inputVariant="outlined"
-          value={startDate}
-          onChange={setStartDate}
-          style={{ marginBottom: "20px" }}
-        />
-      </MuiPickersUtilsProvider>
+        </MuiPickersUtilsProvider>
 
-      <MuiPickersUtilsProvider utils={DateFnsUtils}>
-        <DateTimePicker
-          label="Event End Date"
-          inputVariant="outlined"
-          value={endDate}
-          onChange={setEndDate}
-          style={{ marginBottom: "20px" }}
-        />
-      </MuiPickersUtilsProvider>
+        <MuiPickersUtilsProvider utils={DateFnsUtils}>
+          <DateTimePicker
+            label="Event End Date"
+            inputVariant="outlined"
+            value={endDate}
+            onChange={setEndDate}
+            style={{ marginBottom: "20px" }}
+          />
+        </MuiPickersUtilsProvider>
 
-      <Button
-        variant="contained"
-        color="secondary"
-        size="large"
-        style={{ margin: "0 auto", fontWeight: 600 }}
-        type="submit"
-        onClick={() => {
-          updatePublicPeriod({ startDate, endDate });
-          setEventHasFreeMovement(hasFreeMovement);
-        }}
-      >
-        {`Update settings`}
-      </Button>
+        <Button
+          variant="contained"
+          color="secondary"
+          size="large"
+          style={{ margin: "0 auto", fontWeight: 600 }}
+          type="submit"
+          onClick={() => {
+            updatePublicPeriod({ startDate, endDate });
+            setEventHasFreeMovement(hasFreeMovement);
+          }}
+        >
+          {`Update settings`}
+        </Button>
+      </div>
+      <div className="Edit-container">
+        <AddDoc eventId={event.eventId} />
+      </div>
     </div>
   );
 }

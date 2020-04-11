@@ -79,6 +79,25 @@ const StateProvider = ({ children }) => {
     [eventId, setError]
   );
 
+  const addDoc = useCallback(
+    async (url) => {
+      if (!url) {
+        setError("user-desc-req");
+        return;
+      }
+      try {
+        await FirestoreService.addDoc(url, eventId);
+      } catch (reason) {
+        if (reason.message === "duplicate-item-error") {
+          setError(reason.message);
+        } else {
+          setError("add-list-item-error");
+        }
+      }
+    },
+    [eventId, setError]
+  );
+
   const updatePublicPeriod = useCallback(
     async (period) => {
       if (!period) {
@@ -235,6 +254,7 @@ const StateProvider = ({ children }) => {
         setHasFreeMovement,
         changeRoom,
         updatePublicPeriod,
+        addDoc,
       }}
     >
       {children}
