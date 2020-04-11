@@ -9,12 +9,8 @@ import {
   Tooltip,
 } from "@material-ui/core";
 import {
-  Domain as DomainIcon,
-  EmojiEmotions as EmojiIcon,
   Explore as ExploreIcon,
   ExploreOff as ExploreOffIcon,
-  ControlCamera as ControlCameraIcon,
-  SupervisedUserCircle as SupervisedUserCircleIcon,
 } from "@material-ui/icons";
 
 import { store } from "../../../store.js";
@@ -25,7 +21,7 @@ const ItemTypes = {
 };
 
 function Room({ room }) {
-  const { currentUser, changeRoom } = useContext(store);
+  const { currentUser, changeRoom, event } = useContext(store);
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -79,7 +75,7 @@ function Room({ room }) {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {currentUser.isMentor && (
+          {event.hasFreeMovement && (
             <IconButton
               aria-label="promote"
               color="secondary"

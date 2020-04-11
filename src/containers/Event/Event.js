@@ -7,13 +7,16 @@ import {
   DescriptionRounded as DocumentIcon,
   PeopleAltRounded as PeopleAltRoundedIcon,
   MeetingRoomRounded as MeetingRoomRoundedIcon,
+  Settings as SettingsIcon,
 } from "@material-ui/icons";
+import { format } from "date-fns";
 
 import { store } from "../../store.js";
 
 import Rooms from "./Rooms/Rooms";
 import Users from "./Users/Users";
 import Document from "./Document/Document";
+import Settings from "./Settings/Settings";
 import VideoChat from "./VideoChat/VideoChat";
 
 import "./Event.css";
@@ -36,8 +39,51 @@ function TabPanel(props) {
   );
 }
 
+function WaitingRoom({ theme, currentUser, event }) {
+  return (
+    <div className="main-container" style={theme.container}>
+      <div className={"Event-modal"} style={theme.modal}>
+        <div className="NavBar" style={theme.navbar}>
+          <div
+            style={{
+              display: "flex",
+              flex: 1,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography variant="h5">{event.name}</Typography>
+          </div>
+        </div>
+        <Typography
+          component="div"
+          className="Tab-Panel"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Typography variant="h3">{`Hi ${currentUser.userName}, you're in the waiting room!`}</Typography>
+          <Typography variant="h5">{`The event is open from`}</Typography>
+          <Typography variant="h4">{`${format(
+            event.publicPeriod.startDate.toDate(),
+            "HH:mm - dd/MM/yyyy"
+          )}`}</Typography>
+          <Typography variant="h5">{`to`}</Typography>
+          <Typography variant="h4">{`${format(
+            event.publicPeriod.endDate.toDate(),
+            "HH:mm - dd/MM/yyyy"
+          )}`}</Typography>
+        </Typography>
+      </div>
+    </div>
+  );
+}
+
 function EditEvent() {
-  const { currentUser, event } = useContext(store);
+  const { currentUser, event, isEventOpen } = useContext(store);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const { palette } = useTheme();
@@ -54,6 +100,11 @@ function EditEvent() {
     modal: { background: palette.background.default },
     listItem: { background: palette.grey[200] },
   };
+
+  if (!currentUser.isMentor && !isEventOpen)
+    return (
+      <WaitingRoom event={event} currentUser={currentUser} theme={theme} />
+    );
 
   return (
     <div className="main-container" style={theme.container}>
@@ -111,13 +162,22 @@ function EditEvent() {
           </IconButton>
           <Divider orientation="vertical" flexItem />
           {currentUser.isMentor && (
-            <IconButton
-              color="default"
-              onClick={() => setTabIndex(2)}
-              disabled={tabIndex === 2}
-            >
-              <PeopleAltRoundedIcon fontSize="large" />
-            </IconButton>
+            <>
+              <IconButton
+                color="default"
+                onClick={() => setTabIndex(2)}
+                disabled={tabIndex === 2}
+              >
+                <PeopleAltRoundedIcon fontSize="large" />
+              </IconButton>
+              <IconButton
+                color="default"
+                onClick={() => setTabIndex(3)}
+                disabled={tabIndex === 3}
+              >
+                <SettingsIcon fontSize="large" />
+              </IconButton>
+            </>
           )}
           <div
             style={{
@@ -147,6 +207,9 @@ function EditEvent() {
           </TabPanel>
           <TabPanel value={tabIndex} index={2} dir={theme.direction}>
             <Users />
+          </TabPanel>
+          <TabPanel value={tabIndex} index={3} dir={theme.direction}>
+            <Settings />
           </TabPanel>
         </SwipeableViews>
       </div>

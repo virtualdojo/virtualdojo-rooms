@@ -79,6 +79,21 @@ const StateProvider = ({ children }) => {
     [eventId, setError]
   );
 
+  const updatePublicPeriod = useCallback(
+    async (period) => {
+      if (!period) {
+        setError("user-desc-req");
+        return;
+      }
+      try {
+        await FirestoreService.setEventPublicPeriod(eventId, period);
+      } catch (reason) {
+        setError(reason.message);
+      }
+    },
+    [eventId, setError]
+  );
+
   useEffect(() => {
     if (!eventId) return;
     const unsubscribe = FirestoreService.streamEvent(eventId, {
@@ -141,6 +156,12 @@ const StateProvider = ({ children }) => {
     [eventId]
   );
 
+  const setHasFreeMovement = useCallback(
+    (hasFreeMovement) =>
+      FirestoreService.setEventHasFreeMovement(eventId, hasFreeMovement),
+    [eventId]
+  );
+
   const changeRoom = useCallback(
     (userId, roomId) => FirestoreService.addUserToRoom(userId, roomId, eventId),
     [eventId]
@@ -185,6 +206,19 @@ const StateProvider = ({ children }) => {
     );
   }, [state.currentUser, usersWithRoom]);
 
+  const isEventOpen = useMemo(() => {
+    if (state.event && state.event.publicPeriod) {
+      const currentTime = new Date();
+      if (
+        currentTime >= new Date(state.event.publicPeriod.startDate.toDate()) &&
+        currentTime <= new Date(state.event.publicPeriod.endDate.toDate())
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }, [state.event]);
+
   return (
     <Provider
       value={{
@@ -192,12 +226,15 @@ const StateProvider = ({ children }) => {
         currentUser: currentUserWithRoom,
         users: usersWithRoom,
         rooms: roomsWithUsers,
+        isEventOpen,
         setError,
         setCurrentUser,
         setEvent,
         addRoom,
         toggleIsMentor,
+        setHasFreeMovement,
         changeRoom,
+        updatePublicPeriod,
       }}
     >
       {children}
