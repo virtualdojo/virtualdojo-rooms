@@ -200,10 +200,7 @@ function EditEvent() {
             <Rooms />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} dir={theme.direction}>
-            <Document
-              isOpen={true}
-              src="https://docs.google.com/presentation/d/e/2PACX-1vS-8ObYLMmB5QarJRM34yiDiUcGwHXdDfXQtrzpdEdwIM-QyU_3mehDpSu6l68p1BdneEHkp-_YC23E/embed?start=false&loop=false&delayms=60000"
-            ></Document>
+            <Document isOpen={true}></Document>
           </TabPanel>
           <TabPanel value={tabIndex} index={2} dir={theme.direction}>
             <Users />
