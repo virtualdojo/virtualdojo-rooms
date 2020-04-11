@@ -227,3 +227,12 @@ export const setEventHasFreeMovement = (eventId, hasFreeMovement) => {
     hasFreeMovement,
   });
 };
+
+export const addDoc = async (eventId, docId = uuidv4(), docUrl, userId) => {
+  return db.collection("events").doc(eventId).collection("docs").add({
+    docId: docId,
+    docUrl: docUrl,
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    createdBy: userId,
+  });
+};
