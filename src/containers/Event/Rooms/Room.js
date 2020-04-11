@@ -21,7 +21,7 @@ const ItemTypes = {
 };
 
 function Room({ room }) {
-  const { currentUser, changeRoom } = useContext(store);
+  const { currentUser, changeRoom, event } = useContext(store);
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -75,7 +75,7 @@ function Room({ room }) {
           </Typography>
         </Grid>
         <Grid item xs={1}>
-          {currentUser.isMentor && (
+          {event.hasFreeMovement && (
             <IconButton
               aria-label="promote"
               color="secondary"

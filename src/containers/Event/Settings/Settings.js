@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Button } from "@material-ui/core";
+import { Button, FormControlLabel, Checkbox } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
@@ -8,20 +8,40 @@ import { store } from "../../../store.js";
 import "./Settings.css";
 
 function Settings() {
-  const { event, updatePublicPeriod } = useContext(store);
+  const {
+    event,
+    updatePublicPeriod,
+    setHasFreeMovement: setEventHasFreeMovement,
+  } = useContext(store);
+  const [hasFreeMovement, setHasFreeMovement] = useState(event.hasFreeMovement);
   const [startDate, setStartDate] = useState(
     event.publicPeriod.startDate.toDate()
   );
   const [endDate, setEndDate] = useState(event.publicPeriod.endDate.toDate());
 
-  // avoid dates inconsistency if changed from another client
+  console.log(hasFreeMovement);
+  // avoid state inconsistency if changed from another client
   useEffect(() => {
     setStartDate(event.publicPeriod.startDate.toDate());
     setEndDate(event.publicPeriod.endDate.toDate());
   }, [event.publicPeriod]);
+  useEffect(() => {
+    setHasFreeMovement(event.hasFreeMovement);
+  }, [event.hasFreeMovement]);
 
   return (
     <div className="Settings-container">
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={hasFreeMovement}
+            onChange={(event) => setHasFreeMovement(event.target.checked)}
+            name="freeMovement"
+            color="primary"
+          />
+        }
+        label="Enable users free movement between rooms"
+      />
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <DateTimePicker
           label="Event Start Date"
@@ -48,9 +68,12 @@ function Settings() {
         size="large"
         style={{ margin: "0 auto", fontWeight: 600 }}
         type="submit"
-        onClick={() => updatePublicPeriod({ startDate, endDate })}
+        onClick={() => {
+          updatePublicPeriod({ startDate, endDate });
+          setEventHasFreeMovement(hasFreeMovement);
+        }}
       >
-        {`Edit`}
+        {`Update settings`}
       </Button>
     </div>
   );

@@ -2,6 +2,7 @@ import * as firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
 import { v4 as uuidv4 } from "uuid";
+import { addDays } from "date-fns";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -37,8 +38,9 @@ export const createEvent = async (
     ],
     publicPeriod: {
       startDate: firebase.firestore.FieldValue.serverTimestamp(),
-      endDate: firebase.firestore.FieldValue.serverTimestamp(),
+      endDate: addDays(new Date(), 7),
     },
+    hasFreeMovement: false,
   });
   await addRoom("all", docRef.id, defaultRoomId);
   await db.collection("events").doc(docRef.id).collection("users").add({
@@ -208,7 +210,7 @@ export const setUserIsMentor = (userId, eventId, isMentor) => {
     });
 };
 
-export const updateEventPublicPeriod = (eventId, { startDate, endDate }) => {
+export const setEventPublicPeriod = (eventId, { startDate, endDate }) => {
   return db
     .collection("events")
     .doc(eventId)
@@ -218,4 +220,10 @@ export const updateEventPublicPeriod = (eventId, { startDate, endDate }) => {
         endDate: firebase.firestore.Timestamp.fromDate(endDate),
       },
     });
+};
+
+export const setEventHasFreeMovement = (eventId, hasFreeMovement) => {
+  return db.collection("events").doc(eventId).update({
+    hasFreeMovement,
+  });
 };
