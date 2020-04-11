@@ -7,6 +7,7 @@ import { store } from "../../../store.js";
 
 import "./Settings.css";
 import AddDoc from "./AddDoc";
+import Docs from "./Docs";
 
 function Settings() {
   const {
@@ -79,6 +80,9 @@ function Settings() {
       </div>
       <div className="Edit-container">
         <AddDoc eventId={event.eventId} />
+      </div>
+      <div className="Edit-container">
+        <Docs />
       </div>
     </div>
   );
