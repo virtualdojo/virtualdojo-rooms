@@ -201,6 +201,17 @@ const StateProvider = ({ children }) => {
     [eventId]
   );
 
+  const setJitsiServer = useCallback(
+    (jitsiServer) => {
+      const sanitized = String(jitsiServer).replace(
+        /^(https?:\/\/)?(www\.)?/,
+        ""
+      );
+      FirestoreService.setJitsiServer(eventId, sanitized);
+    },
+    [eventId]
+  );
+
   const changeRoom = useCallback(
     (userId, roomId) => FirestoreService.addUserToRoom(userId, roomId, eventId),
     [eventId]
@@ -278,6 +289,7 @@ const StateProvider = ({ children }) => {
         addRoom,
         toggleIsMentor,
         setHasFreeMovement,
+        setJitsiServer,
         changeRoom,
         deleteDoc,
         updatePublicPeriod,

@@ -41,6 +41,7 @@ export const createEvent = async (
       endDate: addDays(new Date(), 7),
     },
     hasFreeMovement: false,
+    jitsiServer: "meet.jit.si",
   });
   await addRoom("all", docRef.id, defaultRoomId);
   await db.collection("events").doc(docRef.id).collection("users").add({
@@ -265,4 +266,10 @@ export const deleteDoc = (docId, eventId) => {
           .delete();
       }
     });
+};
+
+export const setJitsiServer = (eventId, jitsiServer) => {
+  return db.collection("events").doc(eventId).update({
+    jitsiServer,
+  });
 };

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { store } from "../../../store.js";
 import "./VideoChat.css";
 
-const isVideoEnabled = process.env.NODE_ENV === "production" ? true : false;
+const isVideoEnabled = process.env.NODE_ENV === "production" ? true : true;
 
 let api;
 
@@ -29,7 +29,7 @@ function VideoChat({ isMenuOpen }) {
   useEffect(() => {
     function startConference() {
       try {
-        const domain = "meet.jit.si";
+        const domain = event.jitsiServer;
         const options = {
           roomName: roomId,
           parentNode: document.getElementById("jitsi-container"),
@@ -50,7 +50,11 @@ function VideoChat({ isMenuOpen }) {
         api.addEventListener("videoConferenceJoined", () => {
           api.executeCommand("displayName", currentUser.userName);
           api.executeCommand("email", currentUser.userId);
-          api.executeCommand("password", event.password);
+          // some server needs to grant you moderator status
+          setTimeout(
+            () => api.executeCommand("password", event.password),
+            2000
+          );
           setLoading(false);
         });
 
@@ -71,7 +75,13 @@ function VideoChat({ isMenuOpen }) {
     } else {
       setLoading(false);
     }
-  }, [currentUser.userId, currentUser.userName, event.password, roomId]);
+  }, [
+    currentUser.userId,
+    currentUser.userName,
+    event.password,
+    event.jitsiServer,
+    roomId,
+  ]);
 
   return (
     <div style={containerStyle}>
