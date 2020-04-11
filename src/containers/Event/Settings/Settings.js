@@ -1,5 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
-import { Button, FormControlLabel, Checkbox } from "@material-ui/core";
+import {
+  Button,
+  FormControlLabel,
+  Checkbox,
+  TextField,
+} from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
 
@@ -12,8 +17,10 @@ function Settings() {
     event,
     updatePublicPeriod,
     setHasFreeMovement: setEventHasFreeMovement,
+    setJitsiServer: setEventJitsiServer,
   } = useContext(store);
   const [hasFreeMovement, setHasFreeMovement] = useState(event.hasFreeMovement);
+  const [jitsiServer, setJitsiServer] = useState(event.jitsiServer);
   const [startDate, setStartDate] = useState(
     event.publicPeriod.startDate.toDate()
   );
@@ -28,20 +35,22 @@ function Settings() {
   useEffect(() => {
     setHasFreeMovement(event.hasFreeMovement);
   }, [event.hasFreeMovement]);
+  useEffect(() => {
+    setJitsiServer(event.jitsiServer);
+  }, [event.jitsiServer]);
 
   return (
     <div className="Settings-container">
-      <FormControlLabel
-        control={
-          <Checkbox
-            checked={hasFreeMovement}
-            onChange={(event) => setHasFreeMovement(event.target.checked)}
-            name="freeMovement"
-            color="primary"
-          />
-        }
-        label="Enable users free movement between rooms"
+      <TextField
+        label="Jitsi server"
+        name="jitsiServer"
+        fullWidth
+        value={jitsiServer}
+        onChange={(event) => setJitsiServer(event.target.value)}
+        variant="outlined"
+        style={{ marginBottom: "20px" }}
       />
+
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <DateTimePicker
           label="Event Start Date"
@@ -61,7 +70,17 @@ function Settings() {
           style={{ marginBottom: "20px" }}
         />
       </MuiPickersUtilsProvider>
-
+      <FormControlLabel
+        control={
+          <Checkbox
+            checked={hasFreeMovement}
+            onChange={(event) => setHasFreeMovement(event.target.checked)}
+            name="freeMovement"
+            color="primary"
+          />
+        }
+        label="Enable users free movement between rooms"
+      />
       <Button
         variant="contained"
         color="secondary"
@@ -71,6 +90,7 @@ function Settings() {
         onClick={() => {
           updatePublicPeriod({ startDate, endDate });
           setEventHasFreeMovement(hasFreeMovement);
+          setEventJitsiServer(jitsiServer);
         }}
       >
         {`Update settings`}
