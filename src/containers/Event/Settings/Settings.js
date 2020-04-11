@@ -28,6 +28,7 @@ function Settings() {
           inputVariant="outlined"
           value={startDate}
           onChange={setStartDate}
+          style={{ marginBottom: "20px" }}
         />
       </MuiPickersUtilsProvider>
 
@@ -37,6 +38,7 @@ function Settings() {
           inputVariant="outlined"
           value={endDate}
           onChange={setEndDate}
+          style={{ marginBottom: "20px" }}
         />
       </MuiPickersUtilsProvider>
 
@@ -44,7 +46,7 @@ function Settings() {
         variant="contained"
         color="secondary"
         size="large"
-        style={{ marginLeft: "20px", fontWeight: 600 }}
+        style={{ margin: "0 auto", fontWeight: 600 }}
         type="submit"
         onClick={() => updatePublicPeriod({ startDate, endDate })}
       >
