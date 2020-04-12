@@ -26,15 +26,19 @@ function Document(props) {
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
+    const currentDoc = docs.find((d) => d.docId === docId);
+    if (!currentDoc) {
+      setDocSrc("");
+    }
     setEventDocs(docs);
-    setDocId("");
-    setDocSrc("");
-  }, [docs]);
+  }, [docs, docId]);
 
   const docExists = docs.length !== 0;
 
   const handleDeleteDoc = () => {
     deleteDoc(docId);
+    setDocId("");
+    setDocSrc("");
   };
 
   const handleChangeDoc = (event) => {
