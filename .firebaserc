@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "testvirtualdojo"
+    "default": "testvirtualdojo",
+    "prod": "virtualdojo-prod"
   }
 }
