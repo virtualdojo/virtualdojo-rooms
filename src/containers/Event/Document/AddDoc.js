@@ -29,43 +29,43 @@ function AddDoc() {
   }
 
   return (
-    <>
-      <form
-        name="addDocForm"
-        style={{ display: `flex`, flexDirection: `column` }}
+    <form name="addDocForm" style={{ marginBottom: "20px" }}>
+      <Typography variant="h5" align="center" style={{ marginBottom: "20px" }}>
+        Add new document:
+      </Typography>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
       >
-        <Typography
-          variant="h5"
-          align="center"
-          style={{ marginBottom: "20px" }}
-        >
-          Add new document:
-        </Typography>
         <TextField
           label="Doc Name"
           name="docName"
-          style={{ marginBottom: "20px", backgroundColor: "white" }}
+          style={{ backgroundColor: "white" }}
           variant="outlined"
         />
         <TextField
           label="Doc URL"
           name="docUrl"
-          style={{ marginBottom: "20px", backgroundColor: "white" }}
+          style={{ marginLeft: "20px", backgroundColor: "white" }}
           variant="outlined"
         />
         <Button
           variant="contained"
           color="secondary"
           size="large"
-          style={{ margin: "0 auto", fontWeight: 600 }}
+          style={{ marginLeft: "20px", fontWeight: 600 }}
           type="submit"
           onClick={addItem}
         >
-          Add Doc
+          Add
         </Button>
-      </form>
+      </div>
       <ErrorMessage errorCode={error}></ErrorMessage>
-    </>
+    </form>
   );
 }
 
