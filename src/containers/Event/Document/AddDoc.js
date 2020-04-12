@@ -11,10 +11,12 @@ function AddDoc() {
   function addItem(e) {
     e.preventDefault();
 
-    const docUrl = document.addDocForm.docUrl.value;
+    let docUrl = document.addDocForm.docUrl.value;
     if (!docUrl) {
       setError("event-name-required");
       return;
+    } else {
+      docUrl = !/^https?:\/\//i.test(docUrl) ? `http://${docUrl}` : docUrl;
     }
 
     const docName = document.addDocForm.docName.value;
@@ -50,7 +52,11 @@ function AddDoc() {
         <TextField
           label="Doc URL"
           name="docUrl"
-          style={{ marginLeft: "20px", backgroundColor: "white" }}
+          style={{
+            marginLeft: "20px",
+            backgroundColor: "white",
+            width: "300px",
+          }}
           variant="outlined"
         />
         <Button

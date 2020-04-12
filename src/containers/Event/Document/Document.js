@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   FormControl,
   InputLabel,
@@ -20,14 +20,21 @@ import { store } from "../../../store.js";
 
 function Document(props) {
   const { currentUser, docs, deleteDoc } = useContext(store);
+  const [eventDocs, setEventDocs] = useState(docs);
   const [docId, setDocId] = useState("");
   const [docSrc, setDocSrc] = useState("");
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleDeleteDoc = () => {
-    deleteDoc(docId);
+  useEffect(() => {
+    setEventDocs(docs);
     setDocId("");
     setDocSrc("");
+  }, [docs]);
+
+  const docExists = docs.length !== 0;
+
+  const handleDeleteDoc = () => {
+    deleteDoc(docId);
   };
 
   const handleChangeDoc = (event) => {
@@ -43,28 +50,30 @@ function Document(props) {
   return (
     <>
       <div style={{ display: "flex" }}>
-        <FormControl
-          style={{
-            marginLeft: "20px",
-            marginRight: "20px",
-            marginBottom: "20px",
-            align: "center",
-          }}
-        >
-          <InputLabel id="select-doc">Select Document</InputLabel>
-          <Select
-            labelId="select-doc"
-            id="select-doc"
-            value={docId}
-            onChange={handleChangeDoc}
-            style={{ width: "200px" }}
+        {docExists && (
+          <FormControl
+            style={{
+              marginLeft: "20px",
+              marginRight: "20px",
+              marginBottom: "20px",
+              align: "center",
+            }}
           >
-            {docs.map((d) => (
-              <MenuItem value={d.docId}>{d.docName}</MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        {currentUser.isMentor && (
+            <InputLabel id="select-doc">Select Document</InputLabel>
+            <Select
+              labelId="select-doc"
+              id="select-doc"
+              value={docId}
+              onChange={handleChangeDoc}
+              style={{ width: "200px" }}
+            >
+              {eventDocs.map((d) => (
+                <MenuItem value={d.docId}>{d.docName}</MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+        {docExists && currentUser.isMentor && (
           <>
             <IconButton
               edge="end"
@@ -83,7 +92,7 @@ function Document(props) {
           </>
         )}
       </div>
-      {currentUser.isMentor && expanded && (
+      {docExists && currentUser.isMentor && expanded && (
         <Collapse
           in={expanded}
           timeout="auto"
@@ -92,6 +101,11 @@ function Document(props) {
         >
           <AddDoc />
         </Collapse>
+      )}
+      {!docExists && currentUser.isMentor && (
+        <div style={{ width: "100%", margin: "0 auto" }}>
+          <AddDoc />
+        </div>
       )}
       <div className={"Document-frame"}>
         <iframe
