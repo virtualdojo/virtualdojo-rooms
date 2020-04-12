@@ -200,7 +200,7 @@ function EditEvent() {
             <Rooms />
           </TabPanel>
           <TabPanel value={tabIndex} index={1} dir={theme.direction}>
-            <Document isOpen={true}></Document>
+            <Document />
           </TabPanel>
           <TabPanel value={tabIndex} index={2} dir={theme.direction}>
             <Users />
