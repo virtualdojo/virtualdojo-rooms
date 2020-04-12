@@ -37,6 +37,8 @@ To deploy in production you have to create a new Firebase Web app and add the cr
 npm run deploy
 ```
 
+Check `package.json` to see how to deploy to dev and production with different environment variables.
+
 ## Technologies
 
 - **Jitsi**: Video/audio/text chat
