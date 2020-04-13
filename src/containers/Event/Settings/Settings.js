@@ -4,6 +4,7 @@ import {
   FormControlLabel,
   Checkbox,
   TextField,
+  Typography,
 } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
@@ -26,7 +27,6 @@ function Settings() {
   );
   const [endDate, setEndDate] = useState(event.publicPeriod.endDate.toDate());
 
-  console.log(hasFreeMovement);
   // avoid state inconsistency if changed from another client
   useEffect(() => {
     setStartDate(event.publicPeriod.startDate.toDate());
@@ -41,6 +41,9 @@ function Settings() {
 
   return (
     <div className="Settings-container">
+      <Typography variant="h5" align="center" style={{ marginBottom: "20px" }}>
+        Event Settings
+      </Typography>
       <TextField
         label="Jitsi server"
         name="jitsiServer"
@@ -50,7 +53,6 @@ function Settings() {
         variant="outlined"
         style={{ marginBottom: "20px" }}
       />
-
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <DateTimePicker
           label="Event Start Date"

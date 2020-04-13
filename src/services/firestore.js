@@ -229,6 +229,45 @@ export const setEventHasFreeMovement = (eventId, hasFreeMovement) => {
   });
 };
 
+export const addDoc = async (docUrl, docName, eventId, docId = uuidv4()) => {
+  return db.collection("events").doc(eventId).collection("docs").add({
+    docId: docId,
+    docUrl: docUrl,
+    docName: docName,
+    created: firebase.firestore.FieldValue.serverTimestamp(),
+    // createdBy: userId,
+  });
+};
+
+export const streamEventDocs = (eventId, observer) => {
+  return db
+    .collection("events")
+    .doc(eventId)
+    .collection("docs")
+    .orderBy("created")
+    .onSnapshot(observer);
+};
+
+export const deleteDoc = (docId, eventId) => {
+  return db
+    .collection("events")
+    .doc(eventId)
+    .collection("docs")
+    .get()
+    .then((querySnapshot) => querySnapshot.docs)
+    .then((docs) => docs.find((doc) => doc.data().docId === docId))
+    .then((matchingItem) => {
+      if (matchingItem) {
+        return db
+          .collection("events")
+          .doc(eventId)
+          .collection("docs")
+          .doc(matchingItem.id)
+          .delete();
+      }
+    });
+};
+
 export const setJitsiServer = (eventId, jitsiServer) => {
   return db.collection("events").doc(eventId).update({
     jitsiServer,

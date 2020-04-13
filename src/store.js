@@ -30,6 +30,8 @@ const StateProvider = ({ children }) => {
         return { ...state, rooms: action.payload };
       case "SET_EVENT_ROOMS_USERS":
         return { ...state, roomsUsers: action.payload };
+      case "SET_EVENT_DOCS":
+        return { ...state, docs: action.payload };
       case "SET_ERROR":
         return { ...state, error: action.payload };
       default:
@@ -68,6 +70,29 @@ const StateProvider = ({ children }) => {
       }
       try {
         await FirestoreService.addRoom(name, eventId);
+      } catch (reason) {
+        if (reason.message === "duplicate-item-error") {
+          setError(reason.message);
+        } else {
+          setError("add-list-item-error");
+        }
+      }
+    },
+    [eventId, setError]
+  );
+
+  const addDoc = useCallback(
+    async (url, name) => {
+      if (!url) {
+        setError("user-desc-req");
+        return;
+      }
+      if (!name) {
+        setError("user-desc-req");
+        return;
+      }
+      try {
+        await FirestoreService.addDoc(url, name, eventId);
       } catch (reason) {
         if (reason.message === "duplicate-item-error") {
           setError(reason.message);
@@ -150,6 +175,20 @@ const StateProvider = ({ children }) => {
     return unsubscribe;
   }, [eventId, dispatch, setError]);
 
+  useEffect(() => {
+    if (!eventId) return;
+    const unsubscribe = FirestoreService.streamEventDocs(eventId, {
+      next: (querySnapshot) => {
+        const result = querySnapshot.docs
+          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
+          : [];
+        dispatch({ type: "SET_EVENT_DOCS", payload: result });
+      },
+      error: () => setError("user-get-fail"),
+    });
+    return unsubscribe;
+  }, [eventId, dispatch, setError]);
+
   const toggleIsMentor = useCallback(
     (user) =>
       FirestoreService.setUserIsMentor(user.userId, eventId, !user.isMentor),
@@ -175,6 +214,11 @@ const StateProvider = ({ children }) => {
 
   const changeRoom = useCallback(
     (userId, roomId) => FirestoreService.addUserToRoom(userId, roomId, eventId),
+    [eventId]
+  );
+
+  const deleteDoc = useCallback(
+    (docId) => FirestoreService.deleteDoc(docId, eventId),
     [eventId]
   );
 
@@ -237,6 +281,7 @@ const StateProvider = ({ children }) => {
         currentUser: currentUserWithRoom,
         users: usersWithRoom,
         rooms: roomsWithUsers,
+        docs: state.docs,
         isEventOpen,
         setError,
         setCurrentUser,
@@ -246,7 +291,9 @@ const StateProvider = ({ children }) => {
         setHasFreeMovement,
         setJitsiServer,
         changeRoom,
+        deleteDoc,
         updatePublicPeriod,
+        addDoc,
       }}
     >
       {children}
