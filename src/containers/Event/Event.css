@@ -15,6 +15,8 @@
   bottom: 40px;
   left: 40px;
   right: 40px;
+  display: flex;
+  flex-direction: column;
   border-radius: 15px;
   z-index: 1000;
   transition: 0.2s linear;
@@ -32,22 +34,18 @@
 }
 
 .NavBar {
-  z-index: 1002;
-  position: fixed;
-  top: 40px;
-  left: 40px;
-  right: 40px;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
+  height: 60px;
+  width: 100%;
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
   border: white 1px solid;
   display: flex;
   flex-direction: row;
 }
 
 .Tab-Panel{
-  position: relative;
-  padding-top: 80px;
   width: 100%;
-  height: auto;
+  height: 100%;
   background-color: white;
+  overflow-y: auto;
 }
