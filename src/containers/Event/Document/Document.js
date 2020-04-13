@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useMemo } from "react";
 import {
   FormControl,
   InputLabel,
@@ -22,13 +22,12 @@ function Document(props) {
   const { currentUser, docs, deleteDoc } = useContext(store);
   const [eventDocs, setEventDocs] = useState(docs);
   const [docId, setDocId] = useState("");
-  const [docSrc, setDocSrc] = useState("");
   const [expanded, setExpanded] = React.useState(false);
 
   useEffect(() => {
     const currentDoc = docs.find((d) => d.docId === docId);
     if (!currentDoc) {
-      setDocSrc("");
+      setDocId("");
     }
     setEventDocs(docs);
   }, [docs, docId]);
@@ -38,18 +37,23 @@ function Document(props) {
   const handleDeleteDoc = () => {
     deleteDoc(docId);
     setDocId("");
-    setDocSrc("");
   };
 
   const handleChangeDoc = (event) => {
-    const url = docs.find((d) => d.docId === event.target.value);
     setDocId(event.target.value);
-    setDocSrc(url.docUrl);
   };
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
+
+  const selectedDoc = useMemo(() => {
+    const url = docs.find((d) => d.docId === docId);
+    if (url) {
+      return url.docUrl;
+    }
+    return "";
+  }, [docs, docId]);
 
   return (
     <>
@@ -114,7 +118,7 @@ function Document(props) {
       <div className={"Document-frame"}>
         <iframe
           title="document"
-          src={docSrc}
+          src={selectedDoc}
           frameBorder="0"
           allowFullScreen={false}
         ></iframe>
