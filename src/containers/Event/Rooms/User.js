@@ -52,6 +52,7 @@ function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
 
   const popoverOpen = !isDragging && Boolean(anchorEl);
   const initials = user.userName
+    .trim()
     .split(" ")
     .map((s) => s[0].toUpperCase())
     .concat();
