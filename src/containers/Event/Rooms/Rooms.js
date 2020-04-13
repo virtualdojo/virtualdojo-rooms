@@ -40,7 +40,8 @@ function Rooms() {
           item
           xs={12}
           spacing={2}
-          style={{ margin: "10px", marginRight: "15px" }}
+          justify="center"
+          style={{ margin: "10px" }}
         >
           {rooms.map((room) => (
             <Grid item container xs={3} key={room.roomId} spacing={1}>
