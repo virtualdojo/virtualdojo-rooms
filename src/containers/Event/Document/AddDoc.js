@@ -16,7 +16,7 @@ function AddDoc() {
       setError("event-name-required");
       return;
     } else {
-      docUrl = !/^https?:\/\//i.test(docUrl) ? `http://${docUrl}` : docUrl;
+      docUrl = !/^https?:\/\//i.test(docUrl) ? `https://${docUrl}` : docUrl;
     }
 
     const docName = document.addDocForm.docName.value;
