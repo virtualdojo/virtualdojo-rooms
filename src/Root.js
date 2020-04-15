@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React from "react";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 
@@ -11,9 +11,7 @@ function Root() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <StateProvider>
-        <Suspense>
-          <App />
-        </Suspense>
+        <App />
       </StateProvider>
     </ThemeProvider>
   );
