@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { DateTimePicker, MuiPickersUtilsProvider } from "@material-ui/pickers";
 import DateFnsUtils from "@date-io/date-fns";
-
+import { useTranslation } from "react-i18next";
 import { store } from "../../../store.js";
 
 import "./Settings.css";
@@ -26,6 +26,7 @@ function Settings() {
     event.publicPeriod.startDate.toDate()
   );
   const [endDate, setEndDate] = useState(event.publicPeriod.endDate.toDate());
+  const { t } = useTranslation("translation");
 
   // avoid state inconsistency if changed from another client
   useEffect(() => {
@@ -42,7 +43,7 @@ function Settings() {
   return (
     <div className="Settings-container">
       <Typography variant="h5" align="center" style={{ marginBottom: "20px" }}>
-        Event Settings
+        {t("Event Settings")}
       </Typography>
       <TextField
         label="Jitsi server"
@@ -55,7 +56,7 @@ function Settings() {
       />
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <DateTimePicker
-          label="Event Start Date"
+          label={t("Event Start Date")}
           inputVariant="outlined"
           value={startDate}
           onChange={setStartDate}
@@ -65,7 +66,7 @@ function Settings() {
 
       <MuiPickersUtilsProvider utils={DateFnsUtils}>
         <DateTimePicker
-          label="Event End Date"
+          label={t("Event End Date")}
           inputVariant="outlined"
           value={endDate}
           onChange={setEndDate}
@@ -81,7 +82,7 @@ function Settings() {
             color="primary"
           />
         }
-        label="Enable users free movement between rooms"
+        label={t("Free Movement")}
       />
       <Button
         variant="contained"
@@ -95,7 +96,7 @@ function Settings() {
           setEventJitsiServer(jitsiServer);
         }}
       >
-        {`Update settings`}
+        {t("Update")}:
       </Button>
     </div>
   );

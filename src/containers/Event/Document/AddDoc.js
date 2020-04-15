@@ -35,7 +35,7 @@ function AddDoc() {
   return (
     <form name="addDocForm" style={{ marginBottom: "20px" }}>
       <Typography variant="h5" align="center" style={{ marginBottom: "20px" }}>
-        {t("Add New Doc")}:
+        {t("Add New Document")}:
       </Typography>
       <div
         style={{
@@ -69,7 +69,7 @@ function AddDoc() {
           type="submit"
           onClick={addItem}
         >
-          {t("Add Button")}
+          {t("Add")}
         </Button>
       </div>
       <ErrorMessage errorCode={error}></ErrorMessage>

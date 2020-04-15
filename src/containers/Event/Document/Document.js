@@ -13,7 +13,7 @@ import {
   Delete as DeleteIcon,
   AddCircle as AddCircleIcon,
 } from "@material-ui/icons";
-
+import { useTranslation } from "react-i18next";
 import AddDoc from "./AddDoc";
 import "./Document.css";
 import { store } from "../../../store.js";
@@ -23,6 +23,7 @@ function Document(props) {
   const [eventDocs, setEventDocs] = useState(docs);
   const [docId, setDocId] = useState("");
   const [expanded, setExpanded] = React.useState(false);
+  const { t } = useTranslation("translation");
 
   useEffect(() => {
     const currentDoc = docs.find((d) => d.docId === docId);
@@ -67,7 +68,7 @@ function Document(props) {
               align: "center",
             }}
           >
-            <InputLabel id="select-doc">Select Document</InputLabel>
+            <InputLabel id="select-doc">{t("Select Document")}</InputLabel>
             <Select
               labelId="select-doc"
               id="select-doc"
@@ -88,12 +89,12 @@ function Document(props) {
               aria-label="delete"
               onClick={handleDeleteDoc}
             >
-              <Tooltip title="Delete Selected Document" placement="bottom">
+              <Tooltip title={t("Delete Document")} placement="bottom">
                 <DeleteIcon />
               </Tooltip>
             </IconButton>
             <IconButton edge="end" aria-label="add" onClick={handleExpandClick}>
-              <Tooltip title="Add New Document" placement="bottom">
+              <Tooltip title={t("Add New Document")} placement="bottom">
                 <AddCircleIcon />
               </Tooltip>
             </IconButton>
