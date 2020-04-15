@@ -3,10 +3,12 @@ import { TextField, Button, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import * as FirestoreService from "../../services/firestore";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
+import { useTranslation } from "react-i18next";
 import "./CreateEvent.css";
 
 function CreateEvent(props) {
   const { onCreate, userId } = props;
+  const { t } = useTranslation("translation");
 
   const [error, setError] = useState();
   const { palette } = useTheme();
@@ -64,25 +66,25 @@ function CreateEvent(props) {
           align="center"
           style={{ marginBottom: "15px" }}
         >
-          Fill the form and start a new Dojo!
+          {t("Fill In Form")}!
         </Typography>
         <form name="createListForm" className={"Create-form-container"}>
           <TextField
-            label="Your Full Name"
+            label={t("Full Name")}
             name="userName"
             variant="filled"
             color="primary"
             style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <TextField
-            label="Event Name"
+            label={t("Event Name")}
             name="eventName"
             variant="filled"
             color="primary"
             style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <TextField
-            label="Event Password"
+            label={t("Event Password")}
             name="eventPassword"
             variant="filled"
             color="primary"
@@ -96,7 +98,7 @@ function CreateEvent(props) {
             type="submit"
             onClick={createEvent}
           >
-            {`Create event`}
+            {t("Submit")}
           </Button>
         </form>
         <ErrorMessage errorCode={error}></ErrorMessage>

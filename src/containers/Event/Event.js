@@ -1,6 +1,6 @@
 import React, { useState, useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton, Typography, Divider } from "@material-ui/core";
+import { IconButton, Typography, Divider, Tooltip } from "@material-ui/core";
 import SwipeableViews from "react-swipeable-views";
 import {
   CancelRounded as CancelIcon,
@@ -8,8 +8,10 @@ import {
   PeopleAltRounded as PeopleAltRoundedIcon,
   MeetingRoomRounded as MeetingRoomRoundedIcon,
   Settings as SettingsIcon,
+  Language as LanguageIcon,
 } from "@material-ui/icons";
 import { format } from "date-fns";
+import { useTranslation } from "react-i18next";
 
 import { store } from "../../store.js";
 
@@ -89,6 +91,13 @@ function EditEvent() {
   const { palette } = useTheme();
   const handleChangeIndex = (index) => {
     setTabIndex(index);
+  };
+  const { i18n } = useTranslation("translation");
+
+  const changeLanguage = () => {
+    i18n.language === "it"
+      ? i18n.changeLanguage("en")
+      : i18n.changeLanguage("it");
   };
 
   const theme = {
@@ -177,8 +186,17 @@ function EditEvent() {
               >
                 <SettingsIcon fontSize="large" />
               </IconButton>
+              <Divider orientation="vertical" flexItem />
             </>
           )}
+          <IconButton color="default" onClick={changeLanguage}>
+            <Tooltip
+              title={i18n.language === "it" ? "English" : "Italiano"}
+              placement="bottom"
+            >
+              <LanguageIcon fontSize="large" />
+            </Tooltip>
+          </IconButton>
           <div
             style={{
               display: "flex",

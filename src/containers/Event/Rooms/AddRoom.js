@@ -1,10 +1,12 @@
 import React, { useContext } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 import "./Rooms.css";
 import { store } from "../../../store.js";
 
 function AddRoom() {
   const { addRoom } = useContext(store);
+  const { t } = useTranslation("translation");
 
   function addItem(e) {
     e.preventDefault();
@@ -17,9 +19,9 @@ function AddRoom() {
   return (
     <form name="addItemForm" className="Rooms-AddRoom-container">
       <Typography variant="h5" style={{ marginRight: "20px" }}>
-        Create new room:
+        {t("Add New Room")}:
       </Typography>
-      <TextField label="Room name" name="roomName" variant="filled" />
+      <TextField label={t("Room Name")} name="roomName" variant="filled" />
       <Button
         variant="contained"
         color="primary"
@@ -28,7 +30,7 @@ function AddRoom() {
         type="submit"
         onClick={addItem}
       >
-        Add
+        {t("Add")}
       </Button>
     </form>
   );

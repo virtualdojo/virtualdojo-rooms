@@ -3,10 +3,12 @@ import { TextField, Button, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import * as FirestoreService from "../../services/firestore";
+import { useTranslation } from "react-i18next";
 import "./JoinEvent.css";
 
 function JoinEvent(props) {
   const { event, onSelectUser, userId } = props;
+  const { t } = useTranslation("translation");
 
   const [error, setError] = useState();
   const { palette } = useTheme();
@@ -63,18 +65,18 @@ function JoinEvent(props) {
           align="center"
           style={{ marginBottom: "15px" }}
         >
-          Join the Dojo!
+          {t("Join Dojo")}!
         </Typography>
         <form name="addUserForm" className={"Join-form-container"}>
           <TextField
-            label="Your Full Name"
+            label={t("Full Name")}
             name="userName"
             variant="filled"
             color="primary"
             style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <TextField
-            label="Event Password"
+            label={t("Event Password")}
             name="eventPassword"
             variant="filled"
             color="primary"
@@ -88,7 +90,7 @@ function JoinEvent(props) {
             type="submit"
             onClick={addNewUser}
           >
-            {`Join`}
+            {t("Submit")}
           </Button>
         </form>
         <ErrorMessage errorCode={error}></ErrorMessage>

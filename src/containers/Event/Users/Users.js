@@ -18,6 +18,7 @@ import {
   ControlCamera as ControlCameraIcon,
   SupervisedUserCircle as SupervisedUserCircleIcon,
 } from "@material-ui/icons";
+import { useTranslation } from "react-i18next";
 
 import { store } from "../../../store.js";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
@@ -26,6 +27,7 @@ function Users() {
   const { currentUser, users, error, changeRoom, toggleIsMentor } = useContext(
     store
   );
+  const { t } = useTranslation("translation");
   return (
     <>
       <ErrorMessage errorCode={error}></ErrorMessage>
@@ -33,12 +35,12 @@ function Users() {
         <Table aria-label="users table">
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Room</TableCell>
-              <TableCell>Type</TableCell>
-              <TableCell align="right">Change Type</TableCell>
-              <TableCell align="right">Follow Me</TableCell>
-              <TableCell align="right">Follow Ninja</TableCell>
+              <TableCell>{t("Name")}</TableCell>
+              <TableCell>{t("Room")}</TableCell>
+              <TableCell>{t("Type")}</TableCell>
+              <TableCell align="right">{t("Change Type")}</TableCell>
+              <TableCell align="right">{t("Follow Me")}</TableCell>
+              <TableCell align="right">{t("Follow Ninja")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -57,7 +59,9 @@ function Users() {
                     disabled={currentUser.userId === u.userId}
                   >
                     <Tooltip
-                      title={u.isMentor ? "Set as Ninja" : "Set as Mentor"}
+                      title={
+                        u.isMentor ? t("Set As Ninja") : t("Set As Mentor")
+                      }
                       placement="bottom"
                       key={u.isMentor}
                     >
@@ -78,7 +82,7 @@ function Users() {
                       title={
                         currentUser.room.roomId === u.room.roomId
                           ? "Same room"
-                          : "Follow me"
+                          : t("Follow Me")
                       }
                       placement="bottom"
                       key={currentUser.room.roomId === u.room.roomId}
@@ -104,7 +108,7 @@ function Users() {
                       title={
                         currentUser.room.roomId === u.room.roomId
                           ? "Same room"
-                          : "Follow Ninja"
+                          : t("Follow Ninja")
                       }
                       placement="bottom"
                       key={currentUser.room.roomId === u.room.roomId}

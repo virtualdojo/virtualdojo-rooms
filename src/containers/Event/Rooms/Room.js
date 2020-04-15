@@ -12,6 +12,7 @@ import {
   Explore as ExploreIcon,
   ExploreOff as ExploreOffIcon,
 } from "@material-ui/icons";
+import { useTranslation } from "react-i18next";
 
 import { store } from "../../../store.js";
 import User from "./User";
@@ -22,6 +23,7 @@ const ItemTypes = {
 
 function Room({ room }) {
   const { currentUser, changeRoom, event } = useContext(store);
+  const { t } = useTranslation("translation");
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
     drop: () => {
@@ -87,7 +89,7 @@ function Room({ room }) {
                 title={
                   currentUser.room.roomId === room.roomId
                     ? "You are in this room"
-                    : "Explore this room"
+                    : t("Explore Room")
                 }
                 placement="bottom"
                 key={currentUser.room.roomId === room.roomId}
