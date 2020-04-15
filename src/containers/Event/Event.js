@@ -186,9 +186,9 @@ function EditEvent() {
               >
                 <SettingsIcon fontSize="large" />
               </IconButton>
+              <Divider orientation="vertical" flexItem />
             </>
           )}
-          <Divider orientation="vertical" flexItem />
           <IconButton color="default" onClick={changeLanguage}>
             <Tooltip
               title={i18n.language === "it" ? "English" : "Italiano"}
