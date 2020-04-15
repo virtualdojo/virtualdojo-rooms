@@ -6,7 +6,7 @@ import { store } from "../../../store.js";
 
 function AddDoc() {
   const { addDoc } = useContext(store);
-  const { t } = useTranslation();
+  const { t } = useTranslation("translation");
 
   const [error, setError] = useState();
 
