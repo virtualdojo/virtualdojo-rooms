@@ -1,10 +1,12 @@
 import React, { useContext, useState } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 import { store } from "../../../store.js";
 
 function AddDoc() {
   const { addDoc } = useContext(store);
+  const { t } = useTranslation();
 
   const [error, setError] = useState();
 
@@ -33,7 +35,7 @@ function AddDoc() {
   return (
     <form name="addDocForm" style={{ marginBottom: "20px" }}>
       <Typography variant="h5" align="center" style={{ marginBottom: "20px" }}>
-        Add new document:
+        {t("Add New Doc")}:
       </Typography>
       <div
         style={{
@@ -44,13 +46,13 @@ function AddDoc() {
         }}
       >
         <TextField
-          label="Doc Name"
+          label={t("Document Name")}
           name="docName"
           style={{ backgroundColor: "white" }}
           variant="outlined"
         />
         <TextField
-          label="Doc URL"
+          label={t("Document URL")}
           name="docUrl"
           style={{
             marginLeft: "20px",
@@ -67,7 +69,7 @@ function AddDoc() {
           type="submit"
           onClick={addItem}
         >
-          Add
+          {t("Add Button")}
         </Button>
       </div>
       <ErrorMessage errorCode={error}></ErrorMessage>
