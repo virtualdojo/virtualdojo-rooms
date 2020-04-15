@@ -96,7 +96,7 @@ function Settings() {
           setEventJitsiServer(jitsiServer);
         }}
       >
-        {t("Update")}:
+        {t("Update")}
       </Button>
     </div>
   );
