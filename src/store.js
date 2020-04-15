@@ -13,6 +13,7 @@ const initialState = {
   users: [],
   rooms: [],
   roomsUsers: [],
+  docs: [],
 };
 const store = createContext(initialState);
 const { Provider } = store;
