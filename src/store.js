@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useState,
 } from "react";
 import * as FirestoreService from "./services/firestore";
 
@@ -24,23 +25,36 @@ const StateProvider = ({ children }) => {
       case "SET_CURRENT_USER":
         return { ...state, currentUser: action.payload };
       case "SET_EVENT":
-        return { ...state, event: action.payload };
-      case "SET_EVENT_USERS":
-        return { ...state, users: action.payload || [] };
-      case "SET_EVENT_ROOMS":
-        return { ...state, rooms: action.payload || [] };
-      case "SET_EVENT_ROOMS_USERS":
-        return { ...state, roomsUsers: action.payload || [] };
-      case "SET_EVENT_DOCS":
-        return { ...state, docs: action.payload || [] };
+        return {
+          ...state,
+          event: action.payload,
+          users: action.payload.users || [],
+          rooms: action.payload.rooms || [],
+          docs: action.payload.docs || [],
+          roomsUsers: action.payload.roomsUsers || [],
+        };
+
       case "SET_ERROR":
         return { ...state, error: action.payload };
       default:
         throw new Error();
     }
   }, initialState);
-
+  const [eventSnapshot, setEventSnapshot] = useState(undefined);
   const eventId = state.event ? state.event.eventId : undefined;
+  useEffect(() => {
+    if (eventSnapshot) {
+      const timeoutId = setTimeout(
+        () =>
+          dispatch({
+            type: "SET_EVENT",
+            payload: { eventId, ...eventSnapshot },
+          }),
+        [500]
+      );
+      return () => clearTimeout(timeoutId);
+    }
+  }, [eventId, eventSnapshot]);
 
   const setCurrentUser = useCallback(
     (userId) => {
@@ -162,21 +176,7 @@ const StateProvider = ({ children }) => {
     if (!eventId) return;
     const unsubscribe = FirestoreService.streamEvent(eventId, {
       next: (querySnapshot) => {
-        const {
-          docs,
-          rooms,
-          roomsUsers,
-          users,
-          ...otherFields
-        } = querySnapshot.data();
-        dispatch({
-          type: "SET_EVENT",
-          payload: { eventId, ...otherFields },
-        });
-        dispatch({ type: "SET_EVENT_DOCS", payload: docs });
-        dispatch({ type: "SET_EVENT_ROOMS", payload: rooms });
-        dispatch({ type: "SET_EVENT_ROOMS_USERS", payload: roomsUsers });
-        dispatch({ type: "SET_EVENT_USERS", payload: users });
+        setEventSnapshot(querySnapshot.data());
       },
       error: () => setError("user-get-fail"),
     });

@@ -45,7 +45,7 @@ function Users() {
           </TableHead>
           <TableBody>
             {users.map((u) => (
-              <TableRow key={u.userId}>
+              <TableRow key={`${u.userId}${u.isMentor}`}>
                 <TableCell component="th" scope="row">
                   {u.userName}
                 </TableCell>

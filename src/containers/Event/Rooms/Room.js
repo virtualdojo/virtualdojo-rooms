@@ -108,7 +108,7 @@ function Room({ room }) {
         {room.users.map((u) => (
           <User
             inRoom
-            key={u.userId}
+            key={`${u.userId}${u.isMentor}`}
             user={u}
             changeRoom={changeRoom}
             currentUser={currentUser}

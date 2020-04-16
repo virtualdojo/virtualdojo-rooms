@@ -15,7 +15,7 @@ import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import useQueryString from "./hooks/useQueryString";
 
 function App() {
-  const { currentUser, event, setCurrentUser, setEvent } = useContext(store);
+  const { currentUser, event, setEvent } = useContext(store);
   const [userId, setUserId] = useState();
   const [error, setError] = useState();
   const [isLoading, setIsLoading] = useState(true);
