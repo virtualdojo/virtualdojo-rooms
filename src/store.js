@@ -26,13 +26,13 @@ const StateProvider = ({ children }) => {
       case "SET_EVENT":
         return { ...state, event: action.payload };
       case "SET_EVENT_USERS":
-        return { ...state, users: action.payload };
+        return { ...state, users: action.payload || [] };
       case "SET_EVENT_ROOMS":
-        return { ...state, rooms: action.payload };
+        return { ...state, rooms: action.payload || [] };
       case "SET_EVENT_ROOMS_USERS":
-        return { ...state, roomsUsers: action.payload };
+        return { ...state, roomsUsers: action.payload || [] };
       case "SET_EVENT_DOCS":
-        return { ...state, docs: action.payload };
+        return { ...state, docs: action.payload || [] };
       case "SET_ERROR":
         return { ...state, error: action.payload };
       default:
@@ -43,15 +43,18 @@ const StateProvider = ({ children }) => {
   const eventId = state.event ? state.event.eventId : undefined;
 
   const setCurrentUser = useCallback(
-    (payload) => {
+    (userId) => {
+      const payload = state.users.find((u) => u.userId === userId);
       dispatch({ type: "SET_CURRENT_USER", payload });
     },
-    [dispatch]
+    [state.users]
   );
 
   const setEvent = useCallback(
-    (payload) => {
-      dispatch({ type: "SET_EVENT", payload });
+    (event, userId) => {
+      const user = event.users.find((u) => u.userId === userId);
+      dispatch({ type: "SET_EVENT", payload: event });
+      dispatch({ type: "SET_CURRENT_USER", payload: user });
     },
     [dispatch]
   );
@@ -105,6 +108,41 @@ const StateProvider = ({ children }) => {
     [eventId, setError]
   );
 
+  const addUser = useCallback(
+    async (userId, userName, eventPassword) => {
+      if (!userName) {
+        setError("user-desc-req");
+        return;
+      }
+      if (!eventPassword && state.event.password !== eventPassword) {
+        setError("user-desc-req");
+        return;
+      }
+
+      try {
+        const user = {
+          userId,
+          userName,
+          isMentor: false,
+        };
+        await FirestoreService.addUser(user, eventId);
+        await FirestoreService.addUserToRoom(
+          userId,
+          state.event.defaultRoomId,
+          eventId
+        );
+        dispatch({ type: "SET_CURRENT_USER", payload: user });
+      } catch (reason) {
+        if (reason.message === "duplicate-item-error") {
+          setError(reason.message);
+        } else {
+          setError("add-list-item-error");
+        }
+      }
+    },
+    [eventId, setError, state.event]
+  );
+
   const updatePublicPeriod = useCallback(
     async (period) => {
       if (!period) {
@@ -124,66 +162,21 @@ const StateProvider = ({ children }) => {
     if (!eventId) return;
     const unsubscribe = FirestoreService.streamEvent(eventId, {
       next: (querySnapshot) => {
+        const {
+          docs,
+          rooms,
+          roomsUsers,
+          users,
+          ...otherFields
+        } = querySnapshot.data();
         dispatch({
           type: "SET_EVENT",
-          payload: { eventId, ...querySnapshot.data() },
+          payload: { eventId, ...otherFields },
         });
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, dispatch, setError]);
-
-  useEffect(() => {
-    if (!eventId) return;
-    const unsubscribe = FirestoreService.streamEventUsers(eventId, {
-      next: (querySnapshot) => {
-        const result = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        dispatch({ type: "SET_EVENT_USERS", payload: result });
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, dispatch, setError]);
-
-  useEffect(() => {
-    if (!eventId) return;
-    const unsubscribe = FirestoreService.streamEventRooms(eventId, {
-      next: (querySnapshot) => {
-        const result = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        dispatch({ type: "SET_EVENT_ROOMS", payload: result });
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, dispatch, setError]);
-
-  useEffect(() => {
-    if (!eventId) return;
-    const unsubscribe = FirestoreService.streamEventRoomsUsers(eventId, {
-      next: (querySnapshot) => {
-        const result = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        dispatch({ type: "SET_EVENT_ROOMS_USERS", payload: result });
-      },
-      error: () => setError("user-get-fail"),
-    });
-    return unsubscribe;
-  }, [eventId, dispatch, setError]);
-
-  useEffect(() => {
-    if (!eventId) return;
-    const unsubscribe = FirestoreService.streamEventDocs(eventId, {
-      next: (querySnapshot) => {
-        const result = querySnapshot.docs
-          ? querySnapshot.docs.map((docSnapshot) => docSnapshot.data())
-          : [];
-        dispatch({ type: "SET_EVENT_DOCS", payload: result });
+        dispatch({ type: "SET_EVENT_DOCS", payload: docs });
+        dispatch({ type: "SET_EVENT_ROOMS", payload: rooms });
+        dispatch({ type: "SET_EVENT_ROOMS_USERS", payload: roomsUsers });
+        dispatch({ type: "SET_EVENT_USERS", payload: users });
       },
       error: () => setError("user-get-fail"),
     });
@@ -191,8 +184,12 @@ const StateProvider = ({ children }) => {
   }, [eventId, dispatch, setError]);
 
   const toggleIsMentor = useCallback(
-    (user) =>
-      FirestoreService.setUserIsMentor(user.userId, eventId, !user.isMentor),
+    ({ userId, userName, isMentor }) =>
+      FirestoreService.setUserIsMentor(
+        { userId, userName, isMentor },
+        eventId,
+        !isMentor
+      ),
     [eventId]
   );
 
@@ -214,13 +211,19 @@ const StateProvider = ({ children }) => {
   );
 
   const changeRoom = useCallback(
-    (userId, roomId) => FirestoreService.addUserToRoom(userId, roomId, eventId),
-    [eventId]
+    (userId, roomId) => {
+      const oldRu = state.roomsUsers.find((ru) => ru.userId === userId);
+      FirestoreService.addUserToRoom(userId, roomId, eventId, oldRu);
+    },
+    [eventId, state.roomsUsers]
   );
 
   const deleteDoc = useCallback(
-    (docId) => FirestoreService.deleteDoc(docId, eventId),
-    [eventId]
+    (docId) => {
+      const doc = state.docs.find((d) => d.docId === docId);
+      if (doc) FirestoreService.deleteDoc(doc, eventId);
+    },
+    [eventId, state.docs]
   );
 
   const usersWithRoom = useMemo(() => {
@@ -283,6 +286,7 @@ const StateProvider = ({ children }) => {
         users: usersWithRoom,
         rooms: roomsWithUsers,
         docs: state.docs,
+        addUser,
         isEventOpen,
         setError,
         setCurrentUser,

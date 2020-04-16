@@ -40,7 +40,7 @@ function App() {
             .then((event) => {
               if (event.exists) {
                 setError(null);
-                setEvent({ eventId, ...event.data() });
+                setEvent({ eventId, ...event.data() }, userCredential.user.uid);
               } else {
                 setError("event-not-found");
                 setEventId();
@@ -48,14 +48,7 @@ function App() {
             })
             .catch(() => {
               setError("event-get-fail");
-            })
-            .then(() =>
-              FirestoreService.isUserRegistered(
-                eventId,
-                userCredential.user.uid
-              )
-            )
-            .then((result) => setCurrentUser(result));
+            });
         }
       })
       .then(() => setIsLoading(false))
@@ -74,21 +67,13 @@ function App() {
         setEventId();
         return;
       }
-      const user = await FirestoreService.isUserRegistered(eventId, userId);
       setEventId(eventId);
-      setCurrentUser(user);
-      setEvent({ eventId, ...event.data() });
+      setEvent({ eventId, ...event.data() }, userId);
       setError(null);
     } catch (err) {
       console.log(err);
       setError("event-get-fail");
     }
-  }
-
-  function onSelectUser() {
-    FirestoreService.isUserRegistered(eventId, userId)
-      .then((result) => setCurrentUser(result))
-      .catch(() => setError("event-get-fail"));
   }
 
   if (isLoading)
@@ -122,7 +107,7 @@ function App() {
     return (
       <div style={theme.container}>
         <ErrorMessage errorCode={error}></ErrorMessage>
-        <JoinEvent event={event} onSelectUser={onSelectUser} userId={userId} />
+        <JoinEvent userId={userId} />
       </div>
     );
   }

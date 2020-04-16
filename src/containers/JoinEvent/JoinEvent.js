@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
-import * as FirestoreService from "../../services/firestore";
 import { useTranslation } from "react-i18next";
+import { store } from "../../store.js";
 import "./JoinEvent.css";
 
 function JoinEvent(props) {
-  const { event, onSelectUser, userId } = props;
+  const { addUser } = useContext(store);
+  const { userId } = props;
   const { t } = useTranslation("translation");
 
   const [error, setError] = useState();
@@ -29,18 +30,7 @@ function JoinEvent(props) {
       return;
     }
 
-    FirestoreService.addUserToEvent(
-      userName,
-      eventPassword,
-      event.eventId,
-      event.defaultRoomId,
-      userId
-    )
-      .then(() => {
-        localStorage.setItem("userName", userName);
-        onSelectUser(userName);
-      })
-      .catch((err) => setError(err.message));
+    addUser(userId, userName, eventPassword);
   }
 
   const theme = {
