@@ -17,6 +17,7 @@
   "Follow Ninja": "Segui Ninja",
   "Free Movement": "Abilita tutti gli utenti a spostarsi fra le stanze",
   "Full Name": "Il tuo nome",
+  "Hello": "Ciao",
   "Jitsi Server": "Jitsi Server",
   "Join Dojo": "Unisciti al Dojo",
   "Name": "Nome",
@@ -26,6 +27,9 @@
   "Set As Mentor": "Imposta utente come Mentor",
   "Set As Ninja": "Imposta utente come Ninja",
   "Submit": "Invia",
+  "The Event Is Open From": "L'evento apre da",
+  "To": "a",
   "Type": "Ruolo",
-  "Update": "Aggiorna"
+  "Update": "Aggiorna",
+  "You Are In The Waiting Room": "ti trovi nella stanza d'attesa"
 }

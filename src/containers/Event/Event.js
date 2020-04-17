@@ -42,6 +42,7 @@ function TabPanel(props) {
 }
 
 function WaitingRoom({ theme, currentUser, event }) {
+  const { t } = useTranslation("translation");
   return (
     <div className="main-container" style={theme.container}>
       <div className={"Event-modal"} style={theme.modal}>
@@ -67,13 +68,15 @@ function WaitingRoom({ theme, currentUser, event }) {
             justifyContent: "center",
           }}
         >
-          <Typography variant="h3">{`Hi ${currentUser.userName}, you're in the waiting room!`}</Typography>
-          <Typography variant="h5">{`The event is open from`}</Typography>
+          <Typography variant="h3">{`${t("Hello")} ${currentUser.userName}, ${t(
+            "You Are In The Waiting Room"
+          )}!`}</Typography>
+          <Typography variant="h5">{t("The Event Is Open From")}</Typography>
           <Typography variant="h4">{`${format(
             event.publicPeriod.startDate.toDate(),
             "HH:mm - dd/MM/yyyy"
           )}`}</Typography>
-          <Typography variant="h5">{`to`}</Typography>
+          <Typography variant="h5">{t("To")}</Typography>
           <Typography variant="h4">{`${format(
             event.publicPeriod.endDate.toDate(),
             "HH:mm - dd/MM/yyyy"
