@@ -11,6 +11,7 @@ import {
 import {
   Explore as ExploreIcon,
   ExploreOff as ExploreOffIcon,
+  FileCopy as FileCopyIcon,
 } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
@@ -67,7 +68,7 @@ function Room({ room }) {
       }}
     >
       <Grid item container xs={12} spacing={1}>
-        <Grid item xs={10}>
+        <Grid item xs={8}>
           <Typography
             variant="h5"
             style={{ color: theme.text[activeClass], maxWidth: "150px" }}
@@ -76,7 +77,33 @@ function Room({ room }) {
             {room.roomName}
           </Typography>
         </Grid>
-        <Grid item xs={1}>
+
+        {currentUser.isMentor && (
+          <Grid item xs={2}>
+            <IconButton
+              aria-label="promote"
+              color={
+                currentUser.room.roomId === room.roomId
+                  ? "primary"
+                  : "secondary"
+              }
+              onClick={() => {
+                const el = document.createElement("textarea");
+                el.value = `${event.jitsiServer}/${room.roomId}`;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand("copy");
+                document.body.removeChild(el);
+              }}
+              style={{ padding: 0 }}
+            >
+              <Tooltip title={"Copy Jitsi link"}>
+                <FileCopyIcon />
+              </Tooltip>
+            </IconButton>
+          </Grid>
+        )}
+        <Grid item xs={2}>
           {event.hasFreeMovement && (
             <IconButton
               aria-label="promote"

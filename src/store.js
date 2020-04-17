@@ -157,6 +157,14 @@ const StateProvider = ({ children }) => {
     [eventId, setError, state.event]
   );
 
+  const deleteUser = useCallback(
+    (userId) => {
+      const user = state.users.find((u) => u.userId === userId);
+      if (user) FirestoreService.deleteUser(user, eventId);
+    },
+    [eventId, state.users]
+  );
+
   const updatePublicPeriod = useCallback(
     async (period) => {
       if (!period) {
@@ -287,6 +295,7 @@ const StateProvider = ({ children }) => {
         rooms: roomsWithUsers,
         docs: state.docs,
         addUser,
+        deleteUser,
         isEventOpen,
         setError,
         setCurrentUser,

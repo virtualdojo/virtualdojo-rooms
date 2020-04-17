@@ -138,6 +138,15 @@ export const setUserIsMentor = async (user, eventId, isMentor) => {
     });
 };
 
+export const deleteUser = async (user, eventId) => {
+  return db
+    .collection("events")
+    .doc(eventId)
+    .update({
+      users: firebase.firestore.FieldValue.arrayRemove(user),
+    });
+};
+
 export const setEventPublicPeriod = (eventId, { startDate, endDate }) => {
   return db
     .collection("events")

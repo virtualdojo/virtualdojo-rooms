@@ -17,6 +17,7 @@ import {
   ExploreOff as ExploreOffIcon,
   ControlCamera as ControlCameraIcon,
   SupervisedUserCircle as SupervisedUserCircleIcon,
+  DeleteForever as DeleteForeverIcon,
 } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
@@ -24,9 +25,14 @@ import { store } from "../../../store.js";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
 function Users() {
-  const { currentUser, users, error, changeRoom, toggleIsMentor } = useContext(
-    store
-  );
+  const {
+    currentUser,
+    users,
+    error,
+    changeRoom,
+    toggleIsMentor,
+    deleteUser,
+  } = useContext(store);
   const { t } = useTranslation("translation");
   return (
     <>
@@ -41,6 +47,7 @@ function Users() {
               <TableCell align="right">{t("Change Type")}</TableCell>
               <TableCell align="right">{t("Follow Me")}</TableCell>
               <TableCell align="right">{t("Follow Ninja")}</TableCell>
+              <TableCell align="right">{t("Delete Ninja")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -118,6 +125,18 @@ function Users() {
                       ) : (
                         <ControlCameraIcon />
                       )}
+                    </Tooltip>
+                  </IconButton>
+                </TableCell>
+                <TableCell align="right">
+                  <IconButton
+                    aria-label="promote"
+                    color="primary"
+                    onClick={() => deleteUser(u.userId)}
+                    disabled={currentUser.userId === u.userId}
+                  >
+                    <Tooltip title={t("Delete Ninja")} placement="bottom">
+                      <DeleteForeverIcon />
                     </Tooltip>
                   </IconButton>
                 </TableCell>
