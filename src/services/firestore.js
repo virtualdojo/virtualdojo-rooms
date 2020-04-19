@@ -1,6 +1,7 @@
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
+import "firebase/functions";
 import { v4 as uuidv4 } from "uuid";
 import { addDays } from "date-fns";
 
@@ -12,6 +13,12 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+if (process.env.NODE_ENV === "development") {
+  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+}
+
+const setIsMentor = firebase.functions().httpsCallable("setIsMentor");
 
 export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
@@ -123,19 +130,8 @@ export const removeUserInRoom = (room, eventId) => {
     });
 };
 
-export const setUserIsMentor = async (user, eventId, isMentor) => {
-  await db
-    .collection("events")
-    .doc(eventId)
-    .update({
-      users: firebase.firestore.FieldValue.arrayUnion({ ...user, isMentor }),
-    });
-  return db
-    .collection("events")
-    .doc(eventId)
-    .update({
-      users: firebase.firestore.FieldValue.arrayRemove(user),
-    });
+export const setUserIsMentor = async (userId, eventId, isMentor) => {
+  return setIsMentor({ eventId, userId, isMentor });
 };
 
 export const deleteUser = async (user, eventId) => {

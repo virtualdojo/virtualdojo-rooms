@@ -192,12 +192,8 @@ const StateProvider = ({ children }) => {
   }, [eventId, dispatch, setError]);
 
   const toggleIsMentor = useCallback(
-    ({ userId, userName, isMentor }) =>
-      FirestoreService.setUserIsMentor(
-        { userId, userName, isMentor },
-        eventId,
-        !isMentor
-      ),
+    ({ userId, isMentor }) =>
+      FirestoreService.setUserIsMentor(userId, eventId, !isMentor),
     [eventId]
   );
 

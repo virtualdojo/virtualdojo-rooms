@@ -1,8 +1,8 @@
 # VirtualDojo Rooms
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-3-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
-https://www.virtualdojo.it/
+https://www.app.virtualdojo.it/
 
 Create and manage classroom sessions with multiple video chat rooms. It can also be useful to organise small conference or meetup with various topics.
 
@@ -24,12 +24,23 @@ Most of the contributors are mentor from several CoderDojo organizations in Ital
 ## Development
 Create a new Firebase project and copy and rename the `.env` file to `.env.development.local` and add your Firebase Web credentials. Remember to enable anonymous authentication.
 
+We use also Firebase Functions and to enable local development set up [admin credential](https://firebase.google.com/docs/functions/local-emulator#set_up_admin_credentials_optional). The key should be located in `/functions/dev-admin.key.json`.
+
 To start development run the following commands:
 
 ```
 npm i
 npm start
 ```
+
+Then, open another terminal and run the Functions emulator:
+
+```
+cd functions
+npm run serve
+```
+
+## Deploy
 
 To deploy in production you have to create a new Firebase Web app and add the credentials to `.env.production.local`. Install the Firebase CLI and init your project with hosting enabled, then run:
 
