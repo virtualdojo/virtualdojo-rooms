@@ -3,7 +3,7 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "lint": "eslint .",
-    "serve": "firebase use dev && GOOGLE_APPLICATION_CREDENTIALS=\"npmdev-admin.key.json\" firebase emulators:start --only functions",
+    "serve": "firebase use dev && GOOGLE_APPLICATION_CREDENTIALS=\"dev-admin.key.json\" firebase emulators:start --only functions",
     "shell": "firebase functions:shell",
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
