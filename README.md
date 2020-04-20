@@ -6,6 +6,12 @@ https://app.virtualdojo.it/
 
 Create and manage classroom sessions with multiple video chat rooms. It can also be useful to organise small conference or meetup with various topics.
 
+| | | |
+|:-------------------------:|:-------------------------:|:-------------------------:|
+|<img width="1440" alt="create new event" src="https://user-images.githubusercontent.com/2692166/79786536-e9fee680-8345-11ea-82f7-83e56af343eb.png">  Create New Event |  <img width="1440" alt="join event" src="https://user-images.githubusercontent.com/2692166/79786530-e79c8c80-8345-11ea-85c5-5b3854ac74a5.png"> Join Event | 
+| <img width="1440" alt="jitsi view" src="https://user-images.githubusercontent.com/2692166/79785564-5678e600-8344-11ea-9322-069411321969.png"> Main Screen (Jitsi) | <img width="1440" alt="rooms view" src="https://user-images.githubusercontent.com/2692166/79785740-a657ad00-8344-11ea-81b7-0ddf01f0681f.png">  Rooms |
+|<img width="1440" alt="documents" src="https://user-images.githubusercontent.com/2692166/79785759-ace62480-8344-11ea-975e-3373000feacb.png"> Shared Documents | <img width="1440" alt="settings" src="https://user-images.githubusercontent.com/2692166/79786349-97bdc580-8345-11ea-9c17-bb6619b16e9b.png"> Settings | 
+
 ## Motivations
 The idea is born from various [CoderDojo](https://coderdojo.com/) mentors that were looking for an open source tool with the following characteristics:
 
