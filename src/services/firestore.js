@@ -37,6 +37,7 @@ export const createEvent = async (
     name: eventName,
     password: eventPassword,
     defaultRoomId,
+    mentors: [userId],
     users: [
       {
         userId: userId,
@@ -54,12 +55,18 @@ export const createEvent = async (
     rooms: [],
     roomsUsers: [],
   });
+  await db
+    .collection("events")
+    .doc(docRef.id)
+    .collection("additionalData")
+    .doc("private")
+    .set({ password: eventPassword });
   await addRoom("all", docRef.id, defaultRoomId);
   await addUserToRoom(userId, defaultRoomId, docRef.id);
   return docRef;
 };
 
-export const getEvent = (eventId) => {
+export const getEvent = async (eventId) => {
   return db.collection("events").doc(eventId).get();
 };
 

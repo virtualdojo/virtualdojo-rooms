@@ -40,6 +40,7 @@ function CreateEvent(props) {
         onCreate(docRef.id, userName);
       })
       .catch((reason) => {
+        console.log("Create event error: ", reason);
         setError("create-list-error");
       });
   }

@@ -46,13 +46,15 @@ function App() {
                 setEventId();
               }
             })
-            .catch(() => {
+            .catch((err) => {
+              console.log("Get event error: ", err);
               setError("event-get-fail");
             });
         }
       })
       .then(() => setIsLoading(false))
-      .catch(() => {
+      .catch((err) => {
+        console.log("auth err ", err);
         setError("anonymous-auth-failed");
         setIsLoading(false);
       });

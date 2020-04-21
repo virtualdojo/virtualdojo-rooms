@@ -20,7 +20,7 @@ i18n
   .init({
     resources,
     fallbackLng: "en",
-    debug: true,
+    debug: process.env.NODE_ENV === "production" ? false : true,
 
     keySeparator: false, // we do not use keys in form messages.welcome
 
