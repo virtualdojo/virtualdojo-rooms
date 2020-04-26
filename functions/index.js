@@ -51,7 +51,7 @@ exports.setIsMentor = functions.https.onCall(async (data, context) => {
       } else {
         throw new functions.https.HttpsError(
           "failed-precondition",
-          "The event ha no users field"
+          "The event has no users field"
         );
       }
     });
@@ -61,5 +61,64 @@ exports.setIsMentor = functions.https.onCall(async (data, context) => {
 
   return {
     ...returnUser,
+  };
+});
+
+exports.moveUserToRoom = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "The function must be called while authenticated."
+    );
+  }
+  if (!data) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Payload must not be empty"
+    );
+  }
+  const { eventId, userId, roomId } = data;
+  const uid = context.auth.uid;
+
+  let returnRoomUser = {};
+  try {
+    returnRoomUser = await db.runTransaction(async (t) => {
+      let eventRef = db.collection("events").doc(eventId);
+      const doc = await t.get(eventRef);
+      let { users, rooms, roomsUsers } = doc.data() || {};
+      if (users && rooms && roomsUsers) {
+        const hasUser = users.findIndex((u) => u.userId === userId) >= 0;
+        const hasRoom = rooms.findIndex((r) => r.roomId === roomId) >= 0;
+        if (!hasUser || !hasRoom) {
+          throw new functions.https.HttpsError(
+            "not-found",
+            "User or Room not found"
+          );
+        }
+        // event has users property
+        const roomUserIndex = roomsUsers.findIndex(
+          (ru) => ru.userId === userId
+        );
+        const updatedRoomUser = { userId, roomId };
+        if (roomUserIndex >= 0) {
+          roomsUsers[roomUserIndex] = updatedRoomUser;
+        } else {
+          roomsUsers.push(updatedRoomUser);
+        }
+        await t.update(eventRef, { roomsUsers });
+        return updatedRoomUser;
+      } else {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "The event has no fields"
+        );
+      }
+    });
+  } catch (err) {
+    throw new functions.https.HttpsError("aborted", err.message);
+  }
+
+  return {
+    ...returnRoomUser,
   };
 });

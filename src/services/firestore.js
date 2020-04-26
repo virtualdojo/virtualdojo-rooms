@@ -19,6 +19,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 const setIsMentor = firebase.functions().httpsCallable("setIsMentor");
+const moveUserToRoom = firebase.functions().httpsCallable("moveUserToRoom");
 
 export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
@@ -116,16 +117,7 @@ export const addUserToRoom = async (
   eventId,
   oldRoomUser = undefined
 ) => {
-  await db
-    .collection("events")
-    .doc(eventId)
-    .update({
-      roomsUsers: firebase.firestore.FieldValue.arrayUnion({
-        roomId: roomId,
-        userId: userId,
-      }),
-    });
-  if (oldRoomUser) await removeUserInRoom(oldRoomUser, eventId);
+  await moveUserToRoom({ userId, roomId, eventId });
 };
 
 export const removeUserInRoom = (room, eventId) => {
