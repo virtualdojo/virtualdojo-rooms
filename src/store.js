@@ -4,7 +4,6 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useState,
 } from "react";
 import * as FirestoreService from "./services/firestore";
 
@@ -40,21 +39,7 @@ const StateProvider = ({ children }) => {
         throw new Error();
     }
   }, initialState);
-  const [eventSnapshot, setEventSnapshot] = useState(undefined);
   const eventId = state.event ? state.event.eventId : undefined;
-  useEffect(() => {
-    if (eventSnapshot) {
-      const timeoutId = setTimeout(
-        () =>
-          dispatch({
-            type: "SET_EVENT",
-            payload: { eventId, ...eventSnapshot },
-          }),
-        [500]
-      );
-      return () => clearTimeout(timeoutId);
-    }
-  }, [eventId, eventSnapshot]);
 
   const setCurrentUser = useCallback(
     (userId) => {
@@ -184,7 +169,10 @@ const StateProvider = ({ children }) => {
     if (!eventId) return;
     const unsubscribe = FirestoreService.streamEvent(eventId, {
       next: (querySnapshot) => {
-        setEventSnapshot(querySnapshot.data());
+        dispatch({
+          type: "SET_EVENT",
+          payload: { eventId, ...querySnapshot.data() },
+        });
       },
       error: () => setError("user-get-fail"),
     });
