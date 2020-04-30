@@ -120,15 +120,6 @@ export const addUserToRoom = async (
   await moveUserToRoom({ userId, roomId, eventId });
 };
 
-export const removeUserInRoom = (room, eventId) => {
-  return db
-    .collection("events")
-    .doc(eventId)
-    .update({
-      roomsUsers: firebase.firestore.FieldValue.arrayRemove(room),
-    });
-};
-
 export const setUserIsMentor = async (userId, eventId, isMentor) => {
   return setIsMentor({ eventId, userId, isMentor });
 };

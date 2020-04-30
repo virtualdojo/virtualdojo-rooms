@@ -5,6 +5,7 @@ import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 
 import * as FirestoreService from "./services/firestore";
+import * as LoggerService from "./services/logger";
 import { store } from "./store.js";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
