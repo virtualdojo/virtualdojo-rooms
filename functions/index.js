@@ -1,8 +1,170 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const { v4: uuidv4 } = require("uuid");
 
 admin.initializeApp();
 const db = admin.firestore();
+
+function addDays(date, days) {
+  var result = new Date(date);
+  result.setDate(result.getDate() + days);
+  return result;
+}
+
+exports.createEvent = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "The function must be called while authenticated."
+    );
+  }
+  if (!data) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Payload must not be empty"
+    );
+  }
+  const {
+    eventName,
+    eventPassword,
+    mentorPassword,
+    userName,
+    additionalConfig,
+    roomName,
+  } = data;
+  const userId = context.auth.uid;
+
+  let returnUser = {};
+
+  const defaultRoomId = uuidv4();
+  let returnDocId;
+  try {
+    const docRef = await db.collection("events").add({
+      created: admin.firestore.FieldValue.serverTimestamp(),
+      createdBy: userId,
+      name: eventName,
+      password: eventPassword,
+      defaultRoomId,
+      mentors: [userId],
+      users: [
+        {
+          userId,
+          userName,
+          isMentor: true,
+        },
+      ],
+      publicPeriod: {
+        startDate: admin.firestore.FieldValue.serverTimestamp(),
+        endDate: addDays(new Date(), 7),
+      },
+      hasFreeMovement: false,
+      jitsiServer: "meet.jit.si",
+      docs: [],
+      rooms: [
+        {
+          roomId: defaultRoomId,
+          roomName,
+        },
+      ],
+      roomsUsers: [
+        {
+          roomId: defaultRoomId,
+          userId,
+        },
+      ],
+    });
+
+    await db
+      .collection("events")
+      .doc(docRef.id)
+      .collection("additionalData")
+      .doc("private")
+      .set({ password: eventPassword, mentorPassword });
+    returnDocId = docRef.id;
+  } catch (err) {
+    throw new functions.https.HttpsError("aborted", err.message);
+  }
+
+  return {
+    id: returnDocId,
+  };
+});
+
+exports.joinEvent = functions.https.onCall(async (data, context) => {
+  if (!context.auth) {
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "The function must be called while authenticated."
+    );
+  }
+  if (!data) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Payload must not be empty"
+    );
+  }
+
+  const { userName, eventId, password } = data;
+  const userId = context.auth.uid;
+
+  let returnUser = {};
+  try {
+    returnUser = await db.runTransaction(async (t) => {
+      let eventRef = db.collection("events").doc(eventId);
+      const doc = await t.get(eventRef);
+      let privateData = await db
+        .collection("events")
+        .doc(eventId)
+        .collection("additionalData")
+        .doc("private")
+        .get();
+      let { users, mentors, roomsUsers, defaultRoomId } = doc.data() || {};
+      let { password: eventPassword, mentorPassword } =
+        privateData.data() || {};
+      console.log("password, mentorPassword", password, mentorPassword);
+      if (users) {
+        const hasUser = users.findIndex((u) => u.userId === userId) >= 0;
+        if (hasUser) {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "User already registered"
+          );
+        }
+        if (password !== eventPassword && password !== mentorPassword) {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "wrong password"
+          );
+        }
+        const user = {
+          userId,
+          userName,
+          isMentor: password === mentorPassword,
+        };
+        const hasUserAsMentor = mentors.findIndex((m) => m === userId) >= 0;
+        if (password === mentorPassword && !hasUserAsMentor) {
+          mentors.push(userId);
+        }
+        await t.update(eventRef, {
+          users: users.concat(user),
+          roomsUsers: roomsUsers.concat({ userId, roomId: defaultRoomId }),
+          mentors,
+        });
+        return user;
+      } else {
+        throw new functions.https.HttpsError(
+          "failed-precondition",
+          "The event has no users fields"
+        );
+      }
+    });
+  } catch (err) {
+    throw new functions.https.HttpsError("aborted", err.message);
+  }
+  return {
+    ...returnUser,
+  };
+});
 
 exports.setIsMentor = functions.https.onCall(async (data, context) => {
   if (!context.auth) {

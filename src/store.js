@@ -6,14 +6,18 @@ import React, {
   useMemo,
 } from "react";
 import * as FirestoreService from "./services/firestore";
+import useQueryString from "./hooks/useQueryString";
 
 const initialState = {
-  currentUser: undefined,
+  isInitializing: true,
+  isLoading: false,
+  authUser: undefined,
   event: undefined,
   users: [],
   rooms: [],
   roomsUsers: [],
   docs: [],
+  error: undefined,
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -21,9 +25,25 @@ const { Provider } = store;
 const StateProvider = ({ children }) => {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
-      case "SET_CURRENT_USER":
-        return { ...state, currentUser: action.payload };
-      case "SET_EVENT":
+      case "SET_AUTH_USER":
+        return {
+          ...state,
+          authUser: action.payload,
+          error: undefined,
+          isInitializing: false,
+        };
+      case "EVENT_FETCH_START":
+        return {
+          ...state,
+          event: undefined,
+          users: [],
+          rooms: [],
+          docs: [],
+          roomsUsers: [],
+          error: undefined,
+          isLoading: true,
+        };
+      case "EVENT_FETCH_END":
         return {
           ...state,
           event: action.payload,
@@ -31,32 +51,32 @@ const StateProvider = ({ children }) => {
           rooms: action.payload.rooms || [],
           docs: action.payload.docs || [],
           roomsUsers: action.payload.roomsUsers || [],
+          error: undefined,
+          isLoading: false,
         };
 
       case "SET_ERROR":
-        return { ...state, error: action.payload };
+        return {
+          ...state,
+          error: action.payload,
+          isLoading: false,
+          isInitializing: false,
+        };
       default:
-        throw new Error();
+        console.error("Invalid action type ", action);
+        return state;
     }
   }, initialState);
-  const eventId = state.event ? state.event.eventId : undefined;
+  const [queryEventId, setQueryEventId] = useQueryString("eventId");
+  const eventId = queryEventId;
 
-  const setCurrentUser = useCallback(
-    (userId) => {
-      const payload = state.users.find((u) => u.userId === userId);
-      dispatch({ type: "SET_CURRENT_USER", payload });
-    },
-    [state.users]
-  );
+  const setAuthUser = useCallback((payload) => {
+    dispatch({ type: "SET_AUTH_USER", payload });
+  }, []);
 
-  const setEvent = useCallback(
-    (event, userId) => {
-      const user = event.users.find((u) => u.userId === userId);
-      dispatch({ type: "SET_EVENT", payload: event });
-      dispatch({ type: "SET_CURRENT_USER", payload: user });
-    },
-    [dispatch]
-  );
+  const setEvent = useCallback((event) => {
+    dispatch({ type: "EVENT_FETCH_END", payload: event });
+  }, []);
 
   const setError = useCallback(
     (payload) => {
@@ -84,6 +104,43 @@ const StateProvider = ({ children }) => {
     [eventId, setError]
   );
 
+  const createEvent = useCallback(
+    async ({ eventName, eventPassword, mentorPassword, userName }) => {
+      if (!eventName) {
+        setError("user-desc-req");
+        return;
+      }
+      if (!eventPassword) {
+        setError("user-desc-req");
+        return;
+      }
+
+      if (!mentorPassword) {
+        setError("user-desc-req");
+        return;
+      }
+
+      if (!userName) {
+        setError("user-desc-req");
+        return;
+      }
+
+      try {
+        const eventId = await FirestoreService.createEvent({
+          eventName: eventName.trim(),
+          eventPassword: eventPassword.trim(),
+          mentorPassword: mentorPassword.trim(),
+          userName: userName.trim(),
+          additionalConfig: {},
+        });
+        setQueryEventId(eventId);
+      } catch (err) {
+        setError(err.message);
+      }
+    },
+    [setError, setQueryEventId]
+  );
+
   const addDoc = useCallback(
     async (url, name) => {
       if (!url) {
@@ -108,38 +165,28 @@ const StateProvider = ({ children }) => {
   );
 
   const addUser = useCallback(
-    async (userId, userName, eventPassword) => {
+    async ({ userName, eventPassword }) => {
       if (!userName) {
         setError("user-desc-req");
         return;
       }
-      if (!eventPassword && state.event.password !== eventPassword) {
+
+      if (!eventPassword) {
         setError("user-desc-req");
         return;
       }
 
       try {
-        const user = {
-          userId,
-          userName,
-          isMentor: false,
-        };
-        await FirestoreService.addUser(user, eventId);
-        await FirestoreService.addUserToRoom(
-          userId,
-          state.event.defaultRoomId,
-          eventId
+        await FirestoreService.addUserToEvent(
+          userName.trim(),
+          eventId,
+          eventPassword.trim()
         );
-        dispatch({ type: "SET_CURRENT_USER", payload: user });
-      } catch (reason) {
-        if (reason.message === "duplicate-item-error") {
-          setError(reason.message);
-        } else {
-          setError("add-list-item-error");
-        }
+      } catch (err) {
+        setError(err.message);
       }
     },
-    [eventId, setError, state.event]
+    [eventId, setError]
   );
 
   const deleteUser = useCallback(
@@ -166,18 +213,28 @@ const StateProvider = ({ children }) => {
   );
 
   useEffect(() => {
-    if (!eventId) return;
+    async function getUser() {
+      const userCredential = await FirestoreService.authenticateAnonymously();
+      if (userCredential) {
+        setAuthUser(userCredential.user);
+      } else {
+        setError("Authentication error");
+      }
+    }
+    getUser();
+  }, [setAuthUser, setError]);
+
+  useEffect(() => {
+    if (!eventId || !state.authUser) return;
+    dispatch({ type: "EVENT_FETCH_START" });
     const unsubscribe = FirestoreService.streamEvent(eventId, {
       next: (querySnapshot) => {
-        dispatch({
-          type: "SET_EVENT",
-          payload: { eventId, ...querySnapshot.data() },
-        });
+        setEvent({ eventId, ...querySnapshot.data() });
       },
       error: () => setError("user-get-fail"),
     });
     return unsubscribe;
-  }, [eventId, dispatch, setError]);
+  }, [eventId, state.authUser, dispatch, setError, setEvent]);
 
   const toggleIsMentor = useCallback(
     ({ userId, isMentor }) =>
@@ -251,11 +308,9 @@ const StateProvider = ({ children }) => {
   }, [state.users, state.rooms, state.roomsUsers]);
 
   const currentUserWithRoom = useMemo(() => {
-    return (
-      state.currentUser &&
-      usersWithRoom.find((u) => u.userId === state.currentUser.userId)
-    );
-  }, [state.currentUser, usersWithRoom]);
+    if (!state.authUser || !state.event) return;
+    return usersWithRoom.find((u) => u.userId === state.authUser.uid);
+  }, [state.authUser, state.event, usersWithRoom]);
 
   const isEventOpen = useMemo(() => {
     if (state.event && state.event.publicPeriod) {
@@ -273,16 +328,18 @@ const StateProvider = ({ children }) => {
   return (
     <Provider
       value={{
+        isInitializing: state.isInitializing,
         event: state.event,
         currentUser: currentUserWithRoom,
         users: usersWithRoom,
         rooms: roomsWithUsers,
         docs: state.docs,
+        error: state.error,
+        createEvent,
         addUser,
         deleteUser,
         isEventOpen,
         setError,
-        setCurrentUser,
         setEvent,
         addRoom,
         toggleIsMentor,

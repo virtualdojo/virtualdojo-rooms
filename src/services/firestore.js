@@ -3,7 +3,6 @@ import "firebase/firestore";
 import "firebase/auth";
 import "firebase/functions";
 import { v4 as uuidv4 } from "uuid";
-import { addDays } from "date-fns";
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -18,53 +17,35 @@ if (process.env.NODE_ENV === "development") {
   firebase.functions().useFunctionsEmulator("http://localhost:5001");
 }
 
-const setIsMentor = firebase.functions().httpsCallable("setIsMentor");
-const moveUserToRoom = firebase.functions().httpsCallable("moveUserToRoom");
+const setIsMentorFunction = firebase
+  .functions()
+  .httpsCallable("setIsMentorFunction");
+const moveUserToRoomFunction = firebase
+  .functions()
+  .httpsCallable("moveUserToRoomFunction");
+const createEventFunction = firebase.functions().httpsCallable("createEvent");
+const joinEvent = firebase.functions().httpsCallable("joinEvent");
 
 export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
 };
 
-export const createEvent = async (
+export const createEvent = async ({
   eventName,
   eventPassword,
+  mentorPassword,
   userName,
-  userId
-) => {
-  const defaultRoomId = uuidv4();
-  const docRef = await db.collection("events").add({
-    created: firebase.firestore.FieldValue.serverTimestamp(),
-    createdBy: userId,
-    name: eventName,
-    password: eventPassword,
-    defaultRoomId,
-    mentors: [userId],
-    users: [
-      {
-        userId: userId,
-        userName: userName,
-        isMentor: true,
-      },
-    ],
-    publicPeriod: {
-      startDate: firebase.firestore.FieldValue.serverTimestamp(),
-      endDate: addDays(new Date(), 7),
-    },
-    hasFreeMovement: false,
-    jitsiServer: "meet.jit.si",
-    docs: [],
-    rooms: [],
-    roomsUsers: [],
+  additionalConfig,
+}) => {
+  const { data } = await createEventFunction({
+    eventName,
+    eventPassword,
+    mentorPassword,
+    userName,
+    roomName: "All",
+    additionalConfig,
   });
-  await db
-    .collection("events")
-    .doc(docRef.id)
-    .collection("additionalData")
-    .doc("private")
-    .set({ password: eventPassword });
-  await addRoom("all", docRef.id, defaultRoomId);
-  await addUserToRoom(userId, defaultRoomId, docRef.id);
-  return docRef;
+  return data.id;
 };
 
 export const getEvent = async (eventId) => {
@@ -90,13 +71,13 @@ export const isUserRegistered = (eventId, userId) => {
     });
 };
 
-export const addUser = async (user, eventId) => {
-  return db
-    .collection("events")
-    .doc(eventId)
-    .update({
-      users: firebase.firestore.FieldValue.arrayUnion(user),
-    });
+export const addUserToEvent = async (userName, eventId, password) => {
+  const { data } = await joinEvent({
+    userName,
+    eventId,
+    password,
+  });
+  return data;
 };
 
 export const addRoom = async (roomName, eventId, roomId = uuidv4()) => {
@@ -117,11 +98,11 @@ export const addUserToRoom = async (
   eventId,
   oldRoomUser = undefined
 ) => {
-  await moveUserToRoom({ userId, roomId, eventId });
+  await moveUserToRoomFunction({ userId, roomId, eventId });
 };
 
 export const setUserIsMentor = async (userId, eventId, isMentor) => {
-  return setIsMentor({ eventId, userId, isMentor });
+  return setIsMentorFunction({ eventId, userId, isMentor });
 };
 
 export const deleteUser = async (user, eventId) => {

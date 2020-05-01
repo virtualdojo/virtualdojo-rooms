@@ -1,48 +1,30 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
-import * as FirestoreService from "../../services/firestore";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { useTranslation } from "react-i18next";
+import { store } from "../../store.js";
 import "./CreateEvent.css";
 
 function CreateEvent(props) {
-  const { onCreate, userId } = props;
+  const { createEvent, error } = useContext(store);
   const { t } = useTranslation("translation");
-
-  const [error, setError] = useState();
   const { palette } = useTheme();
 
-  function createEvent(e) {
+  async function create(e) {
     e.preventDefault();
-    setError(null);
 
     const eventName = document.createListForm.eventName.value;
-    if (!eventName) {
-      setError("event-name-required");
-      return;
-    }
-
     const userName = document.createListForm.userName.value;
-    if (!userName) {
-      setError("user-name-required");
-      return;
-    }
-
     const eventPassword = document.createListForm.eventPassword.value;
-    if (!eventPassword) {
-      setError("user-name-required");
-      return;
-    }
+    const mentorPassword = document.createListForm.mentorPassword.value;
 
-    FirestoreService.createEvent(eventName, eventPassword, userName, userId)
-      .then((docRef) => {
-        onCreate(docRef.id, userName);
-      })
-      .catch((reason) => {
-        console.log("Create event error: ", reason);
-        setError("create-list-error");
-      });
+    createEvent({
+      eventName,
+      eventPassword,
+      mentorPassword,
+      userName,
+    });
   }
 
   const theme = {
@@ -85,8 +67,15 @@ function CreateEvent(props) {
             style={{ marginBottom: "20px", backgroundColor: "white" }}
           />
           <TextField
-            label={t("Event Password")}
+            label={t("Users Password")}
             name="eventPassword"
+            variant="filled"
+            color="primary"
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
+          />
+          <TextField
+            label={t("Mentors Password")}
+            name="mentorPassword"
             variant="filled"
             color="primary"
             style={{ marginBottom: "20px", backgroundColor: "white" }}
@@ -97,7 +86,7 @@ function CreateEvent(props) {
             size="large"
             style={{ fontWeight: 600 }}
             type="submit"
-            onClick={createEvent}
+            onClick={create}
           >
             {t("Submit")}
           </Button>

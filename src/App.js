@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
 import { DndProvider } from "react-dnd";
 import Backend from "react-dnd-html5-backend";
 
-import * as FirestoreService from "./services/firestore";
 import * as LoggerService from "./services/logger";
 import { store } from "./store.js";
 
@@ -13,17 +12,11 @@ import JoinEvent from "./containers/JoinEvent/JoinEvent";
 import Event from "./containers/Event/Event";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
-import useQueryString from "./hooks/useQueryString";
-
 function App() {
-  const { currentUser, event, setEvent } = useContext(store);
-  const [userId, setUserId] = useState();
-  const [error, setError] = useState();
-  const [isLoading, setIsLoading] = useState(true);
-
-  const [eventId, setEventId] = useQueryString("eventId");
+  const { currentUser, event, isLoading, error, isInitializing } = useContext(
+    store
+  );
   const { palette } = useTheme();
-
   const theme = {
     container: {
       background: palette.primary.main,
@@ -32,54 +25,7 @@ function App() {
     },
   };
 
-  useEffect(() => {
-    FirestoreService.authenticateAnonymously()
-      .then((userCredential) => {
-        setUserId(userCredential.user.uid);
-        if (eventId) {
-          return FirestoreService.getEvent(eventId)
-            .then((event) => {
-              if (event.exists) {
-                setError(null);
-                setEvent({ eventId, ...event.data() }, userCredential.user.uid);
-              } else {
-                setError("event-not-found");
-                setEventId();
-              }
-            })
-            .catch((err) => {
-              console.log("Get event error: ", err);
-              setError("event-get-fail");
-            });
-        }
-      })
-      .then(() => setIsLoading(false))
-      .catch((err) => {
-        console.log("auth err ", err);
-        setError("anonymous-auth-failed");
-        setIsLoading(false);
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  async function onEventCreate(eventId, userName) {
-    try {
-      const event = await FirestoreService.getEvent(eventId);
-      if (!event.exists) {
-        setError("event-not-found");
-        setEventId();
-        return;
-      }
-      setEventId(eventId);
-      setEvent({ eventId, ...event.data() }, userId);
-      setError(null);
-    } catch (err) {
-      console.log(err);
-      setError("event-get-fail");
-    }
-  }
-
-  if (isLoading)
+  if (isInitializing || isLoading)
     return (
       <div
         style={{
@@ -87,6 +33,7 @@ function App() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
+          flexDirection: "column",
         }}
       >
         <Typography
@@ -95,6 +42,13 @@ function App() {
           style={{ marginBottom: "80px" }}
         >
           VirtualDojo Rooms
+        </Typography>
+        <Typography
+          variant="h6"
+          color="secondary"
+          style={{ marginBottom: "80px" }}
+        >
+          {isInitializing ? "Authentication..." : "Loading Event..."}
         </Typography>
       </div>
     );
@@ -109,15 +63,13 @@ function App() {
   } else if (event) {
     return (
       <div style={theme.container}>
-        <ErrorMessage errorCode={error}></ErrorMessage>
-        <JoinEvent userId={userId} />
+        <JoinEvent />
       </div>
     );
   }
   return (
     <div style={theme.container}>
-      <ErrorMessage errorCode={error} />
-      <CreateEvent onCreate={onEventCreate} userId={userId} />
+      <CreateEvent />
     </div>
   );
 }

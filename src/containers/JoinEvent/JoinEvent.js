@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { TextField, Button, Typography } from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
@@ -7,31 +7,18 @@ import { store } from "../../store.js";
 import "./JoinEvent.css";
 
 function JoinEvent(props) {
-  const { addUser } = useContext(store);
-  const { userId } = props;
+  const { addUser, error } = useContext(store);
   const { t } = useTranslation("translation");
-
-  const [error, setError] = useState();
   const { palette } = useTheme();
 
   function addNewUser(e) {
     e.preventDefault();
-    setError(null);
-
     const userName = document.addUserForm.userName.value;
-    if (!userName) {
-      setError("user-name-required");
-      return;
-    }
-
     const eventPassword = document.addUserForm.eventPassword.value;
-    if (!eventPassword) {
-      setError("user-name-required");
-      return;
-    }
-
-    addUser(userId, userName, eventPassword);
+    addUser({ userName, eventPassword });
   }
+
+  console.log(error);
 
   const theme = {
     container: { background: palette.background.default },
