@@ -22,7 +22,7 @@ const setIsMentorFunction = firebase
   .httpsCallable("setIsMentorFunction");
 const moveUserToRoomFunction = firebase
   .functions()
-  .httpsCallable("moveUserToRoomFunction");
+  .httpsCallable("moveUserToRoom");
 const createEventFunction = firebase.functions().httpsCallable("createEvent");
 const joinEvent = firebase.functions().httpsCallable("joinEvent");
 

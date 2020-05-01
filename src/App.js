@@ -50,6 +50,7 @@ function App() {
         >
           {isInitializing ? "Authentication..." : "Loading Event..."}
         </Typography>
+        {error && <ErrorMessage errorCode={error}></ErrorMessage>}
       </div>
     );
   if (event && currentUser) {

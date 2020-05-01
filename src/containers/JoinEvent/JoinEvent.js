@@ -10,6 +10,10 @@ function JoinEvent(props) {
   const { addUser, error } = useContext(store);
   const { t } = useTranslation("translation");
   const { palette } = useTheme();
+  const theme = {
+    container: { background: palette.background.default },
+    modal: { background: palette.primary.main },
+  };
 
   function addNewUser(e) {
     e.preventDefault();
@@ -17,13 +21,6 @@ function JoinEvent(props) {
     const eventPassword = document.addUserForm.eventPassword.value;
     addUser({ userName, eventPassword });
   }
-
-  console.log(error);
-
-  const theme = {
-    container: { background: palette.background.default },
-    modal: { background: palette.primary.main },
-  };
 
   return (
     <div className={"Join-container"} style={theme.container}>

@@ -9,7 +9,7 @@ const isVideoEnabled = process.env.NODE_ENV === "production" ? true : false;
 let api;
 
 function VideoChat({ isMenuOpen }) {
-  const { currentUser, event } = useContext(store);
+  const { currentUser, event, isDragging } = useContext(store);
   const [loading, setLoading] = useState(true);
 
   const containerStyle = {
@@ -18,9 +18,10 @@ function VideoChat({ isMenuOpen }) {
   };
 
   const jitsiContainerStyle = {
-    display: loading || isMenuOpen ? "none" : "block",
+    display: loading ? "none" : "block",
     width: "100%",
     height: "100%",
+    pointerEvents: isMenuOpen && isDragging ? "none" : "auto",
   };
   const roomId = currentUser.room
     ? currentUser.room.roomId

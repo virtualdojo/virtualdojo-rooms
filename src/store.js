@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
+  useState,
 } from "react";
 import * as FirestoreService from "./services/firestore";
 import useQueryString from "./hooks/useQueryString";
@@ -68,6 +69,9 @@ const StateProvider = ({ children }) => {
     }
   }, initialState);
   const [queryEventId, setQueryEventId] = useQueryString("eventId");
+  // Workaround to enable dragging while having Jitsi on background
+  // Issue: https://github.com/react-dnd/react-dnd/issues/2184
+  const [isDragging, setIsDragging] = useState(false);
   const eventId = queryEventId;
 
   const setAuthUser = useCallback((payload) => {
@@ -349,6 +353,8 @@ const StateProvider = ({ children }) => {
         deleteDoc,
         updatePublicPeriod,
         addDoc,
+        isDragging,
+        setIsDragging,
       }}
     >
       {children}

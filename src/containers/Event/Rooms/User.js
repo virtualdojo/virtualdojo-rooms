@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useDrag } from "react-dnd";
 import { Typography, Avatar, Badge, Grid, Popover } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { store } from "../../../store.js";
 
 const useStyles = makeStyles((theme) => ({
   popover: {
@@ -25,6 +26,7 @@ const SmallAvatar = withStyles((theme) => ({
 }))(Avatar);
 
 function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
+  const { setIsDragging } = useContext(store);
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -38,9 +40,11 @@ function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
 
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
+    begin: () => setIsDragging(true),
     canDrag: currentUser.isMentor,
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
+      setIsDragging(false);
       if (item && dropResult) {
         changeRoom(user.userId, dropResult.room.roomId);
       }
