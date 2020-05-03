@@ -17,7 +17,7 @@ function JoinEvent(props) {
 
   function addNewUser(e) {
     e.preventDefault();
-    const userName = document.addUserForm.userName.value;
+    const userName = `${document.addUserForm.firstName.value} ${document.addUserForm.lastName.value}`;
     const eventPassword = document.addUserForm.eventPassword.value;
     addUser({ userName, eventPassword });
   }
@@ -43,8 +43,15 @@ function JoinEvent(props) {
         </Typography>
         <form name="addUserForm" className={"Join-form-container"}>
           <TextField
-            label={t("Full Name")}
-            name="userName"
+            label={t("First Name")}
+            name="firstName"
+            variant="filled"
+            color="primary"
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
+          />
+          <TextField
+            label={t("Last Name")}
+            name="lastName"
             variant="filled"
             color="primary"
             style={{ marginBottom: "20px", backgroundColor: "white" }}

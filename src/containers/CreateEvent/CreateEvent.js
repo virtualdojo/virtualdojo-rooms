@@ -15,7 +15,7 @@ function CreateEvent(props) {
     e.preventDefault();
 
     const eventName = document.createListForm.eventName.value;
-    const userName = document.createListForm.userName.value;
+    const userName = `${document.createListForm.firstName.value} ${document.createListForm.lastName.value}`;
     const eventPassword = document.createListForm.eventPassword.value;
     const mentorPassword = document.createListForm.mentorPassword.value;
 
@@ -53,8 +53,15 @@ function CreateEvent(props) {
         </Typography>
         <form name="createListForm" className={"Create-form-container"}>
           <TextField
-            label={t("Full Name")}
-            name="userName"
+            label={t("First Name")}
+            name="firstName"
+            variant="filled"
+            color="primary"
+            style={{ marginBottom: "20px", backgroundColor: "white" }}
+          />
+          <TextField
+            label={t("Last Name")}
+            name="lastName"
             variant="filled"
             color="primary"
             style={{ marginBottom: "20px", backgroundColor: "white" }}
