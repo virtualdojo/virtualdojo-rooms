@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useCallback } from "react";
 import { useDrop } from "react-dnd";
 import { useTheme } from "@material-ui/core/styles";
 import {
@@ -7,6 +7,7 @@ import {
   Grid,
   IconButton,
   Tooltip,
+  CircularProgress,
 } from "@material-ui/core";
 import {
   Explore as ExploreIcon,
@@ -24,6 +25,7 @@ const ItemTypes = {
 
 function Room({ room }) {
   const { currentUser, changeRoom, event } = useContext(store);
+  const [isMovingUser, setIsMovingUser] = useState(false);
   const { t } = useTranslation("translation");
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
@@ -48,6 +50,15 @@ function Room({ room }) {
       hover: palette.secondary.main,
     },
   };
+
+  const changeRoomWithState = useCallback(
+    async (userId, roomId) => {
+      setIsMovingUser(true);
+      await changeRoom(userId, roomId);
+      setIsMovingUser(false);
+    },
+    [changeRoom]
+  );
 
   const isActive = canDrop && isOver;
   const isUserInThisRoom = currentUser.room.roomId === room.roomId;
@@ -77,8 +88,20 @@ function Room({ room }) {
             {room.roomName}
           </Typography>
         </Grid>
+        {isMovingUser && (
+          <Grid item xs={2}>
+            <CircularProgress
+              size={20}
+              color={
+                currentUser.room.roomId === room.roomId
+                  ? "primary"
+                  : "secondary"
+              }
+            />
+          </Grid>
+        )}
 
-        {currentUser.isMentor && (
+        {!isMovingUser && currentUser.isMentor && (
           <Grid item xs={2}>
             <IconButton
               aria-label="promote"
@@ -103,33 +126,35 @@ function Room({ room }) {
             </IconButton>
           </Grid>
         )}
-        <Grid item xs={2}>
-          {event.hasFreeMovement && (
-            <IconButton
-              aria-label="promote"
-              color="secondary"
-              onClick={() => changeRoom(currentUser.userId, room.roomId)}
-              disabled={currentUser.room.roomId === room.roomId}
-              style={{ padding: 0 }}
-            >
-              <Tooltip
-                title={
-                  currentUser.room.roomId === room.roomId
-                    ? "You are in this room"
-                    : t("Explore Room")
-                }
-                placement="bottom"
-                key={currentUser.room.roomId === room.roomId}
+        {!isMovingUser && (
+          <Grid item xs={2}>
+            {event.hasFreeMovement && (
+              <IconButton
+                aria-label="promote"
+                color="secondary"
+                onClick={() => changeRoom(currentUser.userId, room.roomId)}
+                disabled={currentUser.room.roomId === room.roomId}
+                style={{ padding: 0 }}
               >
-                {currentUser.room.roomId === room.roomId ? (
-                  <ExploreOffIcon />
-                ) : (
-                  <ExploreIcon />
-                )}
-              </Tooltip>
-            </IconButton>
-          )}
-        </Grid>
+                <Tooltip
+                  title={
+                    currentUser.room.roomId === room.roomId
+                      ? "You are in this room"
+                      : t("Explore Room")
+                  }
+                  placement="bottom"
+                  key={currentUser.room.roomId === room.roomId}
+                >
+                  {currentUser.room.roomId === room.roomId ? (
+                    <ExploreOffIcon />
+                  ) : (
+                    <ExploreIcon />
+                  )}
+                </Tooltip>
+              </IconButton>
+            )}
+          </Grid>
+        )}
       </Grid>
       <Grid item container xs={12} spacing={1}>
         {room.users.map((u) => (
@@ -137,7 +162,8 @@ function Room({ room }) {
             inRoom
             key={`${u.userId}${u.isMentor}`}
             user={u}
-            changeRoom={changeRoom}
+            changeRoom={changeRoomWithState}
+            dragDisabled={isMovingUser}
             currentUser={currentUser}
             avatarColor={{
               background: theme.text[activeClass],

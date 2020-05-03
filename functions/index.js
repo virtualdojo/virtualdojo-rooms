@@ -249,6 +249,7 @@ exports.moveUserToRoom = functions
         "Payload must not be empty"
       );
     }
+    //TODO: check if user is not a mentor
     const { eventId, userId, roomId } = data;
     const uid = context.auth.uid;
 

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   TableContainer,
   Table,
@@ -24,6 +25,12 @@ import { useTranslation } from "react-i18next";
 import { store } from "../../../store.js";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
 
+const useStyles = makeStyles({
+  table: {
+    maxWidth: 1000,
+  },
+});
+
 function Users() {
   const {
     currentUser,
@@ -33,17 +40,26 @@ function Users() {
     toggleIsMentor,
     deleteUser,
   } = useContext(store);
+  const classes = useStyles();
   const { t } = useTranslation("translation");
+  const orderedUsers = users.sort((a, b) => (a.userName > b.userName ? 1 : -1));
   return (
     <>
       <ErrorMessage errorCode={error}></ErrorMessage>
-      <TableContainer component={Paper}>
-        <Table aria-label="users table">
+      <TableContainer
+        component={Paper}
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <Table className={classes.table} size="small" aria-label="users table">
           <TableHead>
             <TableRow>
-              <TableCell>{t("Name")}</TableCell>
-              <TableCell>{t("Room")}</TableCell>
-              <TableCell>{t("Type")}</TableCell>
+              <TableCell colSpan={4}>{t("Name")}</TableCell>
+              <TableCell align="right">{t("Room")}</TableCell>
+              <TableCell align="right">{t("Type")}</TableCell>
               <TableCell align="right">{t("Change Type")}</TableCell>
               <TableCell align="right">{t("Follow Me")}</TableCell>
               <TableCell align="right">{t("Follow Ninja")}</TableCell>
@@ -51,15 +67,18 @@ function Users() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {users.map((u) => (
+            {orderedUsers.map((u) => (
               <TableRow key={`${u.userId}${u.isMentor}`}>
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" colSpan={4}>
                   {u.userName}
                 </TableCell>
-                <TableCell>{u.room.roomName}</TableCell>
-                <TableCell>{u.isMentor ? "Mentor" : "Ninja"}</TableCell>
+                <TableCell align="right">{u.room.roomName}</TableCell>
+                <TableCell align="right">
+                  {u.isMentor ? "Mentor" : "Ninja"}
+                </TableCell>
                 <TableCell align="right">
                   <IconButton
+                    size="small"
                     aria-label="promote"
                     color="primary"
                     onClick={() => toggleIsMentor(u)}
@@ -78,6 +97,7 @@ function Users() {
                 </TableCell>
                 <TableCell align="right">
                   <IconButton
+                    size="small"
                     aria-label="promote"
                     color="primary"
                     onClick={() =>
@@ -104,6 +124,7 @@ function Users() {
                 </TableCell>
                 <TableCell align="right">
                   <IconButton
+                    size="small"
                     aria-label="promote"
                     color="primary"
                     onClick={() =>
@@ -130,6 +151,7 @@ function Users() {
                 </TableCell>
                 <TableCell align="right">
                   <IconButton
+                    size="small"
                     aria-label="promote"
                     color="primary"
                     onClick={() => deleteUser(u.userId)}

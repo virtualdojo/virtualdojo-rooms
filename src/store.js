@@ -264,11 +264,18 @@ const StateProvider = ({ children }) => {
   );
 
   const changeRoom = useCallback(
-    (userId, roomId) => {
-      const oldRu = state.roomsUsers.find((ru) => ru.userId === userId);
-      FirestoreService.addUserToRoom(userId, roomId, eventId, oldRu);
+    async (userId, roomId) => {
+      const isInRoom = state.roomsUsers.find(
+        (ru) => ru.userId === userId && ru.roomId === roomId
+      );
+      if (isInRoom) return;
+      try {
+        await FirestoreService.addUserToRoom(userId, roomId, eventId);
+      } catch (err) {
+        setError("change-room-fail");
+      }
     },
-    [eventId, state.roomsUsers]
+    [eventId, setError, state.roomsUsers]
   );
 
   const deleteDoc = useCallback(
@@ -287,7 +294,7 @@ const StateProvider = ({ children }) => {
         if (roomMeta) {
           return {
             ...u,
-            room: roomMeta,
+            room: { ...roomMeta },
           };
         }
       }
@@ -306,7 +313,7 @@ const StateProvider = ({ children }) => {
       const users = state.users.filter((u) => usersInRoom.includes(u.userId));
       return {
         ...r,
-        users,
+        users: users.map((u) => ({ ...u })),
       };
     });
   }, [state.users, state.rooms, state.roomsUsers]);

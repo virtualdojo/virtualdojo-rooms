@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { useDrag } from "react-dnd";
 import { Typography, Avatar, Badge, Grid, Popover } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
@@ -25,10 +25,17 @@ const SmallAvatar = withStyles((theme) => ({
   },
 }))(Avatar);
 
-function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
+function User({
+  user,
+  currentUser,
+  inRoom,
+  avatarColor,
+  changeRoom,
+  dragDisabled,
+}) {
   const { setIsDragging } = useContext(store);
   const classes = useStyles();
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
 
   const handlePopoverOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -38,10 +45,12 @@ function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
     setAnchorEl(null);
   };
 
+  const canDrag = currentUser.isMentor && !dragDisabled;
+
   const [{ isDragging }, drag] = useDrag({
     item: { name: user.userName, type: ItemTypes.USER },
     begin: () => setIsDragging(true),
-    canDrag: currentUser.isMentor,
+    canDrag,
     end: (item, monitor) => {
       const dropResult = monitor.getDropResult();
       setIsDragging(false);
@@ -64,7 +73,9 @@ function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
     <Grid
       item
       xs
-      style={{ opacity: isDragging ? "0.4" : "1" }}
+      style={{
+        opacity: isDragging ? "0.4" : "1",
+      }}
       onMouseEnter={handlePopoverOpen}
       onMouseLeave={handlePopoverClose}
     >
@@ -76,12 +87,20 @@ function User({ user, currentUser, inRoom, avatarColor, changeRoom }) {
             horizontal: "right",
           }}
           badgeContent={<SmallAvatar>{"M"}</SmallAvatar>}
+          style={{ cursor: canDrag ? "grab" : "default" }}
           ref={drag}
         >
-          <Avatar style={{ ...avatarColor }}>{initials}</Avatar>
+          <Avatar
+            style={{ ...avatarColor, cursor: canDrag ? "grab" : "default" }}
+          >
+            {initials}
+          </Avatar>
         </Badge>
       ) : (
-        <Avatar style={{ ...avatarColor }} ref={drag}>
+        <Avatar
+          style={{ ...avatarColor, cursor: canDrag ? "grab" : "default" }}
+          ref={drag}
+        >
           {initials}
         </Avatar>
       )}

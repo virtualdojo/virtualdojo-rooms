@@ -90,12 +90,7 @@ export const addRoom = async (roomName, eventId, roomId = uuidv4()) => {
     });
 };
 
-export const addUserToRoom = async (
-  userId,
-  roomId,
-  eventId,
-  oldRoomUser = undefined
-) => {
+export const addUserToRoom = async (userId, roomId, eventId) => {
   await moveUserToRoomFunction({ userId, roomId, eventId });
 };
 
