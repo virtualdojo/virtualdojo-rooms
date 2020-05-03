@@ -9,22 +9,20 @@ const firebaseConfig = {
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
 };
+const DEFAULT_REGION = "europe-west1";
 
 firebase.initializeApp(firebaseConfig);
+const functions = firebase.app().functions(DEFAULT_REGION);
 const db = firebase.firestore();
 
 if (process.env.NODE_ENV === "development") {
-  firebase.functions().useFunctionsEmulator("http://localhost:5001");
+  functions.useFunctionsEmulator("http://localhost:5001");
 }
 
-const setIsMentorFunction = firebase
-  .functions()
-  .httpsCallable("setIsMentorFunction");
-const moveUserToRoomFunction = firebase
-  .functions()
-  .httpsCallable("moveUserToRoom");
-const createEventFunction = firebase.functions().httpsCallable("createEvent");
-const joinEvent = firebase.functions().httpsCallable("joinEvent");
+const setIsMentorFunction = functions.httpsCallable("setIsMentorFunction");
+const moveUserToRoomFunction = functions.httpsCallable("moveUserToRoom");
+const createEventFunction = functions.httpsCallable("createEvent");
+const joinEvent = functions.httpsCallable("joinEvent");
 
 export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
