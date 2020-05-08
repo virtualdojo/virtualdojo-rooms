@@ -68,7 +68,7 @@ exports.createEvent = functions
           {
             roomId: defaultRoomId,
             roomName,
-            imageUrl: undefined,
+            imageUrl: "",
           },
         ],
         roomsUsers: [
