@@ -14,6 +14,7 @@
   "Event Settings": "Event Settings",
   "Event Start Date": "Event Start Date",
   "Explore Room": "Explore this room",
+  "You are in this room": "You are in this room",
   "Fill In Form": "Fill in the form and start a new Dojo",
   "Follow Me": "Follow me",
   "Follow Ninja": "Follow Ninja",
@@ -26,6 +27,9 @@
   "Name": "Name",
   "Room": "Room",
   "Room Name": "Room Name",
+  "Room image url": "Room image url",
+  "Room settings title": "Room settings",
+  "Room settings text": "Below you can change name and image",
   "Select Document": "Select a document",
   "Set As Mentor": "Set ad Mentor",
   "Set As Ninja": "Set ad Ninja",
@@ -35,5 +39,7 @@
   "Type": "Type",
   "Update": "Update",
   "You Are In The Waiting Room": "you're in the waiting room",
-  "Delete Ninja": "Delete Ninja"
+  "Delete Ninja": "Delete Ninja",
+  "Cancel": "Cancel",
+  "Confirm": "Confirm"
 }

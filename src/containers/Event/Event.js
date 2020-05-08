@@ -89,7 +89,7 @@ function WaitingRoom({ theme, currentUser, event }) {
 
 function EditEvent() {
   const { currentUser, event, isEventOpen } = useContext(store);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(true);
   const [tabIndex, setTabIndex] = useState(0);
   const { palette } = useTheme();
   const handleChangeIndex = (index) => {

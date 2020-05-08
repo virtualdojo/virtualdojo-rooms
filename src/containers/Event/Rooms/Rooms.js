@@ -25,7 +25,6 @@ function Rooms() {
 
   return (
     <>
-      <ErrorMessage errorCode={error}></ErrorMessage>
       <Grid container>
         {currentUser.isMentor && (
           <Grid item xs>
@@ -34,22 +33,24 @@ function Rooms() {
             </div>
           </Grid>
         )}
+        <ErrorMessage errorCode={error}></ErrorMessage>
 
         <Grid
           container
           item
           xs={12}
-          spacing={2}
-          justify="center"
+          spacing={3}
           style={{ margin: "10px" }}
+          alignContent={"flex-start"}
+          alignItems={"flex-start"}
         >
           {rooms.map((room) => (
-            <Grid item container xs={3} key={room.roomId} spacing={1}>
+            <Grid item container xs={4} key={room.roomId} spacing={1}>
               <Room
                 room={room}
                 eventId={event.eventId}
                 currentUser={currentUser}
-              ></Room>
+              />
             </Grid>
           ))}
         </Grid>

@@ -68,6 +68,7 @@ exports.createEvent = functions
           {
             roomId: defaultRoomId,
             roomName,
+            imageUrl: undefined,
           },
         ],
         roomsUsers: [
@@ -127,7 +128,6 @@ exports.joinEvent = functions
         let { users, mentors, roomsUsers, defaultRoomId } = doc.data() || {};
         let { password: eventPassword, mentorPassword } =
           privateData.data() || {};
-        console.log("password, mentorPassword", password, mentorPassword);
         if (users) {
           const hasUser = users.findIndex((u) => u.userId === userId) >= 0;
           if (hasUser) {
@@ -293,5 +293,60 @@ exports.moveUserToRoom = functions
 
     return {
       ...returnRoomUser,
+    };
+  });
+
+exports.setRoomInfo = functions
+  .region(DEFAULT_REGION)
+  .https.onCall(async (data, context) => {
+    if (!context.auth) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "The function must be called while authenticated."
+      );
+    }
+    if (!data) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "Payload must not be empty"
+      );
+    }
+    //TODO: check if user is not a mentor
+    const { eventId, roomId, roomName, imageUrl } = data;
+    const uid = context.auth.uid;
+
+    let returnRoom = {};
+    try {
+      returnRoom = await db.runTransaction(async (t) => {
+        let eventRef = db.collection("events").doc(eventId);
+        const doc = await t.get(eventRef);
+        let { rooms } = doc.data() || {};
+        if (rooms) {
+          const roomIndex = rooms.findIndex((r) => r.roomId === roomId);
+          if (roomIndex >= 0) {
+            const updatedRoom = {
+              ...rooms[roomIndex],
+              roomName,
+              imageUrl,
+            };
+            rooms[roomIndex] = updatedRoom;
+            await t.update(eventRef, { rooms });
+            return updatedRoom;
+          } else {
+            throw new functions.https.HttpsError("not-found", "Room not found");
+          }
+        } else {
+          throw new functions.https.HttpsError(
+            "failed-precondition",
+            "The event has no rooms field"
+          );
+        }
+      });
+    } catch (err) {
+      throw new functions.https.HttpsError("aborted", err.message);
+    }
+
+    return {
+      ...returnRoom,
     };
   });

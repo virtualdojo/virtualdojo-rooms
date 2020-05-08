@@ -14,6 +14,7 @@
   "Event Settings": "Impostazioni dell'evento",
   "Event Start Date": "Data di inizio evento",
   "Explore Room": "Spostati in questa stanza",
+  "You are in this room": "Sei già in questa stanza",
   "Fill In Form": "Completa il modulo e inizia il Dojo",
   "Follow Me": "Seguimi",
   "Follow Ninja": "Segui Ninja",
@@ -26,6 +27,9 @@
   "Name": "Nome",
   "Room": "Stanza",
   "Room Name": "Nome Stanza",
+  "Room image url": "URL immagine stanza",
+  "Room settings title": "Impostazioni stanza",
+  "Room settings text": "Cambia nome o immagine della stanza",
   "Select Document": "Seleziona un documento",
   "Set As Mentor": "Imposta utente come Mentor",
   "Set As Ninja": "Imposta utente come Ninja",
@@ -35,5 +39,7 @@
   "Type": "Ruolo",
   "Update": "Aggiorna",
   "You Are In The Waiting Room": "ti trovi nella stanza d'attesa",
-  "Delete Ninja": "Cancella Ninja"
+  "Delete Ninja": "Cancella Ninja",
+  "Cancel": "Annulla",
+  "Confirm": "Conferma"
 }

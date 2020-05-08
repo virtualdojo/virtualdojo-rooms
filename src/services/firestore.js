@@ -22,7 +22,8 @@ if (process.env.NODE_ENV === "development") {
 const setIsMentorFunction = functions.httpsCallable("setIsMentorFunction");
 const moveUserToRoomFunction = functions.httpsCallable("moveUserToRoom");
 const createEventFunction = functions.httpsCallable("createEvent");
-const joinEvent = functions.httpsCallable("joinEvent");
+const joinEventFunction = functions.httpsCallable("joinEvent");
+const setRoomInfoFunction = functions.httpsCallable("setRoomInfo");
 
 export const authenticateAnonymously = () => {
   return firebase.auth().signInAnonymously();
@@ -70,7 +71,7 @@ export const isUserRegistered = (eventId, userId) => {
 };
 
 export const addUserToEvent = async (userName, eventId, password) => {
-  const { data } = await joinEvent({
+  const { data } = await joinEventFunction({
     userName,
     eventId,
     password,
@@ -151,4 +152,8 @@ export const setJitsiServer = (eventId, jitsiServer) => {
   return db.collection("events").doc(eventId).update({
     jitsiServer,
   });
+};
+
+export const setRoomInfo = ({ eventId, roomId, roomName, imageUrl }) => {
+  return setRoomInfoFunction({ eventId, roomId, roomName, imageUrl });
 };

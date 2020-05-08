@@ -8,6 +8,7 @@ import {
   IconButton,
   Tooltip,
   CircularProgress,
+  ButtonBase,
 } from "@material-ui/core";
 import {
   Explore as ExploreIcon,
@@ -18,14 +19,17 @@ import { useTranslation } from "react-i18next";
 
 import { store } from "../../../store.js";
 import User from "./User";
+import EditRoomDialog from "./EditRoomDialog";
+import defaultRoomImage from "../../../assets/defaultRoom.png";
 
 const ItemTypes = {
   USER: "user",
 };
 
 function Room({ room }) {
-  const { currentUser, changeRoom, event } = useContext(store);
+  const { currentUser, changeRoom, event, setRoomInfo } = useContext(store);
   const [isMovingUser, setIsMovingUser] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { t } = useTranslation("translation");
   const [{ canDrop, isOver }, drop] = useDrop({
     accept: ItemTypes.USER,
@@ -53,11 +57,13 @@ function Room({ room }) {
 
   const changeRoomWithState = useCallback(
     async (userId, roomId) => {
-      setIsMovingUser(true);
-      await changeRoom(userId, roomId);
-      setIsMovingUser(false);
+      if (!isMovingUser) {
+        setIsMovingUser(true);
+        await changeRoom(userId, roomId);
+        setIsMovingUser(false);
+      }
     },
-    [changeRoom]
+    [changeRoom, isMovingUser]
   );
 
   const isActive = canDrop && isOver;
@@ -68,7 +74,9 @@ function Room({ room }) {
   } else if (canDrop) {
     activeClass = "hover";
   }
-
+  const orderedUsers = room.users.sort((a, b) =>
+    a.userName > b.userName ? 1 : -1
+  );
   return (
     <Paper
       ref={drop}
@@ -78,99 +86,137 @@ function Room({ room }) {
         flexGrow: 1,
       }}
     >
-      <Grid item container xs={12} spacing={1}>
-        <Grid item xs={8}>
-          <Typography
-            variant="h5"
-            style={{ color: theme.text[activeClass], maxWidth: "150px" }}
-            noWrap={true}
-          >
-            {room.roomName}
-          </Typography>
-        </Grid>
-        {isMovingUser && (
-          <Grid item xs={2}>
-            <CircularProgress
-              size={20}
-              color={
-                currentUser.room.roomId === room.roomId
-                  ? "primary"
-                  : "secondary"
-              }
-            />
-          </Grid>
-        )}
-
-        {!isMovingUser && currentUser.isMentor && (
-          <Grid item xs={2}>
-            <IconButton
-              aria-label="promote"
-              color={
-                currentUser.room.roomId === room.roomId
-                  ? "primary"
-                  : "secondary"
-              }
-              onClick={() => {
-                const el = document.createElement("textarea");
-                el.value = `${event.jitsiServer}/${room.roomId}`;
-                document.body.appendChild(el);
-                el.select();
-                document.execCommand("copy");
-                document.body.removeChild(el);
+      <EditRoomDialog
+        isOpen={isEditDialogOpen}
+        room={room}
+        onClose={() => setIsEditDialogOpen(false)}
+        onConfirm={async (roomName, imageUrl) => {
+          if (roomName !== room.roomName || imageUrl !== room.imageUrl) {
+            await setRoomInfo({ roomId: room.roomId, roomName, imageUrl });
+          }
+          setIsEditDialogOpen(false);
+        }}
+      ></EditRoomDialog>
+      <Grid item xs container direction="row" spacing={2}>
+        <Grid container spacing={2}>
+          <Grid item>
+            <ButtonBase
+              disabled={!currentUser.isMentor}
+              style={{
+                width: 64,
+                height: 64,
               }}
-              style={{ padding: 0 }}
+              onClick={() => setIsEditDialogOpen(true)}
             >
-              <Tooltip title={"Copy Jitsi link"}>
-                <FileCopyIcon />
-              </Tooltip>
-            </IconButton>
+              <img
+                style={{
+                  margin: "auto",
+                  display: "block",
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                }}
+                alt={`${room.roomName}`}
+                src={room.imageUrl || defaultRoomImage}
+              />
+            </ButtonBase>
           </Grid>
-        )}
-        {!isMovingUser && (
-          <Grid item xs={2}>
-            {event.hasFreeMovement && (
-              <IconButton
-                aria-label="promote"
-                color="secondary"
-                onClick={() => changeRoom(currentUser.userId, room.roomId)}
-                disabled={currentUser.room.roomId === room.roomId}
-                style={{ padding: 0 }}
-              >
-                <Tooltip
-                  title={
+          <Grid item xs>
+            <Typography
+              gutterBottom
+              variant="subtitle1"
+              style={{ color: theme.text[activeClass] }}
+              noWrap={false}
+            >
+              {room.roomName}
+            </Typography>
+            <Grid item container xs={12} spacing={1}>
+              <Grid item>
+                <IconButton
+                  aria-label="promote"
+                  color={
                     currentUser.room.roomId === room.roomId
-                      ? "You are in this room"
-                      : t("Explore Room")
+                      ? "primary"
+                      : "secondary"
                   }
-                  placement="bottom"
-                  key={currentUser.room.roomId === room.roomId}
+                  disabled={isMovingUser}
+                  onClick={() => {
+                    const el = document.createElement("textarea");
+                    el.value = `${event.jitsiServer}/${room.roomId}`;
+                    document.body.appendChild(el);
+                    el.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(el);
+                  }}
+                  style={{ padding: 0 }}
                 >
-                  {currentUser.room.roomId === room.roomId ? (
-                    <ExploreOffIcon />
-                  ) : (
-                    <ExploreIcon />
-                  )}
-                </Tooltip>
-              </IconButton>
-            )}
+                  <Tooltip title={"Copy Jitsi link"}>
+                    <FileCopyIcon />
+                  </Tooltip>
+                </IconButton>
+              </Grid>
+              <Grid item>
+                <IconButton
+                  aria-label="promote"
+                  color="secondary"
+                  onClick={() =>
+                    changeRoomWithState(currentUser.userId, room.roomId)
+                  }
+                  disabled={
+                    isMovingUser ||
+                    !event.hasFreeMovement ||
+                    currentUser.room.roomId === room.roomId
+                  }
+                  style={{ padding: 0 }}
+                >
+                  <Tooltip
+                    title={
+                      currentUser.room.roomId === room.roomId
+                        ? t("You are in this room")
+                        : t("Explore Room")
+                    }
+                    placement="bottom"
+                    key={currentUser.room.roomId === room.roomId}
+                  >
+                    {currentUser.room.roomId === room.roomId ? (
+                      <ExploreOffIcon />
+                    ) : (
+                      <ExploreIcon />
+                    )}
+                  </Tooltip>
+                </IconButton>
+              </Grid>
+              <Grid item>
+                {isMovingUser && (
+                  <CircularProgress
+                    size={20}
+                    color={
+                      currentUser.room.roomId === room.roomId
+                        ? "primary"
+                        : "secondary"
+                    }
+                  />
+                )}
+              </Grid>
+            </Grid>
           </Grid>
-        )}
-      </Grid>
-      <Grid item container xs={12} spacing={1}>
-        {room.users.map((u) => (
-          <User
-            inRoom
-            key={`${u.userId}${u.isMentor}`}
-            user={u}
-            changeRoom={changeRoomWithState}
-            dragDisabled={isMovingUser}
-            currentUser={currentUser}
-            avatarColor={{
-              background: theme.text[activeClass],
-              color: theme.background[activeClass],
-            }}
-          ></User>
-        ))}
+        </Grid>
+        <Grid item container xs={12} spacing={1} alignItems={"flex-start"}>
+          {orderedUsers.map((u) => (
+            <User
+              inRoom
+              key={`${u.userId}${u.isMentor}`}
+              avatarSize={orderedUsers.length > 20 ? "sm" : "md"}
+              user={u}
+              changeRoom={changeRoomWithState}
+              dragDisabled={isMovingUser}
+              currentUser={currentUser}
+              avatarColor={{
+                background: theme.text[activeClass],
+                color: theme.background[activeClass],
+              }}
+            />
+          ))}
+        </Grid>
       </Grid>
     </Paper>
   );

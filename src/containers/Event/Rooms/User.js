@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useDrag } from "react-dnd";
-import { Typography, Avatar, Badge, Grid, Popover } from "@material-ui/core";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { Typography, Avatar, Grid, Popover } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { store } from "../../../store.js";
 
 const useStyles = makeStyles((theme) => ({
@@ -17,17 +17,10 @@ const ItemTypes = {
   USER: "user",
 };
 
-const SmallAvatar = withStyles((theme) => ({
-  root: {
-    width: 22,
-    height: 22,
-    border: `2px solid ${theme.palette.background.paper}`,
-  },
-}))(Avatar);
-
 function User({
   user,
   currentUser,
+  avatarSize,
   inRoom,
   avatarColor,
   changeRoom,
@@ -63,47 +56,37 @@ function User({
     }),
   });
 
+  const avatarWidthHeight = avatarSize === "sm" ? 24 : 36;
+
   const popoverOpen = !isDragging && Boolean(anchorEl);
   const initials = user.userName
     .trim()
     .split(" ")
+    .slice(0, 2)
     .map((s) => s[0].toUpperCase())
     .concat();
   return (
     <Grid
       item
-      xs
       style={{
         opacity: isDragging ? "0.4" : "1",
       }}
       onMouseEnter={handlePopoverOpen}
       onMouseLeave={handlePopoverClose}
     >
-      {user.isMentor ? (
-        <Badge
-          overlap="circle"
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "right",
-          }}
-          badgeContent={<SmallAvatar>{"M"}</SmallAvatar>}
-          style={{ cursor: canDrag ? "grab" : "default" }}
-          ref={drag}
-        >
-          <Avatar
-            style={{ ...avatarColor, cursor: canDrag ? "grab" : "default" }}
-          >
-            {initials}
-          </Avatar>
-        </Badge>
-      ) : (
-        <Avatar
-          style={{ ...avatarColor, cursor: canDrag ? "grab" : "default" }}
-          ref={drag}
-        >
-          {initials}
-        </Avatar>
-      )}
+      <Avatar
+        style={{
+          ...avatarColor,
+          width: avatarWidthHeight,
+          height: avatarWidthHeight,
+          cursor: canDrag ? "grab" : "default",
+          borderRadius: user.isMentor ? 0 : "50%",
+        }}
+        ref={drag}
+      >
+        {initials}
+      </Avatar>
+
       <Popover
         id="mouse-over-popover"
         className={classes.popover}
@@ -123,7 +106,10 @@ function User({
         onClose={handlePopoverClose}
         disableRestoreFocus
       >
-        <Typography>{user.userName}</Typography>
+        <Typography>
+          {user.userName}
+          {user.isMentor && <b> (Mentor)</b>}
+        </Typography>
       </Popover>
     </Grid>
   );

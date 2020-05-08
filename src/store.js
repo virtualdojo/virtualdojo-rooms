@@ -263,6 +263,18 @@ const StateProvider = ({ children }) => {
     [eventId]
   );
 
+  const setRoomInfo = useCallback(
+    ({ roomId, roomName, imageUrl }) => {
+      return FirestoreService.setRoomInfo({
+        eventId,
+        roomId,
+        roomName,
+        imageUrl,
+      });
+    },
+    [eventId]
+  );
+
   const changeRoom = useCallback(
     async (userId, roomId) => {
       const isInRoom = state.roomsUsers.find(
@@ -352,6 +364,7 @@ const StateProvider = ({ children }) => {
         isEventOpen,
         setError,
         setEvent,
+        setRoomInfo,
         addRoom,
         toggleIsMentor,
         setHasFreeMovement,
