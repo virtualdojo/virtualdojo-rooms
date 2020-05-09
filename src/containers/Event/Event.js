@@ -1,6 +1,15 @@
 import React, { useState, useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
-import { IconButton, Typography, Divider, Tooltip } from "@material-ui/core";
+import {
+  IconButton,
+  Typography,
+  Divider,
+  Tooltip,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  useMediaQuery,
+} from "@material-ui/core";
 import SwipeableViews from "react-swipeable-views";
 import {
   CancelRounded as CancelIcon,
@@ -89,9 +98,10 @@ function WaitingRoom({ theme, currentUser, event }) {
 
 function EditEvent() {
   const { currentUser, event, isEventOpen } = useContext(store);
-  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
-  const { palette } = useTheme();
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const handleChangeIndex = (index) => {
     setTabIndex(index);
   };
@@ -103,30 +113,30 @@ function EditEvent() {
       : i18n.changeLanguage("it");
   };
 
-  const theme = {
-    container: { background: palette.background.black },
+  const style = {
+    container: { background: theme.palette.background.black },
     navbar: {
-      background: palette.primary.main,
-      color: palette.background.default,
+      background: theme.palette.primary.main,
+      color: theme.palette.background.default,
     },
-    modal: { background: palette.background.default },
-    listItem: { background: palette.grey[200] },
+    modal: { background: theme.palette.background.default },
+    listItem: { background: theme.palette.grey[200] },
   };
 
   if (!currentUser.isMentor && !isEventOpen)
     return (
-      <WaitingRoom event={event} currentUser={currentUser} theme={theme} />
+      <WaitingRoom event={event} currentUser={currentUser} theme={style} />
     );
 
   return (
-    <div className="main-container" style={theme.container}>
+    <div className="main-container" style={style.container}>
       {!isModalOpen && (
         <div style={{ position: "fixed" }}>
           <IconButton
             color="secondary"
             onClick={() => {
               setTabIndex(0);
-              setIsModalOpen(true);
+              setIsModalOpen(!isModalOpen);
             }}
           >
             <MeetingRoomRoundedIcon fontSize="large" />
@@ -142,95 +152,106 @@ function EditEvent() {
           </IconButton>
         </div>
       )}
+
       <VideoChat
         user={currentUser}
         isMenuOpen={isModalOpen}
         event={event}
       ></VideoChat>
-      <div
-        className={
-          isModalOpen ? "Event-modal" : "Event-modal Event-modal-closed"
-        }
-        style={theme.modal}
+      <Dialog
+        open={isModalOpen}
+        fullScreen={fullScreen}
+        maxWidth={"md"}
+        PaperProps={{
+          style: { borderRadius: "15px", height: "80vh" },
+        }}
+        disableAutoFocus={true}
+        disableEnforceFocus={true}
+        // fix react dnd not working inside a modal
+        TransitionProps={{ tabIndex: "" }}
       >
-        <div className="NavBar" style={theme.navbar}>
-          <IconButton color="default" onClick={() => setIsModalOpen(false)}>
-            <CancelIcon fontSize="large" />
-          </IconButton>
-          <Divider orientation="vertical" flexItem />
-          <IconButton
-            color="default"
-            onClick={() => setTabIndex(0)}
-            disabled={tabIndex === 0}
-          >
-            <MeetingRoomRoundedIcon fontSize="large" />
-          </IconButton>
-          <IconButton
-            color="default"
-            onClick={() => setTabIndex(1)}
-            disabled={tabIndex === 1}
-          >
-            <DocumentIcon fontSize="large" />
-          </IconButton>
-          <Divider orientation="vertical" flexItem />
-          {currentUser.isMentor && (
-            <>
-              <IconButton
-                color="default"
-                onClick={() => setTabIndex(2)}
-                disabled={tabIndex === 2}
-              >
-                <PeopleAltRoundedIcon fontSize="large" />
-              </IconButton>
-              <IconButton
-                color="default"
-                onClick={() => setTabIndex(3)}
-                disabled={tabIndex === 3}
-              >
-                <SettingsIcon fontSize="large" />
-              </IconButton>
-              <Divider orientation="vertical" flexItem />
-            </>
-          )}
-          <IconButton color="default" onClick={changeLanguage}>
-            <Tooltip
-              title={i18n.language === "it" ? "English" : "Italiano"}
-              placement="bottom"
+        <DialogTitle style={{ padding: 0 }}>
+          <div className="NavBar" style={style.navbar}>
+            <IconButton color="default" onClick={() => setIsModalOpen(false)}>
+              <CancelIcon fontSize="large" />
+            </IconButton>
+            <Divider orientation="vertical" flexItem />
+            <IconButton
+              color="default"
+              onClick={() => setTabIndex(0)}
+              disabled={tabIndex === 0}
             >
-              <LanguageIcon fontSize="large" />
-            </Tooltip>
-          </IconButton>
-          <div
-            style={{
-              display: "flex",
-              flex: 1,
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: "140px",
-            }}
-          >
-            <Typography variant="h5">{event.name}</Typography>
+              <MeetingRoomRoundedIcon fontSize="large" />
+            </IconButton>
+            <IconButton
+              color="default"
+              onClick={() => setTabIndex(1)}
+              disabled={tabIndex === 1}
+            >
+              <DocumentIcon fontSize="large" />
+            </IconButton>
+            <Divider orientation="vertical" flexItem />
+            {currentUser.isMentor && (
+              <>
+                <IconButton
+                  color="default"
+                  onClick={() => setTabIndex(2)}
+                  disabled={tabIndex === 2}
+                >
+                  <PeopleAltRoundedIcon fontSize="large" />
+                </IconButton>
+                <IconButton
+                  color="default"
+                  onClick={() => setTabIndex(3)}
+                  disabled={tabIndex === 3}
+                >
+                  <SettingsIcon fontSize="large" />
+                </IconButton>
+                <Divider orientation="vertical" flexItem />
+              </>
+            )}
+            <IconButton color="default" onClick={changeLanguage}>
+              <Tooltip
+                title={i18n.language === "it" ? "English" : "Italiano"}
+                placement="bottom"
+              >
+                <LanguageIcon fontSize="large" />
+              </Tooltip>
+            </IconButton>
+            <div
+              style={{
+                display: "flex",
+                flex: 1,
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: "140px",
+              }}
+            >
+              <Typography variant="h5">{event.name}</Typography>
+            </div>
           </div>
-        </div>
-        <SwipeableViews
-          axis={"x"}
-          index={tabIndex}
-          onChangeIndex={handleChangeIndex}
-        >
-          <TabPanel value={tabIndex} index={0} dir={theme.direction}>
-            <Rooms />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={1} dir={theme.direction}>
-            <Document />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={2} dir={theme.direction}>
-            <Users />
-          </TabPanel>
-          <TabPanel value={tabIndex} index={3} dir={theme.direction}>
-            <Settings />
-          </TabPanel>
-        </SwipeableViews>
-      </div>
+        </DialogTitle>
+        <DialogContent style={{ padding: 0 }}>
+          <SwipeableViews
+            axis={"x"}
+            index={tabIndex}
+            onChangeIndex={handleChangeIndex}
+          >
+            <TabPanel value={tabIndex} index={0} dir={style.direction}>
+              <Rooms />
+            </TabPanel>
+            <TabPanel value={tabIndex} index={1} dir={style.direction}>
+              <Document />
+            </TabPanel>
+            <TabPanel value={tabIndex} index={2} dir={style.direction}>
+              <Users />
+            </TabPanel>
+            <TabPanel value={tabIndex} index={3} dir={style.direction}>
+              <Settings />
+            </TabPanel>
+          </SwipeableViews>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import React, { useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import Grid from "@material-ui/core/Grid";
+import { DndProvider } from "react-dnd";
+import Backend from "react-dnd-html5-backend";
 
 import { store } from "../../../store.js";
 import ErrorMessage from "../../../components/ErrorMessage/ErrorMessage";
@@ -24,7 +26,7 @@ function Rooms() {
   };
 
   return (
-    <>
+    <DndProvider backend={Backend}>
       <Grid container>
         {currentUser.isMentor && (
           <Grid item xs>
@@ -33,7 +35,9 @@ function Rooms() {
             </div>
           </Grid>
         )}
-        <ErrorMessage errorCode={error}></ErrorMessage>
+        <Grid item xs={12}>
+          <ErrorMessage errorCode={error}></ErrorMessage>
+        </Grid>
 
         <Grid
           container
@@ -55,8 +59,7 @@ function Rooms() {
           ))}
         </Grid>
       </Grid>
-    </>
+    </DndProvider>
   );
 }
-
 export default Rooms;

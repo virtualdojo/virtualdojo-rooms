@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
 import { Typography } from "@material-ui/core";
-import { DndProvider } from "react-dnd";
-import Backend from "react-dnd-html5-backend";
 
 import * as LoggerService from "./services/logger";
 import { store } from "./store.js";
@@ -55,11 +53,9 @@ function App() {
     );
   if (event && currentUser) {
     return (
-      <DndProvider backend={Backend}>
-        <div style={theme.container}>
-          <Event user={currentUser} event={event} />
-        </div>
-      </DndProvider>
+      <div style={theme.container}>
+        <Event user={currentUser} event={event} />
+      </div>
     );
   } else if (event) {
     return (

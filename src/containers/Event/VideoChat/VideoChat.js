@@ -4,7 +4,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { store } from "../../../store.js";
 import "./VideoChat.css";
 
-const isVideoEnabled = process.env.NODE_ENV === "production" ? true : false;
+const isVideoEnabled = process.env.NODE_ENV === "production" ? true : true;
 
 let api;
 
