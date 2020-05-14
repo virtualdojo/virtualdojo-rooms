@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "development") {
   functions.useFunctionsEmulator("http://localhost:5001");
 }
 
-const setIsMentorFunction = functions.httpsCallable("setIsMentorFunction");
+const setIsMentorFunction = functions.httpsCallable("setIsMentor");
 const moveUserToRoomFunction = functions.httpsCallable("moveUserToRoom");
 const createEventFunction = functions.httpsCallable("createEvent");
 const joinEventFunction = functions.httpsCallable("joinEvent");
