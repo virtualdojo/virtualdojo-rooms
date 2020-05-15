@@ -29,21 +29,24 @@ Most of the contributors are mentor from several CoderDojo organizations in Ital
 
 ## Development
 Create a new Firebase project and copy and rename the `.env` file to `.env.development.local` and add your Firebase Web credentials. Remember to enable anonymous authentication.
+We also use Firebase Functions and to enable local development set up [admin credential](https://firebase.google.com/docs/functions/local-emulator#set_up_admin_credentials_optional). The key should be located in `/functions/dev-admin.key.json`.
 
-We use also Firebase Functions and to enable local development set up [admin credential](https://firebase.google.com/docs/functions/local-emulator#set_up_admin_credentials_optional). The key should be located in `/functions/dev-admin.key.json`.
-
-To start development run the following commands:
+To start development for the first time run the following commands:
 
 ```
 npm i
-npm start
+cd functions/
+npm i
+cd ..
+npm run start:dev
 ```
 
-Then, open another terminal and run the Functions emulator:
+The commands above will install all the dependencies and will start both Firebase emulator and Frontend development server.
+
+After you deploy for the first time in development(see next section) you don't need to run the Firebase emulator if you're only working at the frontend, just use this command:
 
 ```
-cd functions
-npm run serve
+npm run start
 ```
 
 ## Deploy
@@ -59,7 +62,7 @@ Check `package.json` to see how to deploy to dev and production with different e
 ## Technologies
 
 - **Jitsi**: Video/audio/text chat
-- **Firebase**: Hosting and Database with subscriptions
+- **Firebase**: Hosting, Functions, Database with subscriptions
 - **React**: Frontend
 - **Comic Neue**: A font that looks similar to Comic Sans 🎨
 

@@ -15,7 +15,10 @@ firebase.initializeApp(firebaseConfig);
 const functions = firebase.app().functions(DEFAULT_REGION);
 const db = firebase.firestore();
 
-if (process.env.NODE_ENV === "development") {
+if (
+  process.env.NODE_ENV === "development" &&
+  process.env.REACT_APP_EMULATOR_ENABLED === "true"
+) {
   functions.useFunctionsEmulator("http://localhost:5001");
 }
 
