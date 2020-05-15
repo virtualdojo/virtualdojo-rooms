@@ -97,7 +97,7 @@ function WaitingRoom({ theme, currentUser, event }) {
 }
 
 function EditEvent() {
-  const { currentUser, event, isEventOpen } = useContext(store);
+  const { currentUser, event, isEventOpen, isInSimpleView } = useContext(store);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [tabIndex, setTabIndex] = useState(0);
   const theme = useTheme();
@@ -128,9 +128,11 @@ function EditEvent() {
       <WaitingRoom event={event} currentUser={currentUser} theme={style} />
     );
 
+  const showModal = isModalOpen || isInSimpleView;
+
   return (
     <div className="main-container" style={style.container}>
-      {!isModalOpen && (
+      {!showModal && (
         <div style={{ position: "fixed" }}>
           <IconButton
             color="secondary"
@@ -153,13 +155,15 @@ function EditEvent() {
         </div>
       )}
 
-      <VideoChat
-        user={currentUser}
-        isMenuOpen={isModalOpen}
-        event={event}
-      ></VideoChat>
+      {!isInSimpleView && (
+        <VideoChat
+          user={currentUser}
+          isMenuOpen={showModal}
+          event={event}
+        ></VideoChat>
+      )}
       <Dialog
-        open={isModalOpen}
+        open={showModal}
         fullScreen={fullScreen}
         maxWidth={"md"}
         PaperProps={{

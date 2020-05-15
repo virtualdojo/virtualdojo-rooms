@@ -41,5 +41,8 @@
   "You Are In The Waiting Room": "ti trovi nella stanza d'attesa",
   "Delete Ninja": "Cancella Ninja",
   "Cancel": "Annulla",
-  "Confirm": "Conferma"
+  "Confirm": "Conferma",
+  "Unsupported browser title": "Il tuo browser non è compatabile",
+  "Unsupported browser description": "Per avere tutte le funzionalità di VirtualDojo Rooms devi utilizzare Chrome su Windows, Mac o Linux.<br/>Non sono supportati altri browser o smartphone e tablet",
+  "Unsupported browser help": "<1>1) Scarica Chrome su Windows, Mac o Linux <br/> </1> <2>Download</2> <br/> <3>2) Provare l'applicazione sapendo che andrai incontro ad errori<br/></3><4>Prova</4>"
 }

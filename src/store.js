@@ -9,6 +9,11 @@ import React, {
 import * as FirestoreService from "./services/firestore";
 import useQueryString from "./hooks/useQueryString";
 
+export const CONSTANTS = {
+  SIMPLE_VIEW: "simple",
+  ADVANCED_VIEW: "advanced",
+};
+
 const initialState = {
   isInitializing: true,
   isLoading: false,
@@ -91,6 +96,7 @@ const StateProvider = ({ children }) => {
   // Workaround to enable dragging while having Jitsi on background
   // Issue: https://github.com/react-dnd/react-dnd/issues/2184
   const [isDragging, setIsDragging] = useState(false);
+  const [forcedView, setForcedView] = useState(undefined);
   const eventId = queryEventId;
 
   const setAuthUser = useCallback((payload) => {
@@ -379,6 +385,8 @@ const StateProvider = ({ children }) => {
     return false;
   }, [state.event]);
 
+  const isInSimpleView = forcedView === CONSTANTS.SIMPLE_VIEW;
+
   return (
     <Provider
       value={{
@@ -407,6 +415,9 @@ const StateProvider = ({ children }) => {
         addDoc,
         isDragging,
         setIsDragging,
+        setForcedView,
+        forcedView,
+        isInSimpleView,
       }}
     >
       {children}

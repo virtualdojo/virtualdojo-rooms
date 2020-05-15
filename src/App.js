@@ -1,19 +1,94 @@
 import React, { useContext } from "react";
 import { useTheme } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import { Typography, Button, Paper } from "@material-ui/core";
+import { isMobile, isChrome } from "react-device-detect";
+import { Trans, useTranslation } from "react-i18next";
 
 import * as LoggerService from "./services/logger";
-import { store } from "./store.js";
+import { store, CONSTANTS } from "./store.js";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
 import JoinEvent from "./containers/JoinEvent/JoinEvent";
 import Event from "./containers/Event/Event";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 
-function App() {
-  const { currentUser, event, isLoading, error, isInitializing } = useContext(
-    store
+function UnsupportedCheck() {
+  const { setForcedView } = useContext(store);
+  const { palette } = useTheme();
+  const { t } = useTranslation("translation");
+  const theme = {
+    container: {
+      display: "flex",
+      background: palette.primary.main,
+      justifyContent: "center",
+      alignItems: "center",
+      minHeight: "100vh",
+      overflowY: "auto",
+    },
+  };
+  return (
+    <div style={theme.container}>
+      <Paper
+        variant="outlined"
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "24px",
+          overflowY: "auto",
+        }}
+      >
+        <Typography variant="h4" gutterBottom={true}>
+          {t("Unsupported browser title")}
+        </Typography>
+        <Typography variant="h6" gutterBottom={true} align={"center"}>
+          <Trans t={t} i18nKey="Unsupported browser description"></Trans>
+        </Typography>
+
+        <Trans t={t} i18nKey="Unsupported browser help">
+          Unsupported browser help
+          <Typography variant="subtitle1">Unsupported browser help</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            style={{ fontWeight: 600 }}
+            type="submit"
+            onClick={() =>
+              window.open("https://www.google.com/chrome/", "_blank")
+            }
+            disabled={false}
+          >
+            "download"
+          </Button>
+          <Typography variant="body2">Unsupported browser help</Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            size="small"
+            style={{ fontWeight: 600 }}
+            type="submit"
+            onClick={() => setForcedView(CONSTANTS.ADVANCED_VIEW)}
+            disabled={false}
+          >
+            "advanced"
+          </Button>
+        </Trans>
+      </Paper>
+    </div>
   );
+}
+
+function App() {
+  const {
+    currentUser,
+    event,
+    isLoading,
+    error,
+    isInitializing,
+    forcedView,
+  } = useContext(store);
   const { palette } = useTheme();
   const theme = {
     container: {
@@ -51,6 +126,9 @@ function App() {
         {error && <ErrorMessage errorCode={error}></ErrorMessage>}
       </div>
     );
+  if ((isMobile || !isChrome) && !forcedView) {
+    return <UnsupportedCheck />;
+  }
   if (event && currentUser) {
     return (
       <div style={theme.container}>
