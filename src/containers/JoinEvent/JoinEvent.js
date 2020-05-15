@@ -1,5 +1,10 @@
-import React, { useContext } from "react";
-import { TextField, Button, Typography } from "@material-ui/core";
+import React, { useContext, useState } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { useTranslation } from "react-i18next";
@@ -8,6 +13,7 @@ import "./JoinEvent.css";
 
 function JoinEvent(props) {
   const { addUser, error } = useContext(store);
+  const [isJoining, setIsJoining] = useState(false);
   const { t } = useTranslation("translation");
   const { palette } = useTheme();
   const theme = {
@@ -15,11 +21,19 @@ function JoinEvent(props) {
     modal: { background: palette.primary.main },
   };
 
-  function addNewUser(e) {
+  async function addNewUser(e) {
+    if (isJoining) return;
+    setIsJoining(true);
     e.preventDefault();
     const userName = `${document.addUserForm.firstName.value} ${document.addUserForm.lastName.value}`;
     const eventPassword = document.addUserForm.eventPassword.value;
-    addUser({ userName, eventPassword });
+
+    try {
+      await addUser({ userName, eventPassword });
+    } catch (err) {
+      console.log(`Join error: `, err.message);
+    }
+    setIsJoining(false);
   }
 
   return (
@@ -70,8 +84,10 @@ function JoinEvent(props) {
             style={{ fontWeight: 600 }}
             type="submit"
             onClick={addNewUser}
+            disabled={isJoining}
           >
             {t("Submit")}
+            {isJoining && <CircularProgress size={20} color="secondary" />}
           </Button>
         </form>
         <ErrorMessage errorCode={error}></ErrorMessage>

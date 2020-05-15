@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useCallback } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   TableContainer,
@@ -39,10 +39,18 @@ function Users() {
     changeRoom,
     toggleIsMentor,
     deleteUser,
+    userIdsBeingEdited,
   } = useContext(store);
   const classes = useStyles();
   const { t } = useTranslation("translation");
   const orderedUsers = users.sort((a, b) => (a.userName > b.userName ? 1 : -1));
+
+  const isBeingEdited = useCallback(
+    (userId) => {
+      return userIdsBeingEdited.indexOf(userId) >= 0;
+    },
+    [userIdsBeingEdited]
+  );
   return (
     <>
       <ErrorMessage errorCode={error}></ErrorMessage>
@@ -82,7 +90,9 @@ function Users() {
                     aria-label="promote"
                     color="primary"
                     onClick={() => toggleIsMentor(u)}
-                    disabled={currentUser.userId === u.userId}
+                    disabled={
+                      currentUser.userId === u.userId || isBeingEdited(u.userId)
+                    }
                   >
                     <Tooltip
                       title={
@@ -103,7 +113,10 @@ function Users() {
                     onClick={() =>
                       changeRoom(u.userId, currentUser.room.roomId)
                     }
-                    disabled={currentUser.room.roomId === u.room.roomId}
+                    disabled={
+                      currentUser.room.roomId === u.room.roomId ||
+                      isBeingEdited(u.userId)
+                    }
                   >
                     <Tooltip
                       title={
@@ -130,7 +143,10 @@ function Users() {
                     onClick={() =>
                       changeRoom(currentUser.userId, u.room.roomId)
                     }
-                    disabled={currentUser.room.roomId === u.room.roomId}
+                    disabled={
+                      currentUser.room.roomId === u.room.roomId ||
+                      isBeingEdited(u.userId)
+                    }
                   >
                     <Tooltip
                       title={
@@ -155,7 +171,9 @@ function Users() {
                     aria-label="promote"
                     color="primary"
                     onClick={() => deleteUser(u.userId)}
-                    disabled={currentUser.userId === u.userId}
+                    disabled={
+                      currentUser.userId === u.userId || isBeingEdited(u.userId)
+                    }
                   >
                     <Tooltip title={t("Delete Ninja")} placement="bottom">
                       <DeleteForeverIcon />

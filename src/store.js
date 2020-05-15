@@ -19,6 +19,7 @@ const initialState = {
   roomsUsers: [],
   docs: [],
   error: undefined,
+  userIdsBeingEdited: [],
 };
 const store = createContext(initialState);
 const { Provider } = store;
@@ -62,6 +63,24 @@ const StateProvider = ({ children }) => {
           error: action.payload,
           isLoading: false,
           isInitializing: false,
+        };
+      case "START_EDIT_USER":
+        return {
+          ...state,
+          userIdsBeingEdited: state.userIdsBeingEdited.concat(action.payload),
+          error: undefined,
+        };
+      case "END_EDIT_USER":
+        const userToRemove = state.userIdsBeingEdited.indexOf(action.payload);
+        const userIdsBeingEdited =
+          userToRemove >= 0
+            ? state.userIdsBeingEdited
+                .slice(0, userToRemove)
+                .concat(state.userIdsBeingEdited.slice(userToRemove + 1))
+            : state.userIdsBeingEdited;
+        return {
+          ...state,
+          userIdsBeingEdited,
         };
       default:
         console.error("Invalid action type ", action);
@@ -194,9 +213,16 @@ const StateProvider = ({ children }) => {
   );
 
   const deleteUser = useCallback(
-    (userId) => {
+    async (userId) => {
       const user = state.users.find((u) => u.userId === userId);
-      if (user) FirestoreService.deleteUser(user, eventId);
+      if (!user) return;
+      dispatch({ type: "START_EDIT_USER", payload: userId });
+      try {
+        await FirestoreService.deleteUser(user, eventId);
+      } catch (err) {
+        console.log("Delete: ", err.message);
+      }
+      dispatch({ type: "END_EDIT_USER", payload: userId });
     },
     [eventId, state.users]
   );
@@ -241,8 +267,11 @@ const StateProvider = ({ children }) => {
   }, [eventId, state.authUser, dispatch, setError, setEvent]);
 
   const toggleIsMentor = useCallback(
-    ({ userId, isMentor }) =>
-      FirestoreService.setUserIsMentor(userId, eventId, !isMentor),
+    async ({ userId, isMentor }) => {
+      dispatch({ type: "START_EDIT_USER", payload: userId });
+      await FirestoreService.setUserIsMentor(userId, eventId, !isMentor);
+      dispatch({ type: "END_EDIT_USER", payload: userId });
+    },
     [eventId]
   );
 
@@ -281,11 +310,13 @@ const StateProvider = ({ children }) => {
         (ru) => ru.userId === userId && ru.roomId === roomId
       );
       if (isInRoom) return;
+      dispatch({ type: "START_EDIT_USER", payload: userId });
       try {
         await FirestoreService.addUserToRoom(userId, roomId, eventId);
       } catch (err) {
         setError("change-room-fail");
       }
+      dispatch({ type: "END_EDIT_USER", payload: userId });
     },
     [eventId, setError, state.roomsUsers]
   );
@@ -358,6 +389,7 @@ const StateProvider = ({ children }) => {
         rooms: roomsWithUsers,
         docs: state.docs,
         error: state.error,
+        userIdsBeingEdited: state.userIdsBeingEdited,
         createEvent,
         addUser,
         deleteUser,

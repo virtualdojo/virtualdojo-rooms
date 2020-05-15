@@ -1,5 +1,10 @@
-import React, { useContext } from "react";
-import { TextField, Button, Typography } from "@material-ui/core";
+import React, { useContext, useState } from "react";
+import {
+  TextField,
+  Button,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
 import { useTheme } from "@material-ui/core/styles";
 import ErrorMessage from "../../components/ErrorMessage/ErrorMessage";
 import { useTranslation } from "react-i18next";
@@ -8,10 +13,13 @@ import "./CreateEvent.css";
 
 function CreateEvent(props) {
   const { createEvent, error } = useContext(store);
+  const [isCreating, setIsCreating] = useState(false);
   const { t } = useTranslation("translation");
   const { palette } = useTheme();
 
   async function create(e) {
+    if (isCreating) return;
+    setIsCreating(true);
     e.preventDefault();
 
     const eventName = document.createListForm.eventName.value;
@@ -19,12 +27,17 @@ function CreateEvent(props) {
     const eventPassword = document.createListForm.eventPassword.value;
     const mentorPassword = document.createListForm.mentorPassword.value;
 
-    createEvent({
-      eventName,
-      eventPassword,
-      mentorPassword,
-      userName,
-    });
+    try {
+      await createEvent({
+        eventName,
+        eventPassword,
+        mentorPassword,
+        userName,
+      });
+    } catch (err) {
+      console.log(`Create error: `, err.message);
+    }
+    setIsCreating(false);
   }
 
   const theme = {
@@ -94,8 +107,10 @@ function CreateEvent(props) {
             style={{ fontWeight: 600 }}
             type="submit"
             onClick={create}
+            disabled={isCreating}
           >
-            {t("Submit")}
+            {t("Submit")}{" "}
+            {isCreating && <CircularProgress size={20} color="secondary" />}
           </Button>
         </form>
         <ErrorMessage errorCode={error}></ErrorMessage>

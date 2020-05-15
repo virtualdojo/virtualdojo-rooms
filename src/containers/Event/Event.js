@@ -163,7 +163,7 @@ function EditEvent() {
         fullScreen={fullScreen}
         maxWidth={"md"}
         PaperProps={{
-          style: { borderRadius: "15px", height: "80vh" },
+          style: { borderRadius: "15px", height: "80vh", minWidth: "80%" },
         }}
         disableAutoFocus={true}
         disableEnforceFocus={true}
