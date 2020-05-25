@@ -149,7 +149,9 @@ const StateProvider = ({ children }) => {
         return;
       }
 
-      if (!userName) {
+      // remove multiple consecutive spaces
+      const trimmedUserName = userName.replace(/\s+/g, " ");
+      if (!trimmedUserName) {
         setError("user-desc-req");
         return;
       }
@@ -159,7 +161,7 @@ const StateProvider = ({ children }) => {
           eventName: eventName.trim(),
           eventPassword: eventPassword.trim(),
           mentorPassword: mentorPassword.trim(),
-          userName: userName.trim(),
+          userName: trimmedUserName,
           additionalConfig: {},
         });
         setQueryEventId(eventId);
@@ -195,7 +197,9 @@ const StateProvider = ({ children }) => {
 
   const addUser = useCallback(
     async ({ userName, eventPassword }) => {
-      if (!userName) {
+      // remove multiple consecutive spaces
+      const trimmedUserName = userName.replace(/\s+/g, " ");
+      if (!trimmedUserName) {
         setError("user-desc-req");
         return;
       }
@@ -207,7 +211,7 @@ const StateProvider = ({ children }) => {
 
       try {
         await FirestoreService.addUserToEvent(
-          userName.trim(),
+          trimmedUserName,
           eventId,
           eventPassword.trim()
         );

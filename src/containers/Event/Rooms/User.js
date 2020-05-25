@@ -63,8 +63,8 @@ function User({
     .trim()
     .split(" ")
     .slice(0, 2)
-    .map((s) => (s[0] ? s[0].toUpperCase() : ""))
-    .concat();
+    .map((s) => (s && [...s].length > 0 ? [...s][0].toUpperCase() : ""));
+  console.log(initials);
   return (
     <Grid
       item
