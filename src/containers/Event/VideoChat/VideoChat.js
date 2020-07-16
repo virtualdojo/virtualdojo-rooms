@@ -10,15 +10,13 @@ let api;
 
 function VideoChat({ isMenuOpen }) {
   const { currentUser, event, isDragging } = useContext(store);
-  const [loading, setLoading] = useState(true);
-
   const containerStyle = {
     width: "100%",
     height: "100vh",
   };
 
   const jitsiContainerStyle = {
-    display: loading ? "none" : "block",
+    display: "block",
     width: "100%",
     height: "100%",
     pointerEvents: isMenuOpen && isDragging ? "none" : "auto",
@@ -56,7 +54,6 @@ function VideoChat({ isMenuOpen }) {
             () => api.executeCommand("password", event.password),
             2000
           );
-          setLoading(false);
         });
 
         api.addEventListener("passwordRequired", () => {
@@ -73,8 +70,6 @@ function VideoChat({ isMenuOpen }) {
       }
       if (window.JitsiMeetExternalAPI) startConference();
       else alert("Jitsi Meet API script not loaded");
-    } else {
-      setLoading(false);
     }
   }, [
     currentUser.userId,
