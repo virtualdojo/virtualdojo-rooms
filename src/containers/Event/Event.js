@@ -133,7 +133,7 @@ function EditEvent() {
   return (
     <div className="main-container" style={style.container}>
       {!showModal && (
-        <div style={{ position: "fixed" }}>
+        <div style={{ position: "fixed", top: "60px", left: "15px" }}>
           <IconButton
             color="secondary"
             onClick={() => {
