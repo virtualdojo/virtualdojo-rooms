@@ -4,7 +4,6 @@ import { Typography, Button, Paper } from "@material-ui/core";
 import { isMobile, isChrome } from "react-device-detect";
 import { Trans, useTranslation } from "react-i18next";
 
-import * as LoggerService from "./services/logger";
 import { store, CONSTANTS } from "./store.js";
 
 import CreateEvent from "./containers/CreateEvent/CreateEvent";
