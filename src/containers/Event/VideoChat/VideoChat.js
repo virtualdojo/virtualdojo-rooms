@@ -38,6 +38,7 @@ function VideoChat({ isMenuOpen }) {
           },
           configOverwrite: {
             disableSimulcast: false,
+            prejoinPageEnabled: false,
           },
           userInfo: {
             displayName: currentUser.userName,
